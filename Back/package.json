@@ -1,0 +1,20 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "proyecto de programacion web",
+  "homepage": "https://github.com/FranciscoJavierSV/Proyecto_SW#readme",
+  "bugs": {
+    "url": "https://github.com/FranciscoJavierSV/Proyecto_SW/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FranciscoJavierSV/Proyecto_SW.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
