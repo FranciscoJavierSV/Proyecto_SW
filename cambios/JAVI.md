@@ -1,4 +1,22 @@
-// Ver todos los cambios en la carpeta cambios en la rama JAVI
+// 08/11/2025 creacion de repo
+
+// Cambios 11/11/2025
+    - Equipo agregado
+    - Asignaciones
+    - esqueleto de distribucion
+
+// Cambios dia 12/11/2025 
+
+- Creacion de APIS del proyecto version 1:
+    - creacion de la declaracion de las rutas en index y routes
+    - creacion de archivos de distribucion
+    - declaracion basica de la API
+
+    + archivos modificados o creados:
+        - index.js
+        - authRoutes.js
+        - privRoutes.js
+        - userRoutes.js
 
 //======================== publico =====================================
 // Estas no requiren ningun tipo de acceso se pueden utilizar en cualquier momento
@@ -27,10 +45,6 @@ router.post('/contact', ...);         // Enviar mensaje de contacto
 // Sesión y perfil
 router.post('/logout', ...);                // Cerrar sesión
 router.get('/perfil', ...);                 // Obtener perfil del usuario
-// Preferencias de accesibilidad
-router.post('/accessibility', ...);         // Guardar preferencias de accesibilidad del 
-                                            // usuario (tema, fuente, contraste, etc.)
-
 
 // Carrito
 router.get('/cart', ...);                   // Ver carrito
