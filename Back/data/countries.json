@@ -1,0 +1,4 @@
+{
+  "MX": { "name": "México", "tax": 0.16 },
+  "US": { "name": "Estados Unidos", "tax": 0.07 }
+}
