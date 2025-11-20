@@ -80,3 +80,11 @@ router.get('/mProducts/inventory', ...);     // Ver inventario completo
 router.get('/sales/chart', ...);            // Ver gráfica de ventas
 router.get('/sales/total', ...);            // Ver total de ventas
 router.get('/inventory', ...);              // Ver inventario por categoría
+
+// Cambios dia 17/11/2025
+
+
+Empezar a agregar estructura de APIs
+
+todos los archivos de controllers, data, models y middleware
+
