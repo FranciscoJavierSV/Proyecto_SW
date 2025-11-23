@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Sexta Armonía</title>
+    <link rel="stylesheet" href="/CrearCuenta/css/CrearCuenta.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <img src="/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img" alt="Logo">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
+
+        <nav class="menu">
+            <a href="Principal.html">Inicio</a>
+            <a href="Productos.html">Productos</a>
+            <a href="IniciarSesion.html">Iniciar Sesión</a>
+            <a href="CrearCuenta.html" class="active">Crear Cuenta</a>
+            <span class="carrito">🛒</span>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="crear-cuenta">
+            <h2>Crear Cuenta</h2>
+
+            <form class="form-crear">
+                <label for="nombre">Nombre completo:</label>
+                <input type="text" id="nombre" placeholder="Ej: Fernando López" required>
+
+                <label for="correo">Correo:</label>
+                <input type="email" id="correo" placeholder="Ej: correo@ejemplo.com" required>
+
+                <label for="pass">Contraseña:</label>
+                <input type="password" id="pass" placeholder="Mínimo 8 caracteres" required>
+
+                <label for="pass2">Confirmar contraseña:</label>
+                <input type="password" id="pass2" placeholder="Repite tu contraseña" required>
+
+                <button type="submit" class="btn-crear">Crear Cuenta</button>
+
+                <p class="login-link">
+                    ¿Ya tienes una cuenta?
+                    <a href="/IniciarSesion/index/IniciarSesion.html">Iniciar Sesión</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programación de Sistemas Web © 2025</p>
+    </footer>
+
+</body>
+</html>
