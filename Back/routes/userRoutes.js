@@ -7,15 +7,15 @@ const productos = require('../controllers/items');
 const contacto = require('../controllers/contac');
 
 // usuario
-router.post('/register', usuarios.newUser); //-----hecho user
-router.post('/login', usuarios.login);    // -----hecho  user
+router.post('/register', usuarios.newUser); // = terminado
+router.post('/login', usuarios.login);      // = terminado
 
 // recuperacion
-router.get('/captcha', validar.captcha);  // creado
-router.post('/captcha', validar.captchaV); // creado
+// falta terminar valicar capcha esa se maneja con lo la api que se crea en el front
+router.post('/recover',validar.captchaV, usuarios.recoveryUser); // = falta una cosa 
+router.post('/reset', usuarios.restore);  // = terminado
 
-router.post('/recover', usuarios.recoveryUser); // -----hecho user
-router.post('/reset', usuarios.restore);  //  ----- hecho user
+
 
 // productos a la vista
 router.get('/products', productos.getAllProducts);

@@ -13,8 +13,10 @@ tablas
         ofertaP     // precio de oferta
         categoria   // categoria del producto
         inventario  // cantidad en inventario
+        imagen
 
     usuarios // Lista todos los usuarios de la pagina
+        id          // identificador de usuario
         nombre      // nombre del usuario
         contrasena  // contrasena de la cuenta
         correo      // correo electronico para acceder
@@ -27,7 +29,8 @@ tablas
     whishlist // Tiene los articulos de la lista de deseos de los usuarios
         usuario     // nombre de la cuenta
         articulo    // datos de el articulo
-        cantidad    // la cantidad en la lista de deseo
+        cantidad    // la cantidad en la lista de dese
+        imagen
 
     cart // Lista los articulos del carrito
         usuario     // usuario asociado
@@ -37,7 +40,8 @@ tablas
         descuento   // descuento del total
         subtotal    // sin descuento ni iva
         total       // total con lo demas
-
+        imagen
+        cupon
 
     sales // Lista todas las ventas de la pagina 
         usuario     // usuario asociado 
