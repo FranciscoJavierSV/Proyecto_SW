@@ -72,19 +72,26 @@ const isAdmin = (req, res, next) =>{
 };
 
 
-// Crea el captcha 
-const captcha = (req, res, next) =>{
 
-};
+
+
 
 // Valida el cpatcha
 const captchaV = (req, res, next) =>{
-  
+    try{
+
+
+
+      next();
+    }catch(error){
+
+
+    }
 };
 
 
 
 
 module.exports = {
-  verifyT,isAdmin,captcha,captchaV
+  verifyT,isAdmin,captchaV
 };
