@@ -7,13 +7,20 @@
 router.post('/register', ...);        // Registro de usuario
 router.post('/login', ...);           // Inicio de sesión (funcion de bloqueo por intentos) y retorna el  
                                       // token y nombre de la cuenta para poder mostrar
+
+router.get('/captcha', ...);         // Obtener captcha
 router.post('/captcha', ...);         // Validación de CAPTCHA
+
+
+
 router.post('/recover', ...);         // Solicitud de recuperación
 router.post('/reset', ...);           // Confirmación de recuperación
 
 // Productos
 router.get('/products', ...);         // Listar todos los productos ( 1categoría, 2 rango de precios 
-                                      // y 3 productos en oferta) con esos 3 tipos de parametros.
+router.get('/products/:cat', ...);         // y 3 productos en oferta) con esos 3 tipos de parametros.
+
+
 router.get('/products/:id', ...);     // devuelve un producto en concreto por si quieren mostrar 1 en grande
 
 
@@ -40,10 +47,10 @@ router.delete('/cart/:prodId', ...);        // Eliminar producto
 router.post('/cart/coupon', ...);           // Aplicar cupón
 
 // Órdenes
-router.post('/ordenar', ...);               // Finalizar compra
-router.get('/ordenar', ...);                // Ver historial
-router.get('/ordenar/:id/pdf', ...);        // Generar nota PDF
-router.post('/ordenar/:id/email', ...);     // Enviar nota por correo
+router.post('/venta', ...);               // Finalizar compra
+router.get('/venta', ...);                // Ver historial
+router.get('/venta/:id/pdf', ...);        // Generar nota PDF
+router.post('/venta/:id/email', ...);     // Enviar nota por correo
 
 // Suscripción
 router.post('/suscripcion', ...);           // Suscribirse y recibir cupón
