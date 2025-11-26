@@ -1,4 +1,4 @@
-// info en README.md
+// info en README.md asdasd
 const express = require('express');
 const router = express.Router();
 const usuarios = require('../controllers/users');
@@ -9,6 +9,9 @@ const contacto = require('../controllers/contac');
 // usuario
 router.post('/register', usuarios.newUser); // = terminado
 router.post('/login', usuarios.login);      // = terminado
+
+// ADD: refresh token (cliente envía { "refreshToken": "<token>" })
+router.post('/refresh', usuarios.refresh);
 
 // recuperacion
 // falta terminar valicar capcha esa se maneja con lo la api que se crea en el front

@@ -2,80 +2,80 @@ const mysql = require('mysql2/promise');
 
 // conexión al pool
 const pool = mysql.createPool({
-  host: 'localhost', // hubicacion de la base
-  user: 'root', // usuario de la base de datos
-  password: '', // contrasena de la base 
-  database: 'tienda' // tabla a la que va a modificar
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'tienda'
 });
 
-// buscar usuario por correo
+// busca usuario por correo
 async function findUser(correo) {
-  const [rows] = await pool.query('SELECT * FROM users WHERE correo = ?', [correo]);
-  return rows[0]; // devuelve el primer usuario encontrado
+  const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? LIMIT 1', [correo]);
+  return rows[0] || null;
 }
 
-// verificar si existe correo
+// verifica si existe correo
 async function findEmail(correo) {
-  const [rows] = await pool.query('SELECT id, correo FROM users WHERE correo = ?', [correo]);
-  return rows[0];
+  const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? LIMIT 1', [correo]);
+  return rows[0] || null;
 }
 
-// crear usuario nuevo
+// crea usuario nuevo en BD
 async function createUser(user) {
-  const { username, contrasena, correo, pais } = user; 
   const [result] = await pool.query(
-    'INSERT INTO users (nombre, contrasena, correo, pais) VALUES (?, ?, ?, ?)',
-    [username, contrasena, correo, pais]
+    'INSERT INTO usuarios (nombre, contrasena, correo, pais, font, contrast) VALUES (?, ?, ?, ?, ?, ?)',
+    [user.username, user.contrasena, user.correo, user.pais, user.text, user.contrast]
   );
-  return result.affectedRows > 0;
+  return result.insertId;
 }
 
-// actualizar contraseña
+// actualiza contraseña del usuario
 async function updatePassword(userId, newContrasena) {
-  const [result] = await pool.query(
-    'UPDATE users SET contrasena = ? WHERE id = ?',
-    [newContrasena, userId]
-  );
-  return result.affectedRows > 0;
+  await pool.query('UPDATE usuarios SET contrasena = ? WHERE id = ?', [newContrasena, userId]);
+  return true;
 }
 
-// guardar refresh token
-async function saveRefreshToken(userId, token) {
-  const [result] = await pool.query(
-    'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))',
-    [userId, token]
-  );
-  return result.affectedRows > 0;
+// incrementa intentos fallidos
+async function incrementFailedAttempt(userId) {
+  await pool.query('UPDATE usuarios SET intentos = intentos + 1 WHERE id = ?', [userId]);
+  const [rows] = await pool.query('SELECT intentos FROM usuarios WHERE id = ?', [userId]);
+  return rows[0] ? rows[0].intentos : 0;
 }
 
-// Funciones para actualizar preferencias de accesibilidad del usuario
+// resetea intentos y quita bloqueo
+async function resetFailedAttempts(userId) {
+  await pool.query('UPDATE usuarios SET intentos = 0, `block` = NULL WHERE id = ?', [userId]);
+  return true;
+}
+
+// bloquea usuario hasta fecha especificada
+async function lockUserUntil(userId, date) {
+  await pool.query('UPDATE usuarios SET `block` = ? WHERE id = ?', [date, userId]);
+  return true;
+}
+
+// actualiza país del usuario
 async function updateUserCountry(userId, pais) {
-  const [result] = await pool.query(
-    'UPDATE users SET pais = ? WHERE id = ?',
-    [pais, userId]
-  );
-  return result.affectedRows > 0;
+  await pool.query('UPDATE usuarios SET pais = ? WHERE id = ?', [pais, userId]);
+  return true;
 }
 
+// actualiza tamaño de fuente del usuario
 async function updateUserFontSize(userId, fontSize) {
-  const [result] = await pool.query(
-    'UPDATE users SET font = ? WHERE id = ?',
-    [fontSize, userId]
-  );
-  return result.affectedRows > 0;
+  await pool.query('UPDATE usuarios SET font = ? WHERE id = ?', [fontSize, userId]);
+  return true;
 }
 
+// actualiza contraste del usuario
 async function updateUserContrast(userId, contrast) {
-  const [result] = await pool.query(
-    'UPDATE users SET contrast = ? WHERE id = ?',
-    [contrast, userId]
-  );
-  return result.affectedRows > 0;
+  await pool.query('UPDATE usuarios SET contrast = ? WHERE id = ?', [contrast, userId]);
+  return true;
 }
 
-async function deleteRefreshToken(userId) {
-  const [result] = await pool.query('DELETE FROM refresh_tokens WHERE user_id = ?', [userId]);
-  return result.affectedRows > 0;
+// obtener usuario por id
+async function getUserById(userId) {
+  const [rows] = await pool.query('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [userId]);
+  return rows[0] || null;
 }
 
 module.exports = {
@@ -83,9 +83,11 @@ module.exports = {
   findEmail,
   createUser,
   updatePassword,
-  saveRefreshToken,
+  incrementFailedAttempt,
+  resetFailedAttempts,
+  lockUserUntil,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
-  deleteRefreshToken
+  getUserById
 };

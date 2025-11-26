@@ -23,6 +23,9 @@ tablas
         rol         // rol de la cuenta 
         pais        // pais para los impuestos
         preferencias// Las preferencias de accesibilidad de la cuenta
+        intentos    // Intentos a su cuenta
+        block       // guardaa la hora y fecha de desbloqueo sino hay 
+                    // nada esta debloqueada
         
  
 

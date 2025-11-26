@@ -2,105 +2,127 @@
 const jwt = require('jsonwebtoken');
 // es para la encriptacion de las contrasenas 
 const bcrypt = require('bcrypt');
-// usar los metodos que se comunican con las base de datos
+// usar los metodos que se comunican con la base de datos
 const {
   createUser,
   findEmail,
   findUser,
   updatePassword,
-  saveRefreshToken,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
-  deleteRefreshToken
+  incrementFailedAttempt,
+  resetFailedAttempts,
+  lockUserUntil,
+  // cambiado: importar el nombre que exporta el modelo
+  getUserById
 } = require('../models/users');
 
 // palabra oculta
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const FRONT_URL = 'http://localhost:4000'; //process.env.FRONT_URL  cambiar por estouna vez este el link del front
-                                           // en el .env
+const FRONT_URL = process.env.FRONT_URL || 'http://localhost:4000';
 
+// Intentos y bloqueo
+const MAX_ATTEMPTS = 5;
+const LOCK_MINUTES = 15;
 
+// autentica usuario y genera tokens
 const login = async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
-    // Comprueba si ingresaron datos
+    
+    // error: falta correo o contraseña
     if (!correo || !contrasena) {
-      return res.status(400).json({
-        success: false,
-        message: 'Usuario y contraseña son requeridos'
+      return res.status(400).json({ 
+        success:false, 
+        message:'Usuario y contraseña son requeridos' 
       });
     }
 
-    // obtiene el usuario de la base de datos
+    // busca usuario por correo
     const user = await findUser(correo);
-
-    // Si no existe el usuario o la contraseña no coincide, falla sin especificar
-    const passwordMatch = user ? await bcrypt.compare(contrasena, user.contrasena) : false;
-    if (!user || !passwordMatch) {
-      return res.status(401).json({
-        success: false,
-        message: 'Datos inválidos'
+    
+    // error: usuario no existe
+    if (!user) {
+      return res.status(401).json({ 
+        success:false, 
+        message:'Datos inválidos' 
       });
     }
-    // se genera el token (access token corto)
-    const token = jwt.sign(
-      {
-        username: user.nombre,
-        role: user.rol,
-        id: user.id,
-        pais: user.pais,
-        fontSize: user.font,
-        contrast: user.contrast
-      },
+
+    // error: cuenta bloqueada por intentos fallidos
+    if (user.block && new Date(user.block) > new Date()) {
+      return res.status(423).json({ 
+        success:false, 
+        message:`Cuenta bloqueada hasta ${new Date(user.block).toLocaleString()}` 
+      });
+    }
+
+    // compara contraseña
+    const match = await bcrypt.compare(contrasena, user.contrasena);
+    if (!match) {
+      // incrementa intentos fallidos
+      const attempts = await incrementFailedAttempt(user.id);
+      
+      // error: supera máximo de intentos, bloquea cuenta
+      if (attempts >= MAX_ATTEMPTS) {
+        const lockUntil = new Date(Date.now() + LOCK_MINUTES * 60 * 1000);
+        await lockUserUntil(user.id, lockUntil);
+        return res.status(423).json({ 
+          success:false, 
+          message:`Cuenta bloqueada temporalmente. Intente nuevamente después de ${lockUntil.toLocaleString()}` 
+        });
+      }
+      
+      // error: contraseña incorrecta
+      return res.status(401).json({ 
+        success:false, 
+        message:'Datos inválidos', 
+        attemptsRemaining: Math.max(0, MAX_ATTEMPTS - attempts) 
+      });
+    }
+
+    // éxito: resetea intentos y genera tokens
+    await resetFailedAttempts(user.id);
+    
+    // genera access token (corta duración)
+    const accessToken = jwt.sign(
+      { id: user.id, nombre: user.nombre, rol: user.rol },
       JWT_SECRET,
       { expiresIn: '15m' }
     );
-
-    // se genera refresh token (sesiones más largas)
+    
+    // genera refresh token (larga duración)
     const refreshToken = jwt.sign(
       { id: user.id },
-      JWT_REFRESH_SECRET,
+      process.env.JWT_REFRESH_SECRET || JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // opcional: guardar refresh token en BD para poder invalidarlo
-    try { if (saveRefreshToken) await saveRefreshToken(user.id, refreshToken); } catch (e) { /* no bloquear login si falla */ }
-
-    // intentar enviar refresh token como cookie httpOnly si está disponible
-    try {
-      if (res.cookie) {
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 });
-      }
-    } catch (e) { /* ignorar si no está configurado */ }
-
-    // regresa si fue exitoso 
+    // devolver ambos tokens en el body (cliente guardará refresh en localStorage)
     return res.status(200).json({
       success: true,
       message: 'Login exitoso',
-      token,
-      refreshToken, // si no quieres exponerlo en body, elimina esta linea y usa solo la cookie
-      user: {
-        username: user.nombre,
-        role: user.rol
-      }
+      token: accessToken,
+      refreshToken,
+      user: { id: user.id, nombre: user.nombre }
     });
-    // envia mensaje de error del servidor 
+
   } catch (error) {
-    console.error('Error en login:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
+    // error: fallo en el servidor
+    console.error(error);
+    return res.status(500).json({ 
+      success:false, 
+      message:'Error en el servidor' 
     });
   }
 };
 
+// registra nuevo usuario
 const newUser = async (req, res ) => {
   const { username, contrasena, correo, pais } = req.body;
-  // Agregar la logica de almacenar los usuarios a la base de datos
   try{
-  // Validar campos obligatorios
+    // error: faltan campos obligatorios
     if (!username || !contrasena || !correo || !pais) {
       return res.status(400).json({
         success: false,
@@ -108,26 +130,30 @@ const newUser = async (req, res ) => {
       });
     }
 
-  const correoB = await findEmail(correo);
-  // Consultar si el correo existe para evitar duplicados
-  if (correoB) {
+    // verifica que el correo no exista
+    const correoB = await findEmail(correo);
+    
+    // error: correo ya está registrado
+    if (correoB) {
       return res.status(401).json({
         success: false,
         message: 'Correo ya registrado'
       });
     }
-  // Si no esta el correo registrado continuar con el registro
-  // asignar conf basica de accesibilidad
-    // Encriptar la contraseña antes de guardar
+
+    // encripta la contraseña
     const hashed = await bcrypt.hash(contrasena, 10);
-    // Agregar campos genericos (accesibilidad, id , etc...)
-    const text = "12"
-    const contrast = "white"
+    
+    // valores por defecto para accesibilidad
+    const text = "12";
+    const contrast = "white";
 
     const user = {username, contrasena: hashed, correo, text, contrast, pais};
 
+    // crea usuario en BD
     const success = await createUser(user);
-
+    
+    // error: fallo al crear usuario en BD
     if(!success){
       return res.status(500).json({
         success: false,
@@ -135,13 +161,13 @@ const newUser = async (req, res ) => {
       });
     }
 
-  // una vez agregado
-  return res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: ' Usuario Registrado con exito ',
     });
-  // En caso de error de conexion
+    
   }catch(error){
+    // error: fallo en el servidor
     console.error('Error interno');
     return res.status(500).json({
       success: false,
@@ -150,28 +176,30 @@ const newUser = async (req, res ) => {
   }
 };
 
+// inicia recuperación de contraseña
 const recoveryUser = async (req, res ) => {
-  // esto viene despues decompletar el captcha y agregar el correo a recuperar
   const { correo, captchaT } = req.body;
-  // Aqui el recuperar usuario
   try{
-    // Verificar que llego el captcha
+    // error: captcha no completado
     if(!captchaT){
       return res.status(401).json({
         success: false,
         message: 'Completa el captcha para continuar'
       });
     }
-    // Verificar que llego el correo
+    
+    // error: falta correo
     if(!correo){
       return res.status(401).json({
         success: false,
         message: 'Ingrese el correo en el campo'
       });
     }
-    // logica de recuperar contrasena 
-    //buscar usuario
+
+    // busca usuario por correo
     const user = await findEmail(correo);
+    
+    // error: correo no registrado
     if(!user){
       return res.status(404).json({
         success: false,
@@ -179,22 +207,21 @@ const recoveryUser = async (req, res ) => {
       });
     }
 
-    // generar token de corta duracion para recuperación
+    // genera token JWT corto (5 minutos)
     const token = jwt.sign({ id: user.id, correo: user.correo }, JWT_SECRET, { expiresIn: '5m' });
     const link = `${FRONT_URL}/reset?token=${token}`;
 
-    // enviar correo con url y token de expiracion para el cambio de contra
-    // TODO: implementar sendRecoveryEmail(user.correo, link);
+    // TODO: enviar link por correo
+    // await sendRecoveryEmail(user.correo, link);
 
     return res.status(200).json({
       success: true,
       message: 'Email de recuperación enviado',
-      // por seguridad no devolver el link en producción; útil para pruebas:
       debugLink: process.env.NODE_ENV === 'development' ? link : undefined
     });
 
-  // si no retorna un error   
   }catch(error){
+    // error: fallo en el servidor
     console.error('Error interno');
     return res.status(500).json({
       success: false,
@@ -203,42 +230,41 @@ const recoveryUser = async (req, res ) => {
   }
 };
 
+// actualiza preferencias de accesibilidad
 const editUser = async (req, res ) => {
   const { type, value } = req.body;
   const userId = req.user.id; // viene del middleware
 
-  // revisa si estan los datos disponibles
   try {
-    if (!type || !value) {
+    // error: faltan datos
+    if (!type || value === undefined) {
       return res.status(400).json({
         success: false,
         message: 'Falta de datos'
       });
     }
-    // logica para cada tipo de request
 
-    // Cambiar país del usuario
+    // actualiza según el tipo
     if (type === 'pais') {
       await updateUserCountry(userId, value);
       return res.status(200).json({ success: true, message: 'País actualizado' });
     }
 
-    // Cambiar tamaño de letra del usuario
     if (type === 'fontSize') {
       await updateUserFontSize(userId, value);
       return res.status(200).json({ success: true, message: 'Preferencia de tamaño de letra actualizada' });
     }
 
-    // Cambiar contraste del usuario
     if (type === 'contrast') {
       await updateUserContrast(userId, value);
-      return res.status(200).json({ success: true, message: 'Brillo actualizado ' });
+      return res.status(200).json({ success: true, message: 'Brillo actualizado' });
     }
-    // si llega un type desconocido
+
+    // error: type desconocido
     return res.status(400).json({ success: false, message: 'Tipo de edición inválido' });
 
-  // si no retorna un error 
   }catch(error){
+    // error: fallo en el servidor
     console.error('Error interno');
     return res.status(500).json({
       success: false,
@@ -247,66 +273,84 @@ const editUser = async (req, res ) => {
   }
 };
 
+// cambia contraseña con token de recuperación
 const restore = async (req, res) => {
-// token que expira para el cambio enviado por la url
- const {token, newPassword} = req.body;
-try{
-  if(!token || !newPassword){
-    return res.status(400).json({ success: false, message: 'Faltan datos' });
-  }
-  // verificar token
-  const payload = jwt.verify(token, JWT_SECRET);
-  // encriptar nueva contraseña
-  const hashed = await bcrypt.hash(newPassword, 10);
-  // Cambia la contra del usuario en la base dedatos
-  await updatePassword(payload.id, hashed);
-
-  return res.status(200).json({ success: true, message: 'Contraseña actualizada' });
-
-}catch(error){
-  console.error('Error restore:', error);
-  return res.status(400).json({ success: false, message: 'Token inválido o expirado' });
-}
-};
-
-const refresh = async (req, res) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    return res.status(401).json({ success: false, message: 'No hay refresh token' });
-  }
-
-  try {
-    const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-    const user = await findUser(payload.id);
-    if (!user) {
-      return res.status(403).json({ success: false, message: 'Usuario no encontrado' });
+  const {token, newPassword} = req.body;
+  try{
+    // error: faltan token o nueva contraseña
+    if(!token || !newPassword){
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Faltan datos' 
+      });
     }
 
-    const newAccessToken = jwt.sign(
-      {
-        id: user.id,
-        username: user.nombre,
-        role: user.rol,
-        pais: user.pais,
-        fontSize: user.font,
-        contrast: user.contrast
-      },
+    // verifica token JWT
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    // encripta nueva contraseña
+    const hashed = await bcrypt.hash(newPassword, 10);
+    
+    // actualiza en BD
+    await updatePassword(payload.id, hashed);
+
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Contraseña actualizada' 
+    });
+
+  }catch(error){
+    // error: token inválido o expirado
+    console.error('Error restore:', error);
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Token inválido o expirado' 
+    });
+  }
+};
+
+// nuevo endpoint: recibe refreshToken en body y devuelve nuevo access token
+const refresh = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ success:false, message:'Falta refresh token' });
+
+    let payload;
+    try {
+      payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || JWT_SECRET);
+    } catch (e) {
+      return res.status(401).json({ success:false, message:'Refresh token inválido o expirado' });
+    }
+
+    // obtener usuario por id usando el nombre correcto
+    const user = await getUserById(payload.id);
+    if (!user) return res.status(404).json({ success:false, message:'Usuario no encontrado' });
+
+    const newAccess = jwt.sign(
+      { id: user.id, nombre: user.nombre, rol: user.rol },
       JWT_SECRET,
       { expiresIn: '15m' }
     );
 
-    return res.json({ success: true, token: newAccessToken });
-  } catch (err) {
-    return res.status(403).json({ success: false, message: 'Refresh token inválido o expirado' });
+    return res.status(200).json({ success:true, token: newAccess, user: { id: user.id, nombre: user.nombre } });
+  } catch (error) {
+    console.error('Error refresh:', error);
+    return res.status(500).json({ success:false, message:'Error en el servidor' });
   }
 };
 
+// nuevo: logout simple (no guarda refresh en BD)
 const logout = async (req, res) => {
-  const userId = req.user.id; // viene del middleware verifyT
-  await deleteRefreshToken(userId);
-  return res.json({ success: true, message: 'Sesión cerrada' });
+  try {
+    // si llegara a usarse cookie en el futuro, limpiar:
+    try { res.clearCookie && res.clearCookie('refreshToken'); } catch (e) {}
+    return res.status(200).json({ success: true, message: 'Logout exitoso' });
+  } catch (error) {
+    console.error('Error logout:', error);
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
 };
 
 module.exports = {
-  login, newUser, recoveryUser, editUser, restore, logout, refresh
+  login, newUser, recoveryUser, editUser, restore, refresh, logout
 };
