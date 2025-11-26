@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Cupones - Sexta Armonía</title>
+    <link rel="stylesheet" href="../css/Cupones.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img" alt="Logo">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
+
+        <nav class="menu">
+            <a href="PaginaUsuarioLogueado.html">Productos</a>
+            <a href="Cupones.html" class="active">Cupones</a>
+        </nav>
+
+        <div class="user-section">
+            <span class="carrito" id="carrito-icon">🛒</span>
+            <span class="usuario-nombre">Hola, Fernando</span>
+            <a href="Principal.html" class="logout-btn">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <div id="panelCarrito" class="panel-carrito">
+        <div class="panel-carrito-header">
+            <h3>Tu carrito</h3>
+            <span class="cerrar" id="cerrarCarrito">✖</span>
+        </div>
+
+        <div class="carrito-productos">
+            <p class="carrito-vacio">No hay productos aún.</p>
+        </div>
+
+        <div class="carrito-info">
+            <p><strong>Subtotal:</strong> $0</p>
+            <p><strong>IVA (16%):</strong> $0</p>
+            <p><strong>Total:</strong> $0</p>
+        </div>
+
+        <a href="Pago.html" class="btn-continuar">Continuar al pago</a>
+    </div>
+
+    <main class="main-content">
+        <h2 class="titulo-seccion">Mis cupones</h2>
+
+        <div class="cupones-grid">
+
+            <div class="cupon">
+                <div class="cupon-icono"></div>
+                <h3>ABC123</h3>
+                <p class="descuento">10% de descuento</p>
+                <p class="vigencia">Válido hasta: 31/12/2025</p>
+            </div>
+
+            <div class="cupon">
+                <div class="cupon-icono"></div>
+                <h3>NAVIDAD25</h3>
+                <p class="descuento">25% de descuento</p>
+                <p class="vigencia">Válido hasta: 25/12/2025</p>
+            </div>
+
+            <div class="cupon">
+                <div class="cupon-icono"></div>
+                <h3>BIENVENIDO</h3>
+                <p class="descuento">15% de descuento</p>
+                <p class="vigencia">Válido hasta: 01/06/2025</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programación de Sistemas Web © 2025</p>
+    </footer>
+
+    <script src="../js/PaginaUsuarioLogueado.js"></script>
+</body>
+</html>

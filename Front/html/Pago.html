@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Pago.css">
+    <title>Datos de envío y pago</title>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo-area">
+        <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img">
+        <span class="logo-text">Sexta Armonía</span>
+    </div>
+
+    <nav class="menu">
+        <a href="PaginaUsuarioLogueado.html">Agregar</a>
+        <a href="Cupones.html">Mis cupones</a>
+        <span class="carrito">🛒</span>
+
+        <div class="usuario-menu">
+            <span class="usuario-nombre">Hola, Fernando ▼</span>
+            <div class="menu-usuario-opciones">
+                <a href="IniciarSesion.html">Cerrar sesión</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section class="formulario-envio">
+    <h2>Datos de envío</h2>
+
+    <label>Nombre completo:</label>
+    <input type="text">
+
+    <label>Dirección:</label>
+    <input type="text">
+
+    <label>Código Postal:</label>
+    <input type="text">
+
+    <label>Ciudad:</label>
+    <input type="text">
+
+    <label>Teléfono:</label>
+    <input type="text">
+
+    <h3>Método de pago</h3>
+
+    <select id="metodoPago" onchange="mostrarFormularioPago()">
+        <option value="">Seleccione una opción</option>
+        <option value="tarjeta">Tarjeta de crédito/débito</option>
+        <option value="oxxo">Pago en OXXO</option>
+    </select>
+
+    <div id="pagoTarjeta" class="form-pago oculto">
+        <h3>Pago con tarjeta</h3>
+
+        <label>Número de tarjeta:</label>
+        <input type="text">
+
+        <label>Nombre en la tarjeta:</label>
+        <input type="text">
+
+        <label>Fecha de expiración:</label>
+        <input type="month">
+
+        <label>CVC:</label>
+        <input type="text">
+
+        <a href="ReciboTarjeta.pdf" download class="btn-confirmar">Confirmar compra</a>
+    </div>
+
+    <div id="pagoOxxo" class="form-pago oculto">
+        <h3>Pago en OXXO</h3>
+
+        <p>Se generará un recibo con instrucciones de pago.</p>
+
+        <a href="ReciboOxxo.pdf" download class="btn-confirmar">Generar recibo</a>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>Sexta Armonía. Proyecto Universitario Correspondiente a Programación Web © 2025</p>
+</footer>
+<script src="../js/Pago.js"></script>
+</body>
+</html>
