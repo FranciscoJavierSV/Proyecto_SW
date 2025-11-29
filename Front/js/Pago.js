@@ -11,3 +11,15 @@ function mostrarFormularioPago() {
         document.getElementById("pagoOxxo").classList.remove("oculto");
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    // ===================================
+    // MOSTRAR NOMBRE DEL USUARIO LOGUEADO
+    // ===================================
+    const username = localStorage.getItem("username");
+    const nombreSpan = document.querySelector(".usuario-nombre");
+
+    if (username && nombreSpan) {
+        nombreSpan.textContent = `Hola, ${username}`;
+    }
+});

@@ -14,6 +14,7 @@ tablas
         categoria   // categoria del producto
         inventario  // cantidad en inventario
         imagen
+        descripcion // descripcion de producto
 
     usuarios // Lista todos los usuarios de la pagina
         id          // identificador de usuario
@@ -22,17 +23,23 @@ tablas
         correo      // correo electronico para acceder
         rol         // rol de la cuenta 
         pais        // pais para los impuestos
-        preferencias// Las preferencias de accesibilidad de la cuenta
+        preferencias// Las preferencias de accesibilidad de la cuenta (en JSON)
+        intentos    // Intentos a su cuenta
+        block       // guarfa la hora y fecha de desbloqueo sino hay nada esta desbloqueada
         
- 
+    paises // paises de usuarios
+        id          // identificador del pais
+        nombre      // Nombre del pais
+        iva         // Impuesto del pais
 
     whishlist // Tiene los articulos de la lista de deseos de los usuarios
-        usuario     // nombre de la cuenta
-        articulo    // datos de el articulo
-        cantidad    // la cantidad en la lista de dese
+        id          // identificador de wishlist
+        usuario     // nombre de la cuenta (id)
+        articulo    // datos de el articulo (id)
         imagen
 
     cart // Lista los articulos del carrito
+        id          // id de carrito
         usuario     // usuario asociado
         articulo    // articulo
         cantidad    // cantidad
@@ -44,6 +51,7 @@ tablas
         cupon
 
     sales // Lista todas las ventas de la pagina 
+        id          // id de ventas
         usuario     // usuario asociado 
         fecha       // fecha de venta
         productos   // productos vendidos
@@ -53,6 +61,13 @@ tablas
         iva         // iva aplica por pais
         total       // total
 
+    sales_items // Especificacion de ventas de un producto
+        id                  // id ventas de producto
+        sale_id             // id en sales
+        producto_id         // id en productos
+        cantidad            // cantidad de productos vendidos
+        precio_unitario     // Precio al momento de la venta               
+        subtotal           // cantidad * precio_unitario
 
     cupones // Almacena todos los cupones expedidos
         codigo        // Código del cupón (ej. "DESCUENTO10")
@@ -61,4 +76,4 @@ tablas
         expiracion    // Fecha de expiración
         uso_maximo    // Cuántas veces puede usarse
         usado         // Cuántas veces se ha usado
-        activo        // Booleano para desactivar sin borrar
+        activo        // Booleano para desactivar sin 
