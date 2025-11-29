@@ -1,122 +1,99 @@
-const pool = require('../db/baseDatos');
-const countries = require('../data/countries.json');
+// models/sales.js
+const pool = require('../db/conexion');
+const { useCoupon } = require('./coupons');
 
-// obtener IVA por país desde countries.json
-function getIVAByCountry(country) {
-  try {
-    // buscar país en countries.json
-    for (const key in countries) {
-      if (countries[key].name === country) {
-        return countries[key].tax || 0.19;
-      }
-    }
-    // si no encuentra, retorna default 19%
-    return 0.19;
-  } catch (error) {
-    console.error('Error al obtener IVA:', error);
-    return 0.19;
-  }
+// =====================================
+// Crear una venta
+// =====================================
+async function createSale(userId, subtotal, descuento, codigoCupon, iva, total) {
+
+  // 1. Insertar venta en tabla sales
+  const [sale] = await pool.query(
+    `
+      INSERT INTO sales 
+      (usuario_id, fecha, subtotal, descuento, codigo_cupon, iva, total, productos)
+      VALUES (?, NOW(), ?, ?, ?, ?, ?, ?)
+    `,
+    [userId, subtotal, descuento, codigoCupon, iva, total, 0] // productos se actualiza después
+  );
+
+  return sale.insertId;
 }
 
-// validar y obtener descuento del cupón
-async function validateCoupon(couponCode) {
-  try {
-    if (!couponCode) return null;
-    
-    const [rows] = await pool.query(
-      'SELECT * FROM coupons WHERE codigo = ? AND activo = 1 AND fecha_expiracion > NOW()',
-      [couponCode]
-    );
-    return rows[0] || null;
-  } catch (error) {
-    console.error('Error al validar cupón:', error);
-    return null;
-  }
+// =====================================
+// Registrar item en sales_items
+// =====================================
+async function addSaleItem(saleId, productoId, cantidad, precioUnitario, subtotal) {
+  const [insert] = await pool.query(
+    `
+      INSERT INTO sales_items 
+      (sale_id, producto_id, cantidad, precio_unitario, subtotal)
+      VALUES (?, ?, ?, ?, ?)
+    `,
+    [saleId, productoId, cantidad, precioUnitario, subtotal]
+  );
+
+  return insert.insertId;
 }
 
-// crear nueva orden (venta) con todos los cálculos
-async function createOrder(userId, cartItems, userCountry, couponCode = null) {
-  try {
-    // calcular subtotal
-    let subtotal = 0;
-    for (const item of cartItems) {
-      subtotal += item.price * item.quantity;
-    }
-
-    // validar cupón y obtener descuento
-    let descuento = 0;
-    let couponUsed = null;
-    if (couponCode) {
-      const coupon = await validateCoupon(couponCode);
-      if (coupon) {
-        descuento = coupon.porcentaje 
-          ? (subtotal * coupon.porcentaje) / 100 
-          : coupon.descuento_fijo;
-        couponUsed = coupon.codigo;
-      }
-    }
-
-    // obtener IVA según país del usuario
-    const ivaRate = getIVAByCountry(userCountry);
-    const subtotalConDescuento = subtotal - descuento;
-    const iva = subtotalConDescuento * ivaRate;
-    const total = subtotalConDescuento + iva;
-
-    // insertar orden en tabla ordenes
-    const [result] = await pool.query(
-      'INSERT INTO ordenes (usuario_id, subtotal, descuento, cupon, iva, total, estado) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [userId, subtotal, descuento, couponUsed, iva, total, 'pendiente']
-    );
-    
-    const orderId = result.insertId;
-    
-    // insertar detalles de la orden (items)
-    for (const item of cartItems) {
-      await pool.query(
-        'INSERT INTO orden_detalles (orden_id, producto_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)',
-        [orderId, item.productId, item.quantity, item.price]
-      );
-    }
-    
-    return { orderId, subtotal, descuento, iva, total, couponUsed };
-  } catch (error) {
-    console.error('Error al crear orden:', error);
-    throw error;
-  }
+// =====================================
+// Actualizar número de productos vendidos
+// =====================================
+async function updateSaleProductCount(saleId, count) {
+  await pool.query(
+    `UPDATE sales SET productos = ? WHERE id = ?`,
+    [count, saleId]
+  );
 }
 
-// obtener órdenes del usuario
-async function getOrdersByUser(userId) {
-  try {
-    const [rows] = await pool.query(
-      'SELECT * FROM ordenes WHERE usuario_id = ? ORDER BY fecha DESC',
-      [userId]
-    );
-    return rows;
-  } catch (error) {
-    console.error('Error al obtener órdenes:', error);
-    throw error;
-  }
+// =====================================
+// Obtener ventas del usuario
+// =====================================
+async function getUserSales(userId) {
+  const [rows] = await pool.query(
+    `
+      SELECT id, fecha, subtotal, iva, descuento, total, productos, codigo_cupon
+      FROM sales
+      WHERE usuario_id = ?
+      ORDER BY fecha DESC
+    `,
+    [userId]
+  );
+  return rows;
 }
 
-// obtener detalles de una orden específica
-async function getOrderDetails(orderId) {
-  try {
-    const [rows] = await pool.query(
-      'SELECT od.*, p.nombre, p.imagen FROM orden_detalles od JOIN productos p ON od.producto_id = p.id WHERE od.orden_id = ?',
-      [orderId]
-    );
-    return rows;
-  } catch (error) {
-    console.error('Error al obtener detalles de orden:', error);
-    throw error;
-  }
+// =====================================
+// Obtener items de una venta
+// =====================================
+async function getSaleItems(saleId) {
+  const [rows] = await pool.query(
+    `
+      SELECT si.*, p.nombre, p.imagen
+      FROM sales_items si
+      INNER JOIN productos p ON si.producto_id = p.id
+      WHERE sale_id = ?
+    `,
+    [saleId]
+  );
+  return rows;
+}
+
+// =====================================
+// Obtener una venta completa (para PDF)
+// =====================================
+async function getSaleById(saleId) {
+  const [sale] = await pool.query(
+    `SELECT * FROM sales WHERE id = ?`,
+    [saleId]
+  );
+  return sale[0] || null;
 }
 
 module.exports = {
-  createOrder,
-  getOrdersByUser,
-  getOrderDetails,
-  validateCoupon,
-  getIVAByCountry
+  createSale,
+  addSaleItem,
+  updateSaleProductCount,
+  getUserSales,
+  getSaleItems,
+  getSaleById
 };

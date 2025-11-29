@@ -1,34 +1,21 @@
-const {
-  getCart,
-  addToCart,
-  updateCartItem,
-  deleteCartItem,
-  applyCoupon
-} = require('../models/cart');
+// -------------------- IMPORTS --------------------
+const cart = require('../models/cart');
+const products = require('../models/products');
+const coupons = require('../models/coupons');
+const { json } = require('express');
 
-const {
-  addToCart,
-  updateCartItem,
-  deleteCartItem,
-} = require('../models/products');
+// -------------------- CONTROLLERS --------------------
 
-const {
-  applyCoupon
-} = require('../models/coupons');
-
-// Carrito
+// Obtener carrito del usuario
 const getCart = async (req, res) => {
   try {
-    const userId = req.user.id; // Representa al usuario para poder guardar su carrito
-    if(!userId){
-      return res.status(400).json({
-        success: false,
-        message: 'Usuario inválido.'
-      });
-    }
+    const userId = req.user.id;
+    const verCarrito = await cart.getCart(userId);
 
-    const verCarrito = await cart.getCart(); // Función que está en models/cart
-    res.json(verCarrito);
+    return res.json({
+      success: true,
+      cart: verCarrito
+    });
 
   } catch (error) {
     console.error('Error en ver carrito:', error);
@@ -39,150 +26,136 @@ const getCart = async (req, res) => {
   }
 };
 
+// Agregar al carrito
 const addToCart = async (req, res) => {
   try {
-    const { productID, quantity } = req.body;
+    const { productId, quantity } = req.body;
     const userId = req.user.id;
-    
-    // Validaciones
-    if(!productID || !quantity) {
-      return res.status(400).json({
-        success: false,
-        message: "Ingresar ID y cantidad"
-      });
+
+    if (!productId || !quantity) {
+      return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    if(quantity <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Cantidad debe ser mayor a 0."
-      });
+    if (quantity <= 0) {
+      return res.status(400).json({ success: false, message: "Cantidad debe ser mayor a 0" });
     }
 
-    const exists = await products.getProductId(productID);
-    if(!exists){
-      return res.status(404).json({
-        success: false,
-        message: "Producto no existente."
-      });
+    const product = await products.getProductId(productID);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Producto no existente" });
+    }
+
+    // Validar inventario
+    if (product.inventario < quantity) {
+      return res.status(400).json({ success: false, message: "No hay suficiente inventario" });
     }
 
     const add = await cart.addCart(userId, productID, quantity);
-    res.json(add);
+
+    return res.json({
+      success: true,
+      data: add
+    });
 
   } catch (error) {
     console.error('Error al agregar al carrito:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
-    });
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
+// Actualizar cantidad
 const updateCartItem = async (req, res) => {
   try {
-    const { productID } = req.params;
+    const { productId } = req.params;
     const { quantity } = req.body;
     const userId = req.user.id;
 
-    // Validaciones
-    if(!productID || !quantity) {
-      return res.status(400).json({
-        success: false,
-        message: "Ingresar ID y cantidad"
-      });
+    if (!productId || !quantity) {
+      return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    const exists = await products.getProductId(productID);
-    if(!exists){
-      return res.status(404).json({
-        success: false,
-        message: "Producto no existente."
-      });
+    const product = await products.getProductId(productID);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Producto no existente" });
+    }
+
+    // Validación inventario
+    if (product.inventario < quantity) {
+      return res.status(400).json({ success: false, message: "No hay suficiente inventario disponible" });
     }
 
     const update = await cart.updateCart(userId, productID, quantity);
-    res.json;
+
+    return res.json({
+      success: true,
+      data: update
+    });
 
   } catch (error) {
-    console.error('Error al agregar al carrito:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
-    });
+    console.error('Error al actualizar carrito:', error);
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
+// Eliminar producto
 const deleteCartItem = async (req, res) => {
   try {
-    const { productID } = req.params;
+    const cartId = req.params.id;
     const userId = req.user.id;
 
-    // Validaciones
-    if(!prodId){
+    console.log("Eliminar carrito registro:", cartId, "usuario:", userId);
+
+    const result = await cart.deleteItem(cartId, userId);
+
+    if (result.affectedRows === 0) {
       return res.status(400).json({
         success: false,
-        message: "Ingresar un ID"
+        message: "No se pudo eliminar. Puede que el producto no exista."
       });
     }
 
-    const exists = await products.getProductId(productID);
-    if(!exists){
-      return res.status(404).json({
-        success: false,
-        message: "El producto no está en el carrito."
-      });
-    }
-
-    const eliminado = await cart.deletProduct(userId, productID);
-    res.json(eliminado);
+    return res.json({
+      success: true,
+      message: "Producto eliminado del carrito."
+    });
 
   } catch (error) {
-    console.error('Error al eliminar del carrito:', error);
+    console.error("Error al eliminar del carrito:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error en el servidor'
+      message: "Error al eliminar producto"
     });
   }
 };
 
+
+// Aplicar cupón
 const applyCoupon = async (req, res) => {
   try {
     const { coupon } = req.body;
     const userId = req.user.id;
 
-    // Validaciones
-    if(!coupon){
-      return res.status(400).json({
-        success: false,
-        message: "Ingresa el cupón."
-      });
+    if (!coupon) {
+      return res.status(400).json({ success: false, message: "Ingresa el cupón" });
     }
 
     const couponData = await coupons.getCoupon(coupon);
 
-    if (!couponData) {
+    if (!couponData || couponData.activo !== 1) {
       return res.status(404).json({
         success: false,
-        message: "Cupón inválido o inexistente."
+        message: "Cupón inválido o no activo"
       });
     }
 
-     /*
-      Aún falta decidir si el descuento se aplicará:
-      - Directamente al carrito
-      o
-      - Hasta el checkout.
-
-      Por ahora solo validamos el cupón y lo mandamos al modelo
-      para que lo registre.
-    */
-
-    const cupon = await cart.aplicarCupon(userId, coupon);
-    res.json(cupon);
+    const cupon = await cart.applyCoupon(userId, coupon);
+    return res.json({
+      success: true,
+      data: cupon
+    });
 
   } catch (error) {
-    console.error('Error al aplicar cupón', error);
+    console.error('Error al aplicar cupón:', error);
     return res.status(500).json({
       success: false,
       message: 'Error en el servidor'
@@ -190,6 +163,7 @@ const applyCoupon = async (req, res) => {
   }
 };
 
+// -------------------- EXPORTS --------------------
 module.exports = {
   getCart,
   addToCart,

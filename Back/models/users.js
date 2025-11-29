@@ -1,86 +1,152 @@
-// importar pool desde el archivo central de la BD
-const pool = require('../db/baseDatos');
+const pool = require('../db/conexion');
 
-// busca usuario por correo
+// ----------------------------------------------------
+// BUSCAR USUARIO COMPLETO PARA LOGIN
+// ----------------------------------------------------
 async function findUser(correo) {
-  const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? LIMIT 1', [correo]);
-  return rows[0] || null;
-}
-
-// verifica si existe correo
-async function findEmail(correo) {
-  const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? LIMIT 1', [correo]);
-  return rows[0] || null;
-}
-
-// crea usuario nuevo en BD
-async function createUser(user) {
-  const [result] = await pool.query(
-    'INSERT INTO usuarios (nombre, contrasena, correo, pais, font, contrast) VALUES (?, ?, ?, ?, ?, ?)',
-    [user.username, user.contrasena, user.correo, user.pais, user.text, user.contrast]
+  const [rows] = await pool.query(
+    'SELECT * FROM usuarios WHERE correo = ?',
+    [correo]
   );
-  return result.insertId;
+  return rows[0];
 }
 
-// actualiza contraseña del usuario
+// ----------------------------------------------------
+// BUSCAR SOLO PARA VALIDAR SI EXISTE CORREO
+// ----------------------------------------------------
+async function findEmail(correo) {
+  const [rows] = await pool.query(
+    'SELECT id, correo FROM usuarios WHERE correo = ?',
+    [correo]
+  );
+  return rows[0];
+}
+
+// ----------------------------------------------------
+// CREAR USUARIO
+// ----------------------------------------------------
+async function createUser(user) {
+  const { username, contrasena, correo, pais_id, preferencias } = user;
+
+  const [result] = await pool.query(
+    `INSERT INTO usuarios 
+      (nombre, contrasena, correo, rol, pais_id, preferencias) 
+     VALUES (?, ?, ?, 'cliente', ?, ?)`,
+    [username, contrasena, correo, pais_id, preferencias]
+  );
+
+  return result.affectedRows > 0;
+}
+
+// ----------------------------------------------------
+// ACTUALIZAR CONTRASEÑA
+// ----------------------------------------------------
 async function updatePassword(userId, newContrasena) {
-  await pool.query('UPDATE usuarios SET contrasena = ? WHERE id = ?', [newContrasena, userId]);
-  return true;
+  const [result] = await pool.query(
+    'UPDATE usuarios SET contrasena = ? WHERE id = ?',
+    [newContrasena, userId]
+  );
+
+  return result.affectedRows > 0;
 }
 
-// incrementa intentos fallidos
-async function incrementFailedAttempt(userId) {
-  await pool.query('UPDATE usuarios SET intentos = intentos + 1 WHERE id = ?', [userId]);
-  const [rows] = await pool.query('SELECT intentos FROM usuarios WHERE id = ?', [userId]);
-  return rows[0] ? rows[0].intentos : 0;
+// ----------------------------------------------------
+// ACTUALIZAR INTENTOS
+// ----------------------------------------------------
+async function updateLoginAttempts(userId, attempts) {
+  await pool.query(
+    'UPDATE usuarios SET intentos = ? WHERE id = ?',
+    [attempts, userId]
+  );
 }
 
-// resetea intentos y quita bloqueo
-async function resetFailedAttempts(userId) {
-  await pool.query('UPDATE usuarios SET intentos = 0, `block` = NULL WHERE id = ?', [userId]);
-  return true;
+// ----------------------------------------------------
+// BLOQUEAR USUARIO POR 15 MINUTOS
+// ----------------------------------------------------
+async function blockUser(userId) {
+  await pool.query(
+    'UPDATE usuarios SET block = DATE_ADD(NOW(), INTERVAL 15 MINUTE), intentos = 0 WHERE id = ?',
+    [userId]
+  );
 }
 
-// bloquea usuario hasta fecha especificada
-async function lockUserUntil(userId, date) {
-  await pool.query('UPDATE usuarios SET `block` = ? WHERE id = ?', [date, userId]);
-  return true;
+// ----------------------------------------------------
+// RESETEAR BLOQUEO E INTENTOS
+// ----------------------------------------------------
+async function resetAttempts(userId) {
+  await pool.query(
+    'UPDATE usuarios SET intentos = 0, block = NULL WHERE id = ?',
+    [userId]
+  );
 }
 
-// actualiza país del usuario
+// ----------------------------------------------------
+// GUARDAR REFRESH TOKEN
+// ----------------------------------------------------
+async function saveRefreshToken(userId, token) {
+  const [result] = await pool.query(
+    `INSERT INTO refresh_tokens (user_id, token, expires_at) 
+     VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))`,
+    [userId, token]
+  );
+
+  return result.affectedRows > 0;
+}
+
+// ----------------------------------------------------
+// ELIMINAR REFRESH TOKENS (LOGOUT)
+// ----------------------------------------------------
+async function deleteRefreshToken(userId) {
+  const [result] = await pool.query(
+    'DELETE FROM refresh_tokens WHERE user_id = ?',
+    [userId]
+  );
+  return result.affectedRows > 0;
+}
+
+// ----------------------------------------------------
+// ACTUALIZAR PREFERENCIAS DE USUARIO
+// ----------------------------------------------------
 async function updateUserCountry(userId, pais) {
-  await pool.query('UPDATE usuarios SET pais = ? WHERE id = ?', [pais, userId]);
-  return true;
+  const [result] = await pool.query(
+    'UPDATE usuarios SET pais = ? WHERE id = ?',
+    [pais, userId]
+  );
+  return result.affectedRows > 0;
 }
 
 // actualiza tamaño de fuente del usuario
 async function updateUserFontSize(userId, fontSize) {
-  await pool.query('UPDATE usuarios SET font = ? WHERE id = ?', [fontSize, userId]);
-  return true;
+  const [result] = await pool.query(
+    'UPDATE usuarios SET font = ? WHERE id = ?',
+    [fontSize, userId]
+  );
+  return result.affectedRows > 0;
 }
 
 // actualiza contraste del usuario
 async function updateUserContrast(userId, contrast) {
-  await pool.query('UPDATE usuarios SET contrast = ? WHERE id = ?', [contrast, userId]);
-  return true;
+  const [result] = await pool.query(
+    'UPDATE usuarios SET contrast = ? WHERE id = ?',
+    [contrast, userId]
+  );
+  return result.affectedRows > 0;
 }
 
-// obtener usuario por id
-async function getUserById(userId) {
-  const [rows] = await pool.query('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [userId]);
-  return rows[0] || null;
-}
-
+// ----------------------------------------------------
+// EXPORTAR
+// ----------------------------------------------------
 module.exports = {
   findUser,
   findEmail,
   createUser,
   updatePassword,
-  incrementFailedAttempt,
-  resetFailedAttempts,
-  lockUserUntil,
+  saveRefreshToken,
+  deleteRefreshToken,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
-  getUserById
+  updateLoginAttempts,
+  blockUser,
+  resetAttempts
 };

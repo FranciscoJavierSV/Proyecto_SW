@@ -1,1 +1,0 @@
-Aqui va todo el contenido que requiera el servidor de variables

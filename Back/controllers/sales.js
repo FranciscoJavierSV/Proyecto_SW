@@ -1,211 +1,179 @@
-// Órdenes/Ventas
-const { createOrder, getOrdersByUser, getOrderDetails } = require('../models/sales');
-const { getCart, deleteCart } = require('../models/cart');
-const { getProductId } = require('../models/products');
-const { getUserById } = require('../models/users');
+// --------------------------- IMPORTS ---------------------------
+const sales = require('../models/sales');
+const cart = require('../models/cart');
+const products = require('../models/products');
+const coupons = require('../models/coupons');
 
-// crear nueva orden desde el carrito
-const createOrderFromCart = async (req, res) => {
+// --------------------------- CREAR ORDEN ---------------------------
+const createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { couponCode } = req.body; // cupón opcional desde frontend
 
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Usuario no autenticado.'
-      });
-    }
+    // Obtener carrito completo del usuario
+    const items = await cart.getCart(userId);
 
-    // obtener carrito del usuario
-    const cartItems = await getCart(userId);
-    if (!cartItems || cartItems.length === 0) {
+    if (!items || items.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'El carrito está vacío.'
+        message: "Tu carrito está vacío"
       });
     }
 
-    // obtener país del usuario
-    const user = await getUserById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado.'
-      });
+    // ------------------------
+    // 1. Calcular totales
+    // ------------------------
+    let subtotal = 0;
+    let descuento = 0;
+    let iva = 0;
+    let total = 0;
+    let codigoCupon = null;
+
+    for (const item of items) {
+      subtotal += item.subtotal;
+      descuento += item.descuento;
+      iva += item.iva;
+      total += item.total;
+      if (item.codigo_cupon) codigoCupon = item.codigo_cupon;
     }
 
-    // validar productos y construir items
-    const validatedItems = [];
-    for (const item of cartItems) {
-      const product = await getProductId(item.productId);
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: `Producto ${item.productId} no encontrado.`
-        });
-      }
+    // ------------------------
+    // 2. Crear venta
+    // ------------------------
+    const saleId = await sales.createSale(
+      userId,
+      subtotal,
+      descuento,
+      codigoCupon,
+      iva,
+      total
+    );
 
-      validatedItems.push({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: product.precio
-      });
+    // ------------------------
+    // 3. Registrar items
+    // ------------------------
+    let count = 0;
+
+    for (const item of items) {
+      await sales.addSaleItem(
+        saleId,
+        item.producto_id,
+        item.cantidad,
+        item.subtotal / item.cantidad,
+        item.subtotal
+      );
+
+      count++;
+
+      // Descontar inventario
+      await products.updateProduct(
+        item.producto_id,
+        {
+          inventario: item.inventario - item.cantidad
+        }
+      );
     }
 
-    // crear orden con cálculos completos
-    const orderData = await createOrder(userId, validatedItems, user.pais, couponCode);
+    // Guardar el número total de productos vendidos
+    await sales.updateSaleProductCount(saleId, count);
 
-    // limpiar carrito del usuario
-    await deleteCart(userId);
+    // ------------------------
+    // 4. Marcar el cupón como utilizado
+    // ------------------------
+    if (codigoCupon) {
+      await coupons.useCoupon(codigoCupon);
+    }
 
-    return res.status(200).json({
+    // ------------------------
+    // 5. Vaciar carrito
+    // ------------------------
+    await cart.clearCart(userId);
+
+    return res.json({
       success: true,
-      message: 'Orden creada exitosamente.',
-      orderId: orderData.orderId,
-      subtotal: orderData.subtotal,
-      descuento: orderData.descuento,
-      iva: orderData.iva,
-      total: orderData.total,
-      cupon: orderData.couponUsed
+      message: "Compra realizada con éxito",
+      saleId
     });
 
   } catch (error) {
-    console.error('Error al crear orden:', error);
+    console.error("Error en createOrder:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error en el servidor'
+      message: "Error en el servidor"
     });
   }
 };
 
-// obtener órdenes del usuario
+// --------------------------- OBTENER HISTORIAL ---------------------------
 const getOrders = async (req, res) => {
   try {
     const userId = req.user.id;
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Usuario no autenticado.'
-      });
-    }
 
-    const orders = await getOrdersByUser(userId);
-    return res.status(200).json({
+    const orders = await sales.getUserSales(userId);
+
+    return res.json({
       success: true,
-      orders
+      data: orders
     });
 
   } catch (error) {
-    console.error('Error al obtener órdenes:', error);
+    console.error("Error en getOrders:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error en el servidor'
+      message: "Error en el servidor"
     });
   }
 };
 
-// obtener detalles de una orden
-const getOrderById = async (req, res) => {
+// --------------------------- OBTENER ITEMS DE UNA ORDEN ---------------------------
+const getOrderDetails = async (req, res) => {
   try {
-    const { orderId } = req.params;
-    const userId = req.user.id;
+    const { saleId } = req.params;
 
-    if (!orderId) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID de orden requerido.'
-      });
-    }
-
-    const details = await getOrderDetails(orderId);
-    if (!details || details.length === 0) {
+    const sale = await sales.getSaleById(saleId);
+    if (!sale) {
       return res.status(404).json({
         success: false,
-        message: 'Orden no encontrada.'
+        message: "Venta no encontrada"
       });
     }
 
-    return res.status(200).json({
+    const items = await sales.getSaleItems(saleId);
+
+    return res.json({
       success: true,
-      details
+      sale,
+      items
     });
 
   } catch (error) {
-    console.error('Error al obtener detalles de orden:', error);
+    console.error("Error en getOrderDetails:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error en el servidor'
+      message: "Error en el servidor"
     });
   }
 };
 
-// generar PDF de orden
-// TODO: implementar generación de PDF (usar librería como pdfkit o puppeteer)
+
 const getOrderPDF = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const userId = req.user.id;
-
-    if (!orderId) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID de orden requerido.'
-      });
-    }
-
-    // TODO: validar que la orden pertenece al usuario autenticado
-    // TODO: generar PDF con detalles de la orden
-    // TODO: devolver PDF como descarga o attachment
-
-    return res.status(501).json({
-      success: false,
-      message: 'Función no implementada aún.'
-    });
-  } catch (error) {
-    console.error('Error al generar PDF:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
-    });
-  }
+  return res.json({
+    success: false,
+    message: "Función PDF pendiente"
+  });
 };
 
-// enviar orden por email
-// TODO: implementar envío de email con detalles de la orden (usar nodemailer)
 const sendOrderEmail = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const userId = req.user.id;
-
-    if (!orderId) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID de orden requerido.'
-      });
-    }
-
-    // TODO: obtener detalles de la orden
-    // TODO: construir template de email
-    // TODO: enviar email con nodemailer
-
-    return res.status(501).json({
-      success: false,
-      message: 'Función no implementada aún.'
-    });
-  } catch (error) {
-    console.error('Error al enviar email:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
-    });
-  }
+  return res.json({
+    success: false,
+    message: "Función email pendiente"
+  });
 };
 
+// --------------------------- EXPORT ---------------------------
 module.exports = {
   createOrderFromCart,
   getOrders,
-  getOrderById,
+  getOrderDetails,
   getOrderPDF,
   sendOrderEmail
 };
