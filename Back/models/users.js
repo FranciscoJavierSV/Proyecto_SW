@@ -1,12 +1,5 @@
-const mysql = require('mysql2/promise');
-
-// conexión al pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'tienda'
-});
+// importar pool desde el archivo central de la BD
+const pool = require('../db/baseDatos');
 
 // busca usuario por correo
 async function findUser(correo) {

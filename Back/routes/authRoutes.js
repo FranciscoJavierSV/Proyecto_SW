@@ -5,10 +5,13 @@ const {verifyT} = require('../middleware/authMiddleware');
 const carrito = require('../controllers/cart');
 const venta = require('../controllers/sales');
 const deseos = require('../controllers/wishlist');
-const { logout, editUser } = require('../controllers/users');
+const { logout, editUser, refresh } = require('../controllers/users');
 
 router.post('/logout',verifyT,logout); // = terminado
 router.post('/accessibility', verifyT, editUser); // = terminado
+
+// ADD: refresh token (cliente envía { "refreshToken": "<token>" })
+router.post('/refresh', refresh);
 
 //router.get('/perfil',verifyT); en caso de requerir los datos del usuario en pantalla 
 

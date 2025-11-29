@@ -10,9 +10,6 @@ const contacto = require('../controllers/contac');
 router.post('/register', usuarios.newUser); // = terminado
 router.post('/login', usuarios.login);      // = terminado
 
-// ADD: refresh token (cliente envía { "refreshToken": "<token>" })
-router.post('/refresh', usuarios.refresh);
-
 // recuperacion
 // falta terminar valicar capcha esa se maneja con lo la api que se crea en el front
 router.post('/recover',validar.captchaV, usuarios.recoveryUser); // = falta una cosa 

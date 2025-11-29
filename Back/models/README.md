@@ -57,6 +57,13 @@ tablas
         total       // total
 
 
+        id — identificador único de la orden
+        usuario_id — ID del usuario que hizo la compra
+        total — precio total de la orden
+        estado — estado de la orden (pendiente, procesada, enviada, etc.)
+        fecha_creacion — fecha/hora de creación automática
+
+
     cupones // Almacena todos los cupones expedidos
         codigo        // Código del cupón (ej. "DESCUENTO10")
         tipo          // Tipo de descuento: 'porcentaje' o 'fijo'
