@@ -1,97 +1,95 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET;
 
-
-// Revisa si el token es valido
+// ----------------------------------------------------
+// VERIFICAR TOKEN (ACCESS TOKEN)
+// ----------------------------------------------------
 const verifyT = (req, res, next) => {
   try {
-    // Obtener el token del header Authorization
     const authHeader = req.headers.authorization;
-    // Revisa si hay algo en el header
+
+    // Si no viene header
     if (!authHeader) {
       return res.status(401).json({
         success: false,
-        message: 'Token no proporcionado. Debe enviar: Authorization: Bearer <token>'
+        message: 'No se proporcionó token. Debe enviar: Authorization: Bearer <token>'
       });
     }
 
-    // Extraer el token y le quita lo inecesario
+    // Formato incorrecto
     const token = authHeader.split(' ')[1];
-    
-    // revisa si existe  el token
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Formato de token inválido. Use: Bearer <token>'
+        message: 'Formato inválido. Use: Authorization: Bearer <token>'
       });
     }
 
-    // Verificar el token usando la variable secreta el ENV
+    // Verificar token
     const decoded = jwt.verify(token, JWT_SECRET);
-    
-    // obtiene los datos del usuaio 
+
+    // Guardar la info del usuario para los controllers
     req.user = decoded;
-    
-    // la revision esta correcta 
+
     next();
-    
-// Sino vamos a los errores
+
   } catch (error) {
-    // Si el token es inválido o expirado
+    // token expirado
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expirado. Debe hacer login nuevamente.'
-      });
-    // Si esta modificado 
-    } else if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Token inválido o falsificado.'
-      });
-    // En caso de que el servidor tenga un problema al revisarlo
-    } else {
-      return res.status(500).json({
-        success: false,
-        message: 'Error al verificar el token.'
+        expired: true,
+        message: 'Token expirado. Solicite uno nuevo con refresh token.'
       });
     }
+
+    // token alterado
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token inválido o modificado.'
+      });
+    }
+
+    // error interno
+    return res.status(500).json({
+      success: false,
+      message: 'Error al verificar el token.'
+    });
   }
 };
 
-// Revisa si la cuenta es admin
-const isAdmin = (req, res, next) =>{
-   if (req.user?.role === 'admin') {
-    return next(); // El usuario tiene rol admin, continúa
+// ----------------------------------------------------
+// VALIDAR SI EL USUARIO ES ADMIN
+// ----------------------------------------------------
+const isAdmin = (req, res, next) => {
+  if (req.user?.rol === 'admin') {
+    return next();
   }
 
   return res.status(403).json({
     success: false,
-    message: 'Acceso denegado. No eres Administrador.'
+    message: 'Acceso denegado. No eres administrador.'
   });
 };
 
-
-
-
-
-
-// Valida el cpatcha
-const captchaV = (req, res, next) =>{
-    try{
-
-
-
-      next();
-    }catch(error){
-
-
-    }
+// ----------------------------------------------------
+// VALIDAR CAPTCHA (placeholder)
+// ----------------------------------------------------
+const captchaV = (req, res, next) => {
+  try {
+    // aquí va tu validación real después
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error al validar captcha.'
+    });
+  }
 };
 
-
-
-
 module.exports = {
-  verifyT,isAdmin,captchaV
+  verifyT,
+  isAdmin,
+  captchaV
 };

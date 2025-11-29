@@ -1,84 +1,68 @@
-const {
-  getAllProducts,
-  getProductsByCategory,
-  getProductById
-} = require('../models/products');
+const products = require('../models/products');
 
-// Productos
+// Obtener todos los productos
 const getAllProducts = async (req, res) => {
   try {
-    const allProducts = await products.getProducts(); // Función que está en models/products
-    res.json(allProducts);
+    const allProducts = await products.getProducts();
+
+    return res.json({
+      success: true,
+      products: allProducts
+    });
+
   } catch (error) {
     console.error('Error en mostrar todos los productos:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error en el servidor'
-    });
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
-  const getProductsByCategory = async (req, res) => {
-    try {
-      const { categoria } = req.params;
+// Productos por categoría
+const getProductsByCategory = async (req, res) => {
+  try {
+    const { categoria } = req.params;
 
-      // Validación de categoría 
-      if(!categoria){
-        return res.status(400).json({
-          success: false,
-          message: "Ingresa la categoria valida."
-        });
-      }
-
-      const product = await products.getProductCategory(categoria);
-
-      if(!product){
-        return res.status(404).json({
-          success: false,
-          message: "Producto no encontrado"
-        });
-      }
-      res.json(product);
-
-    } catch (error) {
-      console.error('Error al encontrar producto por categoria:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Error en el servidor'
-      });
+    if (!categoria || !['bebida','salado','dulce'].includes(categoria)) {
+      return res.status(400).json({ success: false, message: "Categoría inválida" });
     }
-  };
 
-  const getProductById = async (req, res) => {
-    try {
-      const { id } = req.params;
+    const product = await products.getProductCategory(categoria);
 
-      // Validación de id
-      if(!id){
-        return res.status(400).json({
-          success: false,
-          message: "Ingresa un ID valido."
-        });
-      }
+    return res.json({
+      success: true,
+      products: product
+    });
 
-      const product = await products.getProductId(id); // Función que está en models/products
+  } catch (error) {
+    console.error('Error al encontrar producto por categoría:', error);
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
 
-      if(!product){
-        return res.status(404).json({
-          success: false,
-          message: "Producto no encontrado"
-        });
-      }
-      res.json(product);
+// Productos por ID
+const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-    } catch (error) {
-      console.error('Error al encontrar producto por id:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Error en el servidor'
-      });
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Ingresa un ID válido" });
     }
-  };
+
+    const product = await products.getProductId(id);
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
+
+    return res.json({
+      success: true,
+      product
+    });
+
+  } catch (error) {
+    console.error('Error al encontrar producto por id:', error);
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
 
 module.exports = {
   getAllProducts,

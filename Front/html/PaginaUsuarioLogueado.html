@@ -21,7 +21,7 @@
 
         <div class="user-section">
             <span class="carrito" id="carrito-icon">🛒</span>
-            <span class="usuario-nombre">Hola, Fernando</span>
+            <span class="usuario-nombre"></span>
             <a href="Principal.html" class="logout-btn">Cerrar sesión</a>
         </div>
     </header>
@@ -37,9 +37,9 @@
         </div>
 
         <div class="carrito-info">
-            <p><strong>Subtotal:</strong> $0</p>
-            <p><strong>IVA (16%):</strong> $0</p>
-            <p><strong>Total:</strong> $0</p>
+            <p><strong>Subtotal: </strong><span id="subtotal">$0</span></p>
+            <p><strong>IVA: </strong><span id="iva">$0</span></p>
+            <p><strong>Total: </strong><span id="total">$0</span></p>
         </div>
 
         <a href="Pago.html" class="btn-continuar">Continuar al pago</a>
@@ -47,37 +47,7 @@
 
     <main class="main-content">
         <h2 class="titulo-seccion">Productos disponibles</h2>
-
-        <div class="productos-grid">
-
-            <div class="producto-card">
-                <img src="../ImagenesProductos/producto1.jpg" alt="Camisa estampada">
-                <div class="producto-info">
-                    <h3>Camisa estampada</h3>
-                    <p class="precio">$250</p>
-                    <button class="btn-agregar">Agregar al carrito</button>
-                </div>
-            </div>
-
-            <div class="producto-card">
-                <img src="../ImagenesProductos/producto2.jpg" alt="Reloj negro">
-                <div class="producto-info">
-                    <h3>Reloj negro</h3>
-                    <p class="precio">$450</p>
-                    <button class="btn-agregar">Agregar al carrito</button>
-                </div>
-            </div>
-
-            <div class="producto-card">
-                <img src="../ImagenesProductos/producto3.jpg" alt="Audífonos inalámbricos">
-                <div class="producto-info">
-                    <h3>Audífonos inalámbricos</h3>
-                    <p class="precio">$600</p>
-                    <button class="btn-agregar">Agregar al carrito</button>
-                </div>
-            </div>
-
-        </div>
+        <div class="productos-grid"></div>
     </main>
 
     <footer class="footer">

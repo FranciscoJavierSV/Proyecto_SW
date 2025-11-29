@@ -1,28 +1,27 @@
-// info en README.md
 const express = require('express');
 const router = express.Router();
+
 const usuarios = require('../controllers/users');
-const validar = require('../middleware/authMiddleware')
+const validar = require('../middleware/authMiddleware');
 const productos = require('../controllers/items');
 const contacto = require('../controllers/contac');
+const { listarPaises } = require('../controllers/paises');
 
-// usuario
-router.post('/register', usuarios.newUser); // = terminado
-router.post('/login', usuarios.login);      // = terminado
+// ---- USUARIO ----
+router.post('/register', usuarios.newUser);
+router.post('/login', usuarios.login);
+router.get('/paises', listarPaises);
 
-// recuperacion
-// falta terminar valicar capcha esa se maneja con lo la api que se crea en el front
-router.post('/recover',validar.captchaV, usuarios.recoveryUser); // = falta una cosa 
-router.post('/reset', usuarios.restore);  // = terminado
+// ---- RECUPERACIÓN ----
+router.post('/recover', validar.captchaV, usuarios.recoveryUser);
+router.post('/reset', usuarios.restore);
 
-
-
-// productos a la vista
+// ---- PRODUCTOS PUBLICOS ----
 router.get('/products', productos.getAllProducts);
-router.get('/products/:cat', productos.getProductsByCategory);
-router.get('/products/:id', productos.getProductById);
+router.get('/products/category/:cat', productos.getProductsByCategory);
+router.get('/products/id/:id', productos.getProductById);
 
-// Contacto
+// ---- CONTACTO Y SUSCRIPCIÓN ----
 router.post('/contact', contacto.sendContact);
 router.post('/suscripcion', contacto.subscribe);
 
