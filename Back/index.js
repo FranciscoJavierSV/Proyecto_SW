@@ -10,7 +10,12 @@ const app = express();
 
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
-app.use(cors());
+app.use(cors({
+  origin: "https://franciscojaviersv.github.io", // tu frontend en GitHub Pages
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 
 // Importa las rutas
 const authRoutes = require('./routes/authRoutes');
