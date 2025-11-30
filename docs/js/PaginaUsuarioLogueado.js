@@ -1,3 +1,5 @@
+const API_URL = "https://proyecto-production-5301.up.railway.app/api";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ===================================
     // MOSTRAR NOMBRE DEL USUARIO LOGUEADO
@@ -40,7 +42,7 @@ async function cargarProductos() {
     if (!grid) return;
 
     try {
-        const res = await fetch(`${API_URL}/api/public/products`);
+        const res = await fetch(`${API_URL}/public/products`);
         const data = await res.json();
 
         if (!data.success) {
@@ -79,10 +81,9 @@ function activarBotonesCarrito() {
 
     document.querySelectorAll(".btn-agregar").forEach(btn => {
         btn.addEventListener("click", async () => {
-            
             const id = btn.dataset.id;
 
-            const res = await fetch("http://localhost:3000/api/auth/cart", {
+            const res = await fetch(`${API_URL}/auth/cart`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -106,7 +107,6 @@ function activarBotonesCarrito() {
     });
 }
 
-
 async function cargarCarrito() {
     const token = localStorage.getItem("token");
     const contenedor = document.querySelector(".carrito-productos");
@@ -114,12 +114,9 @@ async function cargarCarrito() {
     const ivaElem = document.getElementById("iva");
     const totalElem = document.getElementById("total");
 
-
     try {
-        const res = await fetch("http://localhost:3000/api/auth/cart", {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
+        const res = await fetch(`${API_URL}/auth/cart`, {
+            headers: { "Authorization": "Bearer " + token }
         });
 
         const data = await res.json();
@@ -186,11 +183,9 @@ function activarBotonesEliminar() {
             const id = btn.dataset.id;
             const token = localStorage.getItem("token");
 
-            const res = await fetch(`http://localhost:3000/api/auth/cart/${id}`, {
+            const res = await fetch(`${API_URL}/auth/cart/${id}`, {
                 method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+                headers: { "Authorization": "Bearer " + token }
             });
 
             const data = await res.json();
@@ -204,5 +199,4 @@ function activarBotonesEliminar() {
         });
     });
 }
-
 

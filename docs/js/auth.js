@@ -1,3 +1,5 @@
+const API_URL = "https://proyecto-production-5301.up.railway.app/api";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // ====================================================
@@ -88,8 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function cargarPaises() {
         try {
-            const response = await fetch("http://localhost:3000/api/public/paises");
-            const data = await response.json();
+            const data = await apiGet("/public/paises");
 
             if (data.success) {
                 data.paises.forEach(p => {

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { verifyT } = require('../middleware/authMiddleware');
-const users = require('../controllers/users');  // <- AGREGAR ESTA LÍNEA
+const users = require('../controllers/users'); 
 const cartController = require('../controllers/cart');
 const salesController = require('../controllers/sales');
 const wishlistController = require('../controllers/wishlist');
