@@ -1,5 +1,3 @@
-const API_URL = "https://proyecto-production-5301.up.railway.app/api";
-
 document.addEventListener("DOMContentLoaded", () => {
 
     // ====================================================
