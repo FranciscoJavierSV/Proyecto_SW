@@ -10,16 +10,15 @@ const {
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
-  deleteRefreshToken,
   updateLoginAttempts,
   resetAttempts,
-  blockUser
+  blockUser,
+  getUserById
 } = require('../models/users');
 
 // ENV
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const FRONT_URL = process.env.FRONT_URL || 'http://localhost:4000';
+const FRONT_URL = process.env.FRONT_URL;
 
 // ======================================================
 // LOGIN
@@ -75,7 +74,7 @@ const login = async (req, res) => {
         id: user.id,
         username: user.nombre,
         rol: user.rol,
-        pais: user.pais,
+        pais_id: user.pais_id || user.pais,
         fontSize: user.font,
         contrast: user.contrast
       },
@@ -83,20 +82,10 @@ const login = async (req, res) => {
       { expiresIn: '15m' }
     );
 
-    // Crear Refresh Token
-    const refreshToken = jwt.sign(
-      { id: user.id },
-      process.env.JWT_REFRESH_SECRET || JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    await saveRefreshToken(user.id, refreshToken);
-
     return res.status(200).json({
       success: true,
       message: 'Login exitoso',
       token,
-      refreshToken,
       user: {
         id: user.id,
         username: user.nombre,
@@ -256,56 +245,39 @@ const restore = async (req, res) => {
 };
 
 // ======================================================
+// LOGOUT
+// ======================================================
+const logout = async (req, res) => {
+  return res.json({ success: true, message: 'Sesión cerrada' });
+};
+
+// ======================================================
 // REFRESH TOKEN
 // ======================================================
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'No hay refresh token' });
     }
-
-    const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-
-    const user = await findUser(payload.correo);
-    if (!user) return res.status(403).json({ success: false, message: 'Usuario no encontrado' });
-
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const newAccessToken = jwt.sign(
-      {
-        id: user.id,
-        username: user.nombre,
-        rol: user.rol,
-        pais: user.pais,
-        fontSize: user.font,
-        contrast: user.contrast
-      },
-      JWT_SECRET,
+      { id: payload.id, username: payload.username, rol: payload.rol },
+      process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
-
     return res.json({ success: true, token: newAccessToken });
-
   } catch (error) {
     return res.status(403).json({ success: false, message: 'Refresh token inválido' });
   }
-};
-
-// ======================================================
-// LOGOUT
-// ======================================================
-const logout = async (req, res) => {
-  const userId = req.user.id;
-  await deleteRefreshToken(userId);
-  return res.json({ success: true, message: 'Sesión cerrada' });
 };
 
 module.exports = {
   login,
   newUser,
   recoveryUser,
-  editUser,
   restore,
+  editUser,
   logout,
   refresh
 };

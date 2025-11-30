@@ -81,36 +81,12 @@ async function resetAttempts(userId) {
 }
 
 // ----------------------------------------------------
-// GUARDAR REFRESH TOKEN
-// ----------------------------------------------------
-async function saveRefreshToken(userId, token) {
-  const [result] = await pool.query(
-    `INSERT INTO refresh_tokens (user_id, token, expires_at) 
-     VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))`,
-    [userId, token]
-  );
-
-  return result.affectedRows > 0;
-}
-
-// ----------------------------------------------------
-// ELIMINAR REFRESH TOKENS (LOGOUT)
-// ----------------------------------------------------
-async function deleteRefreshToken(userId) {
-  const [result] = await pool.query(
-    'DELETE FROM refresh_tokens WHERE user_id = ?',
-    [userId]
-  );
-  return result.affectedRows > 0;
-}
-
-// ----------------------------------------------------
 // ACTUALIZAR PREFERENCIAS DE USUARIO
 // ----------------------------------------------------
-async function updateUserCountry(userId, pais) {
+async function updateUserCountry(userId, countryId) {
   const [result] = await pool.query(
-    'UPDATE usuarios SET pais = ? WHERE id = ?',
-    [pais, userId]
+    "UPDATE usuarios SET pais_id = ? WHERE id = ?",
+    [countryId, userId]
   );
   return result.affectedRows > 0;
 }
@@ -133,6 +109,15 @@ async function updateUserContrast(userId, contrast) {
   return result.affectedRows > 0;
 }
 
+// Obtener usuario por id
+async function getUserById(id) {
+  const [rows] = await pool.query(
+    'SELECT * FROM usuarios WHERE id = ?',
+    [id]
+  );
+  return rows[0] || null;
+}
+
 // ----------------------------------------------------
 // EXPORTAR
 // ----------------------------------------------------
@@ -141,12 +126,11 @@ module.exports = {
   findEmail,
   createUser,
   updatePassword,
-  saveRefreshToken,
-  deleteRefreshToken,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
   updateLoginAttempts,
   blockUser,
-  resetAttempts
+  resetAttempts,
+  getUserById
 };

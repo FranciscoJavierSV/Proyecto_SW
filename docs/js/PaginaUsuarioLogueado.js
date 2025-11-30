@@ -40,7 +40,7 @@ async function cargarProductos() {
     if (!grid) return;
 
     try {
-        const res = await fetch("http://localhost:3000/api/public/products");
+        const res = await fetch(`${API_URL}/api/public/products`);
         const data = await res.json();
 
         if (!data.success) {

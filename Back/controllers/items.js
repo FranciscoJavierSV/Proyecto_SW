@@ -64,8 +64,68 @@ const getProductById = async (req, res) => {
   }
 };
 
+// AGREGAR ESTAS FUNCIONES:
+
+const createProduct = async (req, res) => {
+  try {
+    const { nombre, precio, ofertaP, categoria, inventario, imagen, descripcion } = req.body;
+    const productId = await products.addProduct({ nombre, precio, ofertaP, categoria, inventario, imagen, descripcion });
+    return res.json({ success: true, productId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const success = await products.updateProduct(id, req.body);
+    return res.json({ success });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const success = await products.deleteProduct(id);
+    return res.json({ success });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const getInventory = async (req, res) => {
+  try {
+    const products_list = await products.getProducts();
+    return res.json({ success: true, products: products_list });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const getInventoryByCategory = async (req, res) => {
+  try {
+    const allProducts = await products.getProducts();
+    const byCategory = {};
+    allProducts.forEach(p => {
+      if (!byCategory[p.categoria]) byCategory[p.categoria] = [];
+      byCategory[p.categoria].push(p);
+    });
+    return res.json({ success: true, data: byCategory });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductsByCategory,
-  getProductById
+  getProductById,
+  createProduct,      // NUEVO
+  updateProduct,      // NUEVO
+  deleteProduct,      // NUEVO
+  getInventory,       // NUEVO
+  getInventoryByCategory // NUEVO
 };

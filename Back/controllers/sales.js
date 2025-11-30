@@ -64,13 +64,8 @@ const createOrder = async (req, res) => {
 
       count++;
 
-      // Descontar inventario
-      await products.updateProduct(
-        item.producto_id,
-        {
-          inventario: item.inventario - item.cantidad
-        }
-      );
+      // Descontar inventario (usar función segura)
+      await products.decreaseInventory(item.producto_id, item.cantidad);
     }
 
     // Guardar el número total de productos vendidos
@@ -80,13 +75,16 @@ const createOrder = async (req, res) => {
     // 4. Marcar el cupón como utilizado
     // ------------------------
     if (codigoCupon) {
-      await coupons.useCoupon(codigoCupon);
+      await coupons.usarCupon(codigoCupon);  
     }
 
     // ------------------------
-    // 5. Vaciar carrito
-    // ------------------------
-    await cart.clearCart(userId);
+    // 5. Vaciar carrito - AGREGAR ESTA FUNCIÓN AL MODELO
+    // Temporal: eliminar todos los items
+    const cartItems = await cart.getCart(userId);
+    for (const item of cartItems) {
+      await cart.deleteItem(item.id, userId);
+    }
 
     return res.json({
       success: true,
@@ -154,7 +152,6 @@ const getOrderDetails = async (req, res) => {
   }
 };
 
-
 const getOrderPDF = async (req, res) => {
   return res.json({
     success: false,
@@ -169,11 +166,33 @@ const sendOrderEmail = async (req, res) => {
   });
 };
 
+// AGREGAR ESTAS FUNCIONES QUE SE USAN EN privRoutes:
+
+const getSalesChart = async (req, res) => {
+  try {
+    // TODO: Implementar gráfica de ventas
+    return res.json({ success: false, message: 'Función pendiente' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const getTotalSales = async (req, res) => {
+  try {
+    // TODO: Implementar total de ventas
+    return res.json({ success: false, message: 'Función pendiente' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
 // --------------------------- EXPORT ---------------------------
 module.exports = {
-  createOrderFromCart,
+  createOrder,         
   getOrders,
   getOrderDetails,
   getOrderPDF,
-  sendOrderEmail
+  sendOrderEmail,
+  getSalesChart,    
+  getTotalSales    
 };

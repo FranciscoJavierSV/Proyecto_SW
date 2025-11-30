@@ -16,4 +16,32 @@ async function usarCupon(code) {
   return result.affectedRows > 0;
 }
 
-module.exports = { getCoupon, usarCupon };
+async function createCoupon(coupon) {
+  const [result] = await pool.query(
+    `INSERT INTO cupones (codigo, tipo, valor, expiracion, uso_maximo, activo)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [coupon.codigo, coupon.tipo, coupon.valor, coupon.expiracion, coupon.uso_maximo, coupon.activo]
+  );
+  return result.affectedRows > 0;
+}
+
+async function disableCoupon(code) {
+  const [result] = await pool.query(
+    "UPDATE cupones SET activo = 0 WHERE codigo = ?",
+    [code]
+  );
+  return result.affectedRows > 0;
+}
+
+async function getAllCoupons() {
+  const [rows] = await pool.query("SELECT * FROM cupones");
+  return rows;
+}
+
+module.exports = { 
+  getCoupon, 
+  usarCupon,
+  createCoupon,      // NUEVO
+  disableCoupon,     // NUEVO
+  getAllCoupons      // NUEVO
+};

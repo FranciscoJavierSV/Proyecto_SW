@@ -2,19 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 const { verifyT } = require('../middleware/authMiddleware');
+const users = require('../controllers/users');  // <- AGREGAR ESTA LÍNEA
 const cartController = require('../controllers/cart');
 const salesController = require('../controllers/sales');
 const wishlistController = require('../controllers/wishlist');
-const { logout, editUser, refresh } = require('../controllers/users');
 
 // ---- USUARIO ----
-router.post('/logout', verifyT, logout);
-router.post('/accessibility', verifyT, editUser);
+router.post('/logout', verifyT, users.logout);
+router.post('/refresh', users.refresh);
+router.post('/accessibility', verifyT, users.editUser);
 
-// ADD: refresh token (cliente envía { "refreshToken": "<token>" })
-router.post('/refresh', refresh);
-
-//router.get('/perfil',verifyT); en caso de requerir los datos del usuario en pantalla 
 // ---- CARRITO ----
 router.get('/cart', verifyT, cartController.getCart);
 router.post('/cart', verifyT, cartController.addToCart);

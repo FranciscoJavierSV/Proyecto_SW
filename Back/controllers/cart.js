@@ -40,18 +40,16 @@ const addToCart = async (req, res) => {
       return res.status(400).json({ success: false, message: "Cantidad debe ser mayor a 0" });
     }
 
-    const product = await products.getProductId(productID);
+    const product = await products.getProductId(productId);
     if (!product) {
       return res.status(404).json({ success: false, message: "Producto no existente" });
     }
 
-    // Validar inventario
     if (product.inventario < quantity) {
       return res.status(400).json({ success: false, message: "No hay suficiente inventario" });
     }
 
-    const add = await cart.addCart(userId, productID, quantity);
-
+    const add = await cart.addCart(userId, productId, quantity); 
     return res.json({
       success: true,
       data: add
@@ -74,7 +72,7 @@ const updateCartItem = async (req, res) => {
       return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    const product = await products.getProductId(productID);
+    const product = await products.getProductId(productId);
     if (!product) {
       return res.status(404).json({ success: false, message: "Producto no existente" });
     }
@@ -84,7 +82,7 @@ const updateCartItem = async (req, res) => {
       return res.status(400).json({ success: false, message: "No hay suficiente inventario disponible" });
     }
 
-    const update = await cart.updateCart(userId, productID, quantity);
+    const update = await cart.updateCart(userId, productId, quantity);
 
     return res.json({
       success: true,
@@ -148,7 +146,7 @@ const applyCoupon = async (req, res) => {
       });
     }
 
-    const cupon = await cart.applyCoupon(userId, coupon);
+    const cupon = await cart.aplicarCupon(userId, coupon); // <- usar aplicarCupon (modelo)
     return res.json({
       success: true,
       data: cupon

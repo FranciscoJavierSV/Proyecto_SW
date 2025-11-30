@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "http://localhost:4000/api"; // <-- ajustar a 4000 (backend)
 
 async function apiPost(endpoint, data) {
     const res = await fetch(`${API_URL}${endpoint}`, {
