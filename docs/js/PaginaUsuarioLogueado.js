@@ -88,7 +88,7 @@ function activarBotonesCarrito() {
                     "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                    productID: id,
+                    productId: id,
                     quantity: 1
                 })
             });
