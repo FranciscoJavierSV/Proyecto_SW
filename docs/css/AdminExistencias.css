@@ -4,24 +4,32 @@
     box-sizing: border-box;
 }
 
-body {
+.body{
     background: #FAF3E0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin: 0;
+    padding: 0;
 }
 
 .header {
     width: 100%;
     background: #8B6B4A;
-    padding: 12px 40px;
+    padding: 12px 40px; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #6B5642;
     position: sticky;
     top: 0;
-    z-index: 10;
+    box-sizing: border-box;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .logo-img {
@@ -39,6 +47,7 @@ body {
 
 .menu {
     display: flex;
+    align-items: center;
     gap: 25px;
 }
 
@@ -47,23 +56,44 @@ body {
     color: #F3E9DD;
     font-weight: bold;
     font-size: 16px;
+    transition: color 0.2s;
 }
 
-.menu a.active,
-.menu a:hover {
+.menu a:hover,
+.menu a.active {
     color: #FFE8C9;
 }
 
 .perfil-admin {
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 10px;
     cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-.main-container {
-    display: flex;
-    flex: 1;
+.perfil-admin:hover {
+    opacity: 0.8;
+}
+
+.perfil-icon {
+    font-size: 26px;
+    color: #F3E9DD;
+}
+
+.admin-name {
+    font-size: 16px;
+    color: #F3E9DD;
+    font-weight: bold;
+}
+
+
+.footer {
+    background: #6B5642;
+    color: #FAF3E0;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
 }
 
 .sidebar {
@@ -116,28 +146,16 @@ body {
     opacity: .85;
 }
 
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
 .content-area {
     flex: 1;
     padding: 35px;
 }
 
-.page-header {
-    background: #FFFFFF;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(107, 86, 66, 0.15);
-    margin-bottom: 22px;
-}
-
-.page-header h1 {
-    font-size: 28px;
-    color: #6B5642;
-}
-
-.page-header p {
-    font-size: 16px;
-    color: #8B6B4A;
-}
 
 .stats-cards {
     display: flex;
@@ -200,11 +218,4 @@ body {
 .status.low {
     background: #D9534F;
     color: #fff;
-}
-
-.footer {
-    background: #6B5642;
-    color: #FAF3E0;
-    text-align: center;
-    padding: 20px;
 }

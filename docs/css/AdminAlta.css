@@ -4,23 +4,26 @@
     box-sizing: border-box;
 }
 
-body {
+.body{
     background: #FAF3E0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin: 0;
+    padding: 0;
 }
 
 .header {
     width: 100%;
     background: #8B6B4A;
-    padding: 12px 40px;
+    padding: 12px 40px; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #6B5642;
     position: sticky;
     top: 0;
+    box-sizing: border-box;
 }
 
 .logo-area {
@@ -60,6 +63,7 @@ body {
 .menu a.active {
     color: #FFE8C9;
 }
+
 .perfil-admin {
     display: flex;
     align-items: center;
@@ -83,37 +87,44 @@ body {
     font-weight: bold;
 }
 
-.main-container {
-    display: flex;
-    flex: 1;
-    padding: 30px;
-    gap: 25px;
+
+.footer {
+    background: #6B5642;
+    color: #FAF3E0;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
 }
 
 .sidebar {
-    width: 260px; 
-    background: #E5D3B3; 
+    width: 260px;
+    background: #E5D3B3;
     padding: 20px;
     display: flex;
+    gap: 18px;
     flex-direction: column;
-    gap: 15px;
-    border-right: 2px solid #C0A98E; 
+    border-right: 2px solid #C0A98E;
 }
 
 .sidebar-card {
     background: #FAF3E0;
-    padding: 15px;
-    border-radius: 10px;
+    border-radius: 12px;
+    padding: 18px;
     text-decoration: none;
+    color: #4B3B2A;
+    display: block;
+    transition: all .15s;
     border: 1px solid #D4C4B0;
-    box-shadow: 0 2px 6px rgba(107, 86, 66, 0.15);
-    cursor: pointer;
-    transition: all 0.25s;
 }
 
 .sidebar-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(107, 86, 66, 0.25);
+}
+
+.sidebar-card.active {
+    background: #C0A98E;
+    color: #FAF3E0;
+    border-color: #8B6B4A;
 }
 
 .main-card {
@@ -126,22 +137,18 @@ body {
     font-size: 22px;
     font-weight: bold;
 }
-
 .card-title-small {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: bold;
-    color: #6B5642;
 }
-
 .card-subtitle {
-    font-size: 14px;
-    color: #6B5642;
-    opacity: 0.75;
+    font-size: 13px;
+    opacity: .85;
 }
 
-.main-card .card-subtitle {
-    color: #F3E9DD;
-    opacity: 0.9;
+.main-container {
+    display: flex;
+    flex: 1;
 }
 
 .content-area {
@@ -241,11 +248,4 @@ body {
 .btn-reset:hover {
     background: #C19A6B;
     color: #FAF3E0;
-}
-
-.footer {
-    background: #6B5642;
-    color: #FAF3E0;
-    padding: 20px;
-    text-align: center;
 }
