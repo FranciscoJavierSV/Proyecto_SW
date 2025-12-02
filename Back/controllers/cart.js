@@ -36,28 +36,33 @@ const addToCart = async (req, res) => {
       return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    if (quantity <= 0) {
-      return res.status(400).json({ success: false, message: "Cantidad debe ser mayor a 0" });
+    // Ver si ya existe en el carrito
+    const itemExiste = await cart.getCartItem(userId, productId);
+
+    // 2Si ya está, aumentar cantidad
+    if (itemExiste) {
+      const nuevaCantidad = itemExiste.cantidad + quantity;
+      const actualizado = await cart.updateCart(userId, productId, nuevaCantidad);
+
+      return res.json({
+        success: true,
+        message: "Cantidad actualizada",
+        cantidad: nuevaCantidad
+      });
     }
 
-    const product = await products.getProductId(productId);
-    if (!product) {
-      return res.status(404).json({ success: false, message: "Producto no existente" });
-    }
+    // Sino, insertar uno nuevo
+    const add = await cart.addCart(userId, productId, quantity);
 
-    if (product.inventario < quantity) {
-      return res.status(400).json({ success: false, message: "No hay suficiente inventario" });
-    }
-
-    const add = await cart.addCart(userId, productId, quantity); 
     return res.json({
       success: true,
+      message: "Producto agregado",
       data: add
     });
 
   } catch (error) {
-    console.error('Error al agregar al carrito:', error);
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error al agregar al carrito:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
   }
 };
 
@@ -65,35 +70,37 @@ const addToCart = async (req, res) => {
 const updateCartItem = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { quantity } = req.body;
+    const { action } = req.body;
     const userId = req.user.id;
 
-    if (!productId || !quantity) {
-      return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
+    const item = await cart.getCartItem(userId, productId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Producto no está en el carrito" });
     }
 
-    const product = await products.getProductId(productId);
-    if (!product) {
-      return res.status(404).json({ success: false, message: "Producto no existente" });
+    let nuevaCantidad = item.cantidad;
+
+    if (action === "add") nuevaCantidad++;
+    if (action === "remove") nuevaCantidad--;
+
+    if (nuevaCantidad <= 0) {
+      await cart.deleteItem(item.id, userId);
+      return res.json({ success: true, message: "Producto eliminado" });
     }
 
-    // Validación inventario
-    if (product.inventario < quantity) {
-      return res.status(400).json({ success: false, message: "No hay suficiente inventario disponible" });
-    }
-
-    const update = await cart.updateCart(userId, productId, quantity);
+    await cart.updateCart(userId, productId, nuevaCantidad);
 
     return res.json({
       success: true,
-      data: update
+      cantidad: nuevaCantidad
     });
 
   } catch (error) {
-    console.error('Error al actualizar carrito:', error);
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error al actualizar carrito:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
   }
 };
+
 
 // Eliminar producto
 const deleteCartItem = async (req, res) => {
