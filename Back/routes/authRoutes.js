@@ -7,10 +7,18 @@ const cartController = require('../controllers/cart');
 const salesController = require('../controllers/sales');
 const wishlistController = require('../controllers/wishlist');
 
+
 // ---- USUARIO ----
 router.post('/logout', verifyT, users.logout);
 router.post('/refresh', users.refresh);
 router.post('/accessibility', verifyT, users.editUser);
+router.post("/recovery", users.recoveryUser);            // Enviar token
+router.post("/validate-token", users.validateToken);      // Validar token
+router.post("/change-password", users.changePassword);    // Cambiar contraseña
+
+// ---- LOGING Y REGISTER ----
+router.post('/login', users.login);
+router.post('/register', users.newUser);
 
 // ---- CARRITO ----
 router.get('/cart', verifyT, cartController.getCart);

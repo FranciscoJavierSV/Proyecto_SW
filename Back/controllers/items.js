@@ -19,13 +19,13 @@ const getAllProducts = async (req, res) => {
 // Productos por categoría
 const getProductsByCategory = async (req, res) => {
   try {
-    const { categoria } = req.params;
+    const { cat } = req.params;
 
-    if (!categoria || !['bebida','salado','dulce'].includes(categoria)) {
+    if (!cat || !['bebida','salado','dulce'].includes(cat)) {
       return res.status(400).json({ success: false, message: "Categoría inválida" });
     }
 
-    const product = await products.getProductCategory(categoria);
+    const product = await products.getProductCategory(cat);
 
     return res.json({
       success: true,
@@ -65,6 +65,7 @@ const getProductById = async (req, res) => {
 };
 
 // AGREGAR ESTAS FUNCIONES:
+// FUNCIONES QUE SOLO EL ADMIN USA
 
 const createProduct = async (req, res) => {
   try {
