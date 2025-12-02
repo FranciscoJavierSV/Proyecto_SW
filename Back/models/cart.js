@@ -69,6 +69,14 @@ async function addCart(userId, productId, quantity) {
   return insert.affectedRows > 0;
 }
 
+async function getCartItem(userId, productId) {
+  const [rows] = await pool.query(
+    "SELECT * FROM cart WHERE usuario_id = ? AND producto_id = ?",
+    [userId, productId]
+  );
+  return rows[0];
+}
+
 // -----------------------------
 // Actualizar cantidad
 // -----------------------------
@@ -177,6 +185,7 @@ async function clearCart(userId) {
 module.exports = {
   getCart,
   addCart,
+  getCartItem,
   updateCart,
   deleteItem,
   aplicarCupon,

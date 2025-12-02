@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Cupones - Sexta Armonía</title>
     <link rel="stylesheet" href="../css/Cupones.css">
+    <script src="https://kit.fontawesome.com/8c4039e060.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -37,9 +38,9 @@
         </div>
 
         <div class="carrito-info">
-            <p><strong>Subtotal:</strong> $0</p>
-            <p><strong>IVA (16%):</strong> $0</p>
-            <p><strong>Total:</strong> $0</p>
+            <p><strong>Subtotal: </strong><span id="subtotal">$0</span></p>
+            <p><strong>IVA: </strong><span id="iva">$0</span></p>
+            <p><strong>Total: </strong><span id="total">$0</span></p>
         </div>
 
         <a href="Pago.html" class="btn-continuar">Continuar al pago</a>
@@ -79,6 +80,7 @@
     </footer>
 
     <script src="../js/api.js"></script>
-    <script src="../js/PaginaUsuarioLogueado.js"></script>
+    <script src="../js/carrito.js"></script>
+    <script src="../js/cupones.js"></script>
 </body>
 </html>
