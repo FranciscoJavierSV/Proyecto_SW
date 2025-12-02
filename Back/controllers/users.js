@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { enviarCorreo } = require('../utils/mailer'); // AGREGA ESTO ARRIBA
 
 // Importar modelos 
 const {
@@ -7,20 +8,21 @@ const {
   findEmail,
   findUser,
   updatePassword,
-  saveRefreshToken,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
-  deleteRefreshToken,
   updateLoginAttempts,
   resetAttempts,
-  blockUser
+  blockUser,
+  getUserById,
+  saveRecoveryToken,
+  validateRecoveryToken,
+  updatePasswordByEmail
 } = require('../models/users');
 
 // ENV
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const FRONT_URL = process.env.FRONT_URL || 'http://localhost:4000';
+const FRONT_URL = process.env.FRONT_URL;
 
 // ======================================================
 // LOGIN
@@ -76,7 +78,7 @@ const login = async (req, res) => {
         id: user.id,
         username: user.nombre,
         rol: user.rol,
-        pais: user.pais,
+        pais_id: user.pais_id || user.pais,
         fontSize: user.font,
         contrast: user.contrast
       },
@@ -84,20 +86,10 @@ const login = async (req, res) => {
       { expiresIn: '15m' }
     );
 
-    // Crear Refresh Token
-    const refreshToken = jwt.sign(
-      { id: user.id },
-      JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    await saveRefreshToken(user.id, refreshToken);
-
     return res.status(200).json({
       success: true,
       message: 'Login exitoso',
       token,
-      refreshToken,
       user: {
         id: user.id,
         username: user.nombre,
@@ -142,6 +134,7 @@ const newUser = async (req, res) => {
       preferencias
     };
 
+    // crea usuario en BD
     const success = await createUser(user);
 
     if (!success) {
@@ -159,42 +152,112 @@ const newUser = async (req, res) => {
 // ======================================================
 // RECUPERAR CONTRASEÑA
 // ======================================================
+
+//     // Crear token de recuperación
+//     const token = jwt.sign(
+//       { id: user.id, correo: user.correo },
+//       JWT_SECRET,
+//       { expiresIn: '5m' }
+//     );
+
 const recoveryUser = async (req, res) => {
   try {
-    const { correo, captchaT } = req.body;
-
-    if (!captchaT) {
-      return res.status(400).json({ success: false, message: 'Completa el captcha' });
-    }
-
+    const { correo } = req.body;
+    console.log("[RECOVERY] Solicitud recibida desde front:", correo);
     if (!correo) {
-      return res.status(400).json({ success: false, message: 'Ingresa el correo' });
+      console.log("[RECOVERY] Error: No se proporcionó correo");
+      return res.status(400).json({ success: false, message: 'Ingresa tu correo' });
     }
 
     const user = await findEmail(correo);
     if (!user) {
+      console.log("[RECOVERY] Correo no encontrado:", correo);
       return res.status(404).json({ success: false, message: 'Correo no registrado' });
     }
 
-    const token = jwt.sign(
-      { id: user.id, correo: user.correo },
-      JWT_SECRET,
-      { expiresIn: '5m' }
-    );
+    // 🔐 Token corto tipo ABC123
+    const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+    console.log("[RECOVERY] Token generado para usuario:", token);
+    // Guardamos temporalmente token y caducidad 5 min
+    await saveRecoveryToken(user.id, token);
 
-    const link = `${FRONT_URL}/reset?token=${token}`;
+    // Contenido del mensaje
+    const html = `
+      <h2>Recuperación de contraseña - Sexta Armonía</h2>
+      <p>Hola ${user.username}, tu token de recuperación es:</p>
 
-    return res.status(200).json({
+      <h1 style="color:#6a4a3c">${token}</h1>
+
+      <p>Este token es válido por <strong>5 minutos</strong>.</p>
+      <p>Ingresa este código en la página para continuar.</p>
+
+      <br>
+      <p>— <strong>Sexta Armonía</strong></p>
+    `;
+
+    await enviarCorreo({
+      to: correo,
+      subject: "Tu token de recuperación - Sexta Armonía",
+      html
+    });
+
+    console.log("[RECOVERY] Correo enviado correctamente a:", correo);
+
+    return res.json({
       success: true,
-      message: 'Correo enviado',
-      debugLink: process.env.NODE_ENV === 'development' ? link : undefined
+      message: "Token enviado al correo. Revisa tu bandeja."
     });
 
   } catch (error) {
-    console.error('Error recovery:', error);
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error recoveryUser:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
   }
 };
+
+// Validar token
+const validateToken = async (req, res) => {
+  try {
+    const { correo, token } = req.body;
+
+    if (!correo || !token) {
+      return res.status(400).json({ success: false, message: "Faltan datos" });
+    }
+
+    const user = await validateRecoveryToken(correo, token);
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+    }
+
+    return res.json({ success: true, message: "Token válido" });
+  } catch (error) {
+    console.error("Error validateToken:", error);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+};
+
+// cambiar contraseña
+const changePassword = async (req, res) => {
+  try {
+    const { correo, newPassword } = req.body;
+
+    if (!correo || !newPassword) {
+      return res.status(400).json({ success: false, message: "Faltan datos" });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await updatePasswordByEmail(correo, hashed);
+
+    return res.json({ success: true, message: "Contraseña actualizada" });
+
+  } catch (error) {
+    console.error("Error changePassword:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
+  }
+};
+
+
 
 // ======================================================
 // EDITAR USUARIO
@@ -256,56 +319,41 @@ const restore = async (req, res) => {
 };
 
 // ======================================================
+// LOGOUT
+// ======================================================
+const logout = async (req, res) => {
+  return res.json({ success: true, message: 'Sesión cerrada' });
+};
+
+// ======================================================
 // REFRESH TOKEN
 // ======================================================
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'No hay refresh token' });
     }
-
-    const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-
-    const user = await findUser(payload.correo);
-    if (!user) return res.status(403).json({ success: false, message: 'Usuario no encontrado' });
-
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const newAccessToken = jwt.sign(
-      {
-        id: user.id,
-        username: user.nombre,
-        rol: user.rol,
-        pais: user.pais,
-        fontSize: user.font,
-        contrast: user.contrast
-      },
-      JWT_SECRET,
+      { id: payload.id, username: payload.username, rol: payload.rol },
+      process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
-
     return res.json({ success: true, token: newAccessToken });
-
   } catch (error) {
     return res.status(403).json({ success: false, message: 'Refresh token inválido' });
   }
-};
-
-// ======================================================
-// LOGOUT
-// ======================================================
-const logout = async (req, res) => {
-  const userId = req.user.id;
-  await deleteRefreshToken(userId);
-  return res.json({ success: true, message: 'Sesión cerrada' });
 };
 
 module.exports = {
   login,
   newUser,
   recoveryUser,
-  editUser,
   restore,
+  editUser,
   logout,
-  refresh
+  refresh,
+  validateToken,
+  changePassword
 };

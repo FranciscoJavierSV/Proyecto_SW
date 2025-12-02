@@ -8,9 +8,30 @@ const cors = require('cors');
 // Inicializa la aplicación
 const app = express();
 
+const allowedOrigins = [
+    "https://franciscojaviersv.github.io",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500"
+];
+
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permite herramientas como Postman (sin origen)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("❌ CORS bloqueado para origen:", origin);
+      callback(new Error("No permitido por CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 
 // Importa las rutas
 const authRoutes = require('./routes/authRoutes');
@@ -23,15 +44,20 @@ app.use('/api/public', userRoutes);
 app.use('/api/account', privRoutes);
 
 // Ruta por defecto si no se encuentra la solicitada
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Ruta no encontrada'
-  });
+// app.use((req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: 'Ruta no encontrada'
+//   });
+// });
+
+// Solo para verificar si funciona
+app.get('/', (req, res) => {
+  res.json({ message: 'API funcionando correctamente' });
 });
 
 // Configura el puerto desde .env y levanta el servidor
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

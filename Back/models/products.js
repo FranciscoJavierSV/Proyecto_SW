@@ -81,11 +81,23 @@ async function deleteProduct(id) {
   return result.affectedRows > 0;
 }
 
+// ----------------------------------------
+// Disminuir inventario (seguro)
+// ----------------------------------------
+async function decreaseInventory(productId, amount) {
+  const [result] = await pool.query(
+    "UPDATE productos SET inventario = GREATEST(inventario - ?, 0) WHERE id = ?",
+    [amount, productId]
+  );
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   getProducts,
   getProductCategory,
   getProductId,
   addProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  decreaseInventory // <- agregado
 };

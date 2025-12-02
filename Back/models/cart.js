@@ -54,7 +54,9 @@ async function addCart(userId, productId, quantity) {
     [userId]
   );
 
-  const iva = subtotal * usuario.iva;
+  // usuario.iva es porcentaje (ej. 15) -> dividir por 100
+  const ivaRate = usuario.iva ? (usuario.iva / 100) : 0;
+  const iva = subtotal * ivaRate;
   const total = subtotal + iva;
 
   const [insert] = await pool.query(
@@ -65,6 +67,14 @@ async function addCart(userId, productId, quantity) {
   );
 
   return insert.affectedRows > 0;
+}
+
+async function getCartItem(userId, productId) {
+  const [rows] = await pool.query(
+    "SELECT * FROM cart WHERE usuario_id = ? AND producto_id = ?",
+    [userId, productId]
+  );
+  return rows[0];
 }
 
 // -----------------------------
@@ -91,7 +101,7 @@ async function updateCart(userId, productId, quantity) {
     [userId]
   );
 
-  const ivaRate = usuario.iva / 100;
+  const ivaRate = usuario.iva ? (usuario.iva / 100) : 0;
   const iva = subtotal * ivaRate;
   const total = subtotal + iva;
 
@@ -163,10 +173,21 @@ async function aplicarCupon(userId, codigo) {
   return { success: true };
 }
 
+// Limpiar carrito completo
+async function clearCart(userId) {
+  const [result] = await pool.query(
+    "DELETE FROM cart WHERE usuario_id = ?",
+    [userId]
+  );
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   getCart,
   addCart,
+  getCartItem,
   updateCart,
   deleteItem,
-  aplicarCupon
+  aplicarCupon,
+  clearCart
 };

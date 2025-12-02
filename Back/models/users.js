@@ -81,40 +81,17 @@ async function resetAttempts(userId) {
 }
 
 // ----------------------------------------------------
-// GUARDAR REFRESH TOKEN
-// ----------------------------------------------------
-async function saveRefreshToken(userId, token) {
-  const [result] = await pool.query(
-    `INSERT INTO refresh_tokens (user_id, token, expires_at) 
-     VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))`,
-    [userId, token]
-  );
-
-  return result.affectedRows > 0;
-}
-
-// ----------------------------------------------------
-// ELIMINAR REFRESH TOKENS (LOGOUT)
-// ----------------------------------------------------
-async function deleteRefreshToken(userId) {
-  const [result] = await pool.query(
-    'DELETE FROM refresh_tokens WHERE user_id = ?',
-    [userId]
-  );
-  return result.affectedRows > 0;
-}
-
-// ----------------------------------------------------
 // ACTUALIZAR PREFERENCIAS DE USUARIO
 // ----------------------------------------------------
-async function updateUserCountry(userId, pais) {
+async function updateUserCountry(userId, countryId) {
   const [result] = await pool.query(
-    'UPDATE usuarios SET pais = ? WHERE id = ?',
-    [pais, userId]
+    "UPDATE usuarios SET pais_id = ? WHERE id = ?",
+    [countryId, userId]
   );
   return result.affectedRows > 0;
 }
 
+// actualiza tamaño de fuente del usuario
 async function updateUserFontSize(userId, fontSize) {
   const [result] = await pool.query(
     'UPDATE usuarios SET font = ? WHERE id = ?',
@@ -123,11 +100,46 @@ async function updateUserFontSize(userId, fontSize) {
   return result.affectedRows > 0;
 }
 
+// actualiza contraste del usuario
 async function updateUserContrast(userId, contrast) {
   const [result] = await pool.query(
     'UPDATE usuarios SET contrast = ? WHERE id = ?',
     [contrast, userId]
   );
+  return result.affectedRows > 0;
+}
+
+// Obtener usuario por id
+async function getUserById(id) {
+  const [rows] = await pool.query(
+    'SELECT * FROM usuarios WHERE id = ?',
+    [id]
+  );
+  return rows[0] || null;
+}
+
+// Para recuperar contraseña
+async function saveRecoveryToken(id, token) {
+  return await pool.query(
+    "UPDATE usuarios SET recovery_token = ?, recovery_expires = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE id = ?",
+    [token, id]
+  );
+}
+
+async function validateRecoveryToken(correo, token) {
+  const result = await pool.query(
+    "SELECT * FROM usuarios WHERE correo = ? AND recovery_token = ? AND recovery_expires > NOW()",
+    [correo, token]
+  );
+  return result[0];
+}
+
+async function updatePasswordByEmail(correo, newPassword) {
+  const [result] = await pool.query(
+    "UPDATE usuarios SET contrasena = ? WHERE correo = ?",
+    [newPassword, correo]
+  );
+
   return result.affectedRows > 0;
 }
 
@@ -139,12 +151,14 @@ module.exports = {
   findEmail,
   createUser,
   updatePassword,
-  saveRefreshToken,
-  deleteRefreshToken,
   updateUserCountry,
   updateUserFontSize,
   updateUserContrast,
   updateLoginAttempts,
   blockUser,
-  resetAttempts
+  resetAttempts,
+  getUserById,
+  saveRecoveryToken,
+  validateRecoveryToken,
+  updatePasswordByEmail
 };

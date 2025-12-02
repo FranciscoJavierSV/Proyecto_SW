@@ -19,15 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const res = await apiPost("/public/login", { correo, contrasena });
 
-            if (!res || !res.success) {
+            
+            const token = res?.token ?? res?.data?.token ?? null;
+            const refreshToken = res?.refreshToken ?? res?.data?.refreshToken ?? null;
+            const user = res?.user ?? res?.data?.user ?? null;
+            const success = res?.success ?? (token !== null);
+
+            if (!success || !token) {
                 alert(res?.message || "Datos inválidos");
                 return;
-            } 
+            }
 
             // Guardar tokens y datos
-            localStorage.setItem("token", res.token);
-            localStorage.setItem("refreshToken", res.refreshToken);
-            localStorage.setItem("username", res.user.username);
+            localStorage.setItem("token", token);
+            if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+            if (user?.username) localStorage.setItem("username", user.username);
+            else if (res?.username) localStorage.setItem("username", res.username);
 
             window.location.href = "PaginaUsuarioLogueado.html";
         });
@@ -88,8 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function cargarPaises() {
         try {
-            const response = await fetch("http://localhost:3000/api/public/paises");
-            const data = await response.json();
+            const data = await apiGet("/public/paises");
 
             if (data.success) {
                 data.paises.forEach(p => {

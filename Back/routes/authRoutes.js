@@ -2,14 +2,23 @@ const express = require('express');
 const router = express.Router();
 
 const { verifyT } = require('../middleware/authMiddleware');
+const users = require('../controllers/users'); 
 const cartController = require('../controllers/cart');
 const salesController = require('../controllers/sales');
 const wishlistController = require('../controllers/wishlist');
-const { logout, editUser } = require('../controllers/users');
+
 
 // ---- USUARIO ----
-router.post('/logout', verifyT, logout);
-router.post('/accessibility', verifyT, editUser);
+router.post('/logout', verifyT, users.logout);
+router.post('/refresh', users.refresh);
+router.post('/accessibility', verifyT, users.editUser);
+router.post("/recovery", users.recoveryUser);            // Enviar token
+router.post("/validate-token", users.validateToken);      // Validar token
+router.post("/change-password", users.changePassword);    // Cambiar contraseña
+
+// ---- LOGING Y REGISTER ----
+router.post('/login', users.login);
+router.post('/register', users.newUser);
 
 // ---- CARRITO ----
 router.get('/cart', verifyT, cartController.getCart);
@@ -24,10 +33,10 @@ router.post('/wishlist', verifyT, wishlistController.addToWishlist);
 router.delete('/wishlist/:productId', verifyT, wishlistController.removeFromWishlist);
 
 // ---- COMPRAS ----
-//router.post('/ordenar', verifyT, salesController.createOrder);
-//router.get('/ordenar', verifyT, salesController.getOrders);
-//router.get('/ordenar/:id/pdf', verifyT, salesController.getOrderPDF);
-//router.post('/ordenar/:id/email', verifyT, salesController.sendOrderEmail);
+router.post('/ordenar', verifyT, salesController.createOrder);
+router.get('/ordenar', verifyT, salesController.getOrders);
+router.get('/ordenar/:id/pdf', verifyT, salesController.getOrderPDF);
+router.post('/ordenar/:id/email', verifyT, salesController.sendOrderEmail);
 
 module.exports = router;
 

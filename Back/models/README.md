@@ -23,6 +23,7 @@ tablas
         correo      // correo electronico para acceder
         rol         // rol de la cuenta 
         pais        // pais para los impuestos
+
         preferencias// Las preferencias de accesibilidad de la cuenta (en JSON)
         intentos    // Intentos a su cuenta
         block       // guarfa la hora y fecha de desbloqueo sino hay nada esta desbloqueada
@@ -68,6 +69,13 @@ tablas
         cantidad            // cantidad de productos vendidos
         precio_unitario     // Precio al momento de la venta               
         subtotal           // cantidad * precio_unitario
+
+        id — identificador único de la orden
+        usuario_id — ID del usuario que hizo la compra
+        total — precio total de la orden
+        estado — estado de la orden (pendiente, procesada, enviada, etc.)
+        fecha_creacion — fecha/hora de creación automática
+
 
     cupones // Almacena todos los cupones expedidos
         codigo        // Código del cupón (ej. "DESCUENTO10")

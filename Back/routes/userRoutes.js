@@ -1,3 +1,4 @@
+// info en README.md asdasd
 const express = require('express');
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.get('/paises', listarPaises);
 // ---- RECUPERACIÓN ----
 router.post('/recover', validar.captchaV, usuarios.recoveryUser);
 router.post('/reset', usuarios.restore);
+
 
 // ---- PRODUCTOS PUBLICOS ----
 router.get('/products', productos.getAllProducts);

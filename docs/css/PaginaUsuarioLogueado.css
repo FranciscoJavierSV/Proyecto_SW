@@ -83,7 +83,7 @@ body {
     color: #F3E9DD;
     font-weight: bold;
     font-size: 15px;
-}
+} 
 
 .logout-btn {
     text-decoration: none;
@@ -278,4 +278,89 @@ body {
 
 .footer p {
     font-size: 14px;
+}
+:root {
+    --font-size: 16px;
+    --bg: #ffffff;
+    --text: #222222;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-size: var(--font-size);
+    transition: 0.3s ease;
+}
+
+.dark {
+    --bg: #121212;
+    --text: #e2e2e2;
+}
+
+#accessibility-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #2c2c2d;
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 9999;
+}
+
+.dark #accessibility-btn {
+    background: #939090;
+}
+
+#accessibility-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    background: white;
+    padding: 20px;
+    width: 250px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #0004;
+    z-index: 9999;
+}
+
+.dark #accessibility-panel {
+    background: #333;
+}
+
+.hidden { display: none; }
+
+.acc-btn {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    background: #EDEDED;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.acc-btn:hover {
+    background: #dcdcdc;
+    transform: scale(1.03);
+}
+
+.icon-btn {
+    font-size: 22px;
+    padding: 14px;
+}
+
+.text-size-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.text-size-controls .acc-btn {
+    flex: 1;
+    font-size: 18px;
 }

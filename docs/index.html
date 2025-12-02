@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Principal.css">
+    <link rel="stylesheet" href="css/Principal.css">
     
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <title>Sexta Armonia</title>
@@ -12,35 +12,22 @@
 <body>
     <header class="header">
         <div class="logo-area">
-            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+            <img src="ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
             <span class="logo-text">Sexta Armonía</span>
         </div>
 
         <nav class="menu">
-            <a href="Principal.html">Inicio</a>
-            <a href="Productos.html">Productos</a>
-            <a href="IniciarSesion.html">Iniciar Sesión</a>
-            <a href="CrearCuenta.html">Crear Cuenta</a>
+            <a href="index.html">Inicio</a>
+            <a href="html/Productos.html">Productos</a>
+            <a href="html/IniciarSesion.html">Iniciar Sesión</a>
+            <a href="html/CrearCuenta.html">Crear Cuenta</a>
             <span class="carrito">🛒</span>
         </nav>
     </header>
 
     <section class="carrusel">
         <div class="swiper">
-            <div class="swiper-wrapper">
-
-                <div class="swiper-slide"><img src="../ImagenesGenerales/calpico-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/coffee-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/lotus-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/mochi-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/ramen-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/ramune-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/takoyaki-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/tiramisu-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/water-HD.png"></div>
-                <div class="swiper-slide"><img src="../ImagenesGenerales/yakult-HD.png"></div>
-
-            </div>
+            <div class="swiper-wrapper"></div>
 
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
@@ -74,7 +61,7 @@
         <div class="contacto-info">
             <h3>Información</h3>
             <p><strong>Teléfono:</strong>449-586-123-14</p>
-            <p><strong>Instagram:</strong><a href="https://www.instagram.com/tuusuario" target="_blank">@tuusuario</a></p>
+            <p><strong>Instagram:</strong><a href="https://www.instagram.com/sexta_armonia6" target="_blank">@sexta_armonia6</a></p>
             <p><strong>Dirección:</strong> Av. Universidad 1603, Aguascalientes, Aguascalientes</p>
 
             <h3>Horarios</h3>
@@ -85,10 +72,10 @@
         <div class="contacto-formulario">
             <h3>Envíanos un mensaje</h3>
 
-            <form>
-                <input type="text" placeholder="Tu nombre" required>
-                <input type="email" placeholder="Tu correo" required>
-                <textarea placeholder="Escribe tu mensaje..." rows="5" required></textarea>
+            <form id="contactForm">
+                <input type="text" id="contactName" placeholder="Tu nombre" required>
+                <input type="email" id="contactEmail" placeholder="Tu correo" required>
+                <textarea id="contactMessage" placeholder="Escribe tu mensaje..." rows="5" required></textarea>
 
                 <button type="submit">Enviar Mensaje</button>
             </form>
@@ -99,7 +86,9 @@
     <footer class="footer">
         <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025 </p>
     </footer>
+    
+    <script src="js/api.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-    <script src="../js/Principal.js"></script>
+    <script src="js/Principal.js"></script>
 </body>
 </html>
