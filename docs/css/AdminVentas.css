@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header {
+    width: 100%;
+    background: #8B6B4A;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #6B5642;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.logo-text {
+    font-size: 26px;
+    font-weight: bold;
+    color: #FAF3E0;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #F3E9DD;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.menu a:hover,
+.menu a.active {
+    color: #FFE8C9;
+}
+
+.perfil-admin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.perfil-admin:hover {
+    opacity: 0.8;
+}
+
+.perfil-icon {
+    font-size: 26px;
+    color: #F3E9DD;
+}
+
+.admin-name {
+    font-size: 16px;
+    color: #F3E9DD;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ventas-container {
+    width: 100%;
+    max-width: 1200px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(107, 86, 66, 0.15);
+    overflow: hidden;
+}
+
+.header-title {
+    background: #F5EFE7;
+    padding: 25px;
+    border-bottom: 3px solid #D4C4B0;
+}
+
+.header-title h1 {
+    font-size: 32px;
+    color: #6B5642;
+    text-align: center;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 500px;
+}
+
+.left-section {
+    padding: 40px;
+    border-right: 3px solid #E8DCC8;
+}
+
+.category-section {
+    margin-bottom: 35px;
+}
+
+.category-section h2 {
+    font-size: 24px;
+    color: #6B5642;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #E8DCC8;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.checkbox-group label:hover {
+    background: #F9F6F1;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #8B6B4A;
+}
+
+.checkbox-group span {
+    font-size: 16px;
+    color: #5A4A3A;
+}
+
+.ventas-count {
+    margin-left: auto;
+    font-weight: bold;
+    color: #8B6B4A;
+    background: #E8DCC8;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.right-section {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-container {
+    margin-bottom: 30px;
+    width: 350px;
+    height: 350px;
+}
+
+.pie-chart {
+    width: 100%;
+    height: 100%;
+}
+
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    color: #5A4A3A;
+}
+
+.legend-color {
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+    border: 2px solid #6B5642;
+}
+
+.legend-item span:nth-child(2) {
+    flex: 1;
+    font-weight: bold;
+}
+
+.legend-percent {
+    font-weight: bold;
+    color: #8B6B4A;
+    font-size: 18px;
+}
+
+.footer {
+    background: #6B5642;
+    color: #FAF3E0;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
+}

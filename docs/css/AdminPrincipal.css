@@ -1,0 +1,104 @@
+.body{
+    background: #FAF3E0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    width: 100%;
+    background: #8B6B4A;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #6B5642;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.logo-text {
+    font-size: 26px;
+    font-weight: bold;
+    color: #FAF3E0;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #F3E9DD;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.menu a:hover,
+.menu a.active {
+    color: #FFE8C9;
+}
+
+.perfil-admin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.perfil-admin:hover {
+    opacity: 0.8;
+}
+
+.perfil-icon {
+    font-size: 26px;
+    color: #F3E9DD;
+}
+
+.admin-name {
+    font-size: 16px;
+    color: #F3E9DD;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-content h1 {
+    font-size: 32px;
+    color: #8B6B4A;
+    text-align: center;
+}
+
+.footer {
+    background: #6B5642;
+    color: #FAF3E0;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
+}

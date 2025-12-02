@@ -1,0 +1,172 @@
+body {
+    background: #FAF3E0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    width: 100%;
+    background: #8B6B4A;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #6B5642;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.logo-text {
+    font-size: 26px;
+    font-weight: bold;
+    color: #FAF3E0;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #F3E9DD;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.menu a:hover,
+.menu a.active {
+    color: #FFE8C9;
+}
+
+.perfil-admin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.perfil-admin:hover {
+    opacity: 0.8;
+}
+
+.perfil-icon {
+    font-size: 26px;
+    color: #F3E9DD;
+}
+
+.admin-name {
+    font-size: 16px;
+    color: #F3E9DD;
+    font-weight: bold;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
+.sidebar {
+    width: 260px;
+    background: #E5D3B3;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-sizing: border-box;
+    border-right: 2px solid #C0A98E;
+}
+
+.sidebar-card {
+    background: #FAF3E0;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #4B3B2A;
+    display: block;
+    transition: transform 0.15s;
+}
+
+.sidebar-card:hover {
+    transform: scale(1.02);
+}
+
+.main-card {
+    background: #C0A98E;
+    color: #4B3B2A;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.card-subtitle {
+    margin: 0;
+    font-size: 14px;
+}
+
+.card-title-small {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.content-area {
+    flex: 1;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.welcome-section h2 {
+    margin-top: 0;
+    font-size: 28px;
+    color: #8B6B4A;
+}
+
+.welcome-subtitle {
+    font-size: 16px;
+    margin-bottom: 30px;
+    color: #6B5642;
+}
+
+.info-card {
+    background: #E5D3B3;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.info-card h3 {
+    margin-top: 0;
+    color: #4B3B2A;
+}
+
+.footer {
+    background: #6B5642;
+    color: #FAF3E0;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
+}
