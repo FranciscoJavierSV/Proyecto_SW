@@ -57,6 +57,7 @@ async function cargarProductos() {
                 <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
                 <div class="producto-info">
                     <h3>${prod.nombre}</h3>
+                    <h4>${prod.descripcion}</h4>
                     <p class="precio">$${prod.precio}</p>
                     <button class="btn-agregar" data-id="${prod.id}">Agregar al carrito</button>
                 </div>
