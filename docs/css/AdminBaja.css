@@ -16,7 +16,7 @@
 
 .header {
     width: 100%;
-    background: #8B6B4A;
+    background: #ffcdd4;
     padding: 12px 40px; 
     display: flex;
     justify-content: space-between;
@@ -90,7 +90,7 @@
 
 
 .footer {
-    background: #6B5642;
+    background: #ffcdd4;
     color: #FAF3E0;
     padding: 20px;
     text-align: center;
