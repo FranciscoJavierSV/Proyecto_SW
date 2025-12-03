@@ -453,11 +453,11 @@ body {
     border-radius: 5px;
     background: #D4C4B0;
     outline: none;
-    -webkit-appearance: none;
+    /*-webkit-appearance: none;*/
 }
 
 .slider-precio::-webkit-slider-thumb {
-    -webkit-appearance: none;
+    /*-webkit-appearance: none;*/
     appearance: none;
     width: 20px;
     height: 20px;

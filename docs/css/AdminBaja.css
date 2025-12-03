@@ -3,7 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+ 
 .body {
   background: #faf3e0;
   min-height: 100vh;
@@ -12,20 +12,8 @@
   margin: 0;
   padding: 0;
 }
-
+ 
 .header {
-<<<<<<< HEAD
-    width: 100%;
-    background: #ffcdd4;
-    padding: 12px 40px; 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #6B5642;
-    position: sticky;
-    top: 0;
-    box-sizing: border-box;
-=======
   width: 100%;
   background: #8b6b4a;
   padding: 12px 40px;
@@ -36,34 +24,33 @@
   position: sticky;
   top: 0;
   box-sizing: border-box;
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
-
+ 
 .logo-area {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .logo-img {
   width: 70px;
   height: 70px;
   border-radius: 10px;
   object-fit: cover;
 }
-
+ 
 .logo-text {
   font-size: 26px;
   font-weight: bold;
   color: #faf3e0;
 }
-
+ 
 .menu {
   display: flex;
   align-items: center;
   gap: 25px;
 }
-
+ 
 .menu a {
   text-decoration: none;
   color: #f3e9dd;
@@ -71,12 +58,12 @@
   font-size: 16px;
   transition: color 0.2s;
 }
-
+ 
 .menu a:hover,
 .menu a.active {
   color: #ffe8c9;
 }
-
+ 
 .perfil-admin {
   display: flex;
   align-items: center;
@@ -84,30 +71,23 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-
+ 
 .perfil-admin:hover {
   opacity: 0.8;
 }
-
+ 
 .perfil-icon {
   font-size: 26px;
   color: #f3e9dd;
 }
-
+ 
 .admin-name {
   font-size: 16px;
   color: #f3e9dd;
   font-weight: bold;
 }
-
+ 
 .footer {
-<<<<<<< HEAD
-    background: #ffcdd4;
-    color: #FAF3E0;
-    padding: 20px;
-    text-align: center;
-    margin-top: auto;
-=======
   background: #6b5642;
   color: #faf3e0;
   padding: 20px;
@@ -119,9 +99,8 @@
   left: 0;
   width: 100%;
   z-index: 100;
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
-
+ 
 .sidebar {
   width: 260px;
   background: #e5d3b3;
@@ -131,7 +110,7 @@
   flex-direction: column;
   border-right: 2px solid #c0a98e;
 }
-
+ 
 .sidebar-card {
   background: #faf3e0;
   border-radius: 12px;
@@ -142,23 +121,23 @@
   transition: all 0.15s;
   border: 1px solid #d4c4b0;
 }
-
+ 
 .sidebar-card:hover {
   transform: translateY(-3px);
 }
-
+ 
 .sidebar-card.active {
   background: #c0a98e;
   color: #faf3e0;
   border-color: #8b6b4a;
 }
-
+ 
 .main-card {
   background: #8b6b4a;
   color: #faf3e0;
   text-align: center;
 }
-
+ 
 .card-title {
   font-size: 22px;
   font-weight: bold;
@@ -171,14 +150,15 @@
   font-size: 13px;
   opacity: 0.85;
 }
-
+ 
 .main-container {
   display: flex;
   flex: 1;
 }
-
+ 
 .main-card {
   background: #8b6b4a;
   text-align: center;
   color: #faf3e0;
 }
+ 
