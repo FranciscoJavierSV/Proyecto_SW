@@ -10,7 +10,7 @@ const { listarPaises } = require('../controllers/paises');
 
 // ---- USUARIO ----
 router.post('/register', usuarios.newUser);
-router.post('/login', usuarios.login);
+router.post('/login', validar.captchaV, usuarios.login);
 router.get('/paises', listarPaises);
 
 // ---- RECUPERACIÓN ----

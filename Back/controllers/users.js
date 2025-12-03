@@ -175,7 +175,7 @@ const recoveryUser = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Correo no registrado' });
     }
 
-    // 🔐 Token corto tipo ABC123
+    //  Token corto tipo ABC123
     const token = Math.random().toString(36).substring(2, 8).toUpperCase();
     console.log("[RECOVERY] Token generado para usuario:", token);
     // Guardamos temporalmente token y caducidad 5 min
