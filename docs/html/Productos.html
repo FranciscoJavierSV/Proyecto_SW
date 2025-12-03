@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Productos.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/Productos.css" />
     <title>Productos - Sexta Armonía</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <header class="header">
-        <div class="logo-area">
-            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
-            <span class="logo-text">Sexta Armonía</span>
-        </div>
+      <div class="logo-area">
+        <img
+          src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg"
+          alt="Logo"
+          class="logo-img"
+        />
+        <span class="logo-text">Sexta Armonía</span>
+      </div>
 
-        <nav class="menu">
-            <a href="../index.html">Inicio</a>
-            <a href="Productos.html" class="active">Productos</a>
-            <a href="IniciarSesion.html">Iniciar Sesión</a>
-            <a href="CrearCuenta.html">Crear Cuenta</a>
-            <span class="carrito">🛒</span>
-        </nav>
+      <nav class="menu">
+        <a href="../index.html">Inicio</a>
+        <a href="Productos.html" class="active">Productos</a>
+        <a href="IniciarSesion.html">Iniciar Sesión</a>
+        <a href="CrearCuenta.html">Crear Cuenta</a>
+        <span class="carrito">🛒</span>
+      </nav>
     </header>
 
     <section class="productos-contenedor">
-        <h2>Nuestros Productos</h2>
-        <div class="grid-productos"></div>
+      <h2>Nuestros Productos</h2>
+      <div class="grid-productos">
+        <div class="producto">
+          <img src="food.jpg" alt="Producto" />
+          <h3>Nombre del producto</h3>
+          <p class="descripcion">Esta es la descripción.</p>
+          <p class="precio">$199 MXN</p>
+        </div>
+      </div>
     </section>
 
     <footer class="footer">
-        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programación de Sistemas Web © 2025</p>
+      <p>
+        Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de
+        Programación de Sistemas Web © 2025
+      </p>
     </footer>
 
     <script src="../js/api.js"></script>
     <script src="../js/productos.js"></script>
-</body>
+  </body>
 </html>
