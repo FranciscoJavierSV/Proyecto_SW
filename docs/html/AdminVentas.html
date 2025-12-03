@@ -1,104 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ventas - Sexta Armonía</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="../css/AdminVentas.css">
-</head>
-<body>
-
-<header class="header">
-    <div class="logo-area">
-        <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+    <link rel="stylesheet" href="/docs/css/AdminVentas.css" />
+    <link
+      rel="icon"
+      type="image/jpg"
+      href="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-area">
+        <img
+          src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg"
+          alt="Logo"
+          class="logo-img"
+        />
         <h1 class="logo-text">Sexta Armonía</h1>
-    </div>
-    <nav class="menu">
+      </div>
+      <nav class="menu">
         <a href="AdminPrincipal.html">Inicio</a>
         <a href="AdminInventario.html">Inventario</a>
         <a href="AdminVentas.html" class="active">Ventas</a>
-    </nav>
-    <div class="perfil-admin">
+      </nav>
+      <div class="perfil-admin">
         <span class="perfil-icon">👤</span>
         <span class="admin-name"></span>
         <a class="logout-btn">Cerrar sesión</a>
-    </div>
-</header>
+      </div>
+    </header>
 
-<div class="main-content">
-    <div class="ventas-container">
-
+    <div class="main-content">
+      <div class="ventas-container">
         <div class="header-title">
-            <h1>Inventario Total</h1>
+          <h1>Inventario Total</h1>
         </div>
 
         <div class="content-grid">
-            <div class="left-section">
-
-                <div class="category-section">
-                    <h2>Bebida</h2>
-                    <ul class="product-list">
-                        <li><span>Agua</span> <span class="ventas-count">12</span></li>
-                        <li><span>Refresco</span> <span class="ventas-count">8</span></li>
-                        <li><span>Jugo</span> <span class="ventas-count">15</span></li>
-                        <li><span>Café</span> <span class="ventas-count">20</span></li>
-                    </ul>
-                </div>
-
-                <div class="category-section">
-                    <h2>Salado</h2>
-                    <ul class="product-list">
-                        <li><span>Torta</span> <span class="ventas-count">25</span></li>
-                        <li><span>Sandwich</span> <span class="ventas-count">18</span></li>
-                        <li><span>Taco</span> <span class="ventas-count">30</span></li>
-                        <li><span>Pizza</span> <span class="ventas-count">10</span></li>
-                    </ul>
-                </div>
-
-                <div class="category-section">
-                    <h2>Postre</h2>
-                    <ul class="product-list">
-                        <li><span>Pastel</span> <span class="ventas-count">22</span></li>
-                        <li><span>Galleta</span> <span class="ventas-count">35</span></li>
-                        <li><span>Helado</span> <span class="ventas-count">28</span></li>
-                    </ul>
-                </div>
-
+          <div class="left-section">
+            <div class="category-section">
+              <h2>Bebida</h2>
+              <ul class="product-list">
+                <li><span>Agua</span> <span class="ventas-count">12</span></li>
+                <li>
+                  <span>Refresco</span> <span class="ventas-count">8</span>
+                </li>
+                <li><span>Jugo</span> <span class="ventas-count">15</span></li>
+                <li><span>Café</span> <span class="ventas-count">20</span></li>
+              </ul>
             </div>
-            <div class="right-section">
-    
-                <div class="chart-container">
-                    <canvas id="ventasChart"></canvas>
-                </div>
 
-                <div class="chart-legend">
-                    <div class="legend-item">
-                        <span class="legend-color" style="background:#C19A6B;"></span>
-                        <span>Bebida</span>
-                        <span class="legend-percent" id="bebida-percent">0%</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background:#8B6B4A;"></span>
-                        <span>Salado</span>
-                        <span class="legend-percent" id="salado-percent">0%</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background:#D4C4B0;"></span>
-                        <span>Postre</span>
-                        <span class="legend-percent" id="postre-percent">0%</span>
-                    </div>
-                </div>
+            <div class="category-section">
+              <h2>Salado</h2>
+              <ul class="product-list">
+                <li><span>Torta</span> <span class="ventas-count">25</span></li>
+                <li>
+                  <span>Sandwich</span> <span class="ventas-count">18</span>
+                </li>
+                <li><span>Taco</span> <span class="ventas-count">30</span></li>
+                <li><span>Pizza</span> <span class="ventas-count">10</span></li>
+              </ul>
             </div>
+
+            <div class="category-section">
+              <h2>Postre</h2>
+              <ul class="product-list">
+                <li>
+                  <span>Pastel</span> <span class="ventas-count">22</span>
+                </li>
+                <li>
+                  <span>Galleta</span> <span class="ventas-count">35</span>
+                </li>
+                <li>
+                  <span>Helado</span> <span class="ventas-count">28</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="right-section">
+            <div class="chart-container">
+              <canvas id="ventasChart"></canvas>
+            </div>
+
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background: #c19a6b"></span>
+                <span>Bebida</span>
+                <span class="legend-percent" id="bebida-percent">0%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background: #8b6b4a"></span>
+                <span>Salado</span>
+                <span class="legend-percent" id="salado-percent">0%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background: #d4c4b0"></span>
+                <span>Postre</span>
+                <span class="legend-percent" id="postre-percent">0%</span>
+              </div>
+            </div>
+          </div>
         </div>
-
+      </div>
     </div>
-</div>
 
-<footer class="footer">
-    <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025</p>
-</footer>
+    <footer class="footer">
+      <p>
+        Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de
+        Programacion de Sistemas Web © 2025
+      </p>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/docs/js/AdminVentas.js"></script>
-</body>
+    <script src="/docs/js/AdminVentas.js"></script>
+  </body>
 </html>
