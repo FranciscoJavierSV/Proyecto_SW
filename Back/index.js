@@ -1,13 +1,25 @@
 // Carga variables del archivo .env
-require('dotenv').config();
+require("dotenv").config();
 
 // Importa dependencias principales
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
 // Inicializa la aplicación
 const app = express();
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+const allowedOrigins = [
+  "https://franciscojaviersv.github.io",
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+];
+
+>>>>>>> 58292eb5e80d70f4718049e7c7f374006fdf82e9
+>>>>>>> main
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
 app.use(cors({
@@ -23,14 +35,14 @@ app.use(cors({
 
 
 // Importa las rutas
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const privRoutes = require('./routes/privRoutes');
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const privRoutes = require("./routes/privRoutes");
 
 // Usa las rutas bajo el prefijo /api
-app.use('/api/auth', authRoutes);
-app.use('/api/public', userRoutes);
-app.use('/api/account', privRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/public", userRoutes);
+app.use("/api/account", privRoutes);
 
 // Ruta por defecto si no se encuentra la solicitada
 // app.use((req, res) => {
@@ -41,8 +53,8 @@ app.use('/api/account', privRoutes);
 // });
 
 // Solo para verificar si funciona
-app.get('/', (req, res) => {
-  res.json({ message: 'API funcionando correctamente' });
+app.get("/", (req, res) => {
+  res.json({ message: "API funcionando correctamente" });
 });
 
 // Configura el puerto desde .env y levanta el servidor

@@ -21,13 +21,20 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bwip-js": "^4.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.3",
     "nodemailer": "^7.0.11",
+<<<<<<< HEAD
     "pdfkit": "^0.17.2"
+=======
+    "pdfkit": "^0.17.2",
+    "svg-captcha": "^1.4.0",
+    "uuid": "^13.0.0"
+>>>>>>> main
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

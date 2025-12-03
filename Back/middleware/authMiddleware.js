@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const svgCaptcha = require("svg-captcha");
+const { captchas } = require("../utils/captchaStore");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // ----------------------------------------------------
@@ -74,12 +76,36 @@ const isAdmin = (req, res, next) => {
 };
 
 // ----------------------------------------------------
-// VALIDAR CAPTCHA (placeholder)
+// VALIDAR CAPTCHA
 // ----------------------------------------------------
 const captchaV = (req, res, next) => {
   try {
-    // aquí va tu validación real después
+    const { tokenCaptcha, captchaIngresado } = req.body;
+
+    if (!tokenCaptcha || !captchaIngresado) {
+        return res.status(400).json({ succes: false, message: "Faltan datos del captcha" });
+    }
+
+    const registro = captchas[tokenCaptcha];
+
+    if (!registro) {
+        return res.status(400).json({ succes: false, message: "Captcha inválido o expirado" });
+    }
+
+    if (Date.now() > registro.expira) {
+        delete captchas[tokenCaptcha];
+        return res.status(400).json({ succes: false, message: "Captcha expirado" });
+    }
+
+    if (registro.texto.toLowerCase() !== captchaIngresado.toLowerCase()) {
+        return res.status(400).json({ succes: false, message: "Captcha incorrecto" });
+    }
+
+    // captcha correcto → eliminar para no reusar
+    delete captchas[tokenCaptcha];
+
     next();
+
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -88,6 +114,7 @@ const captchaV = (req, res, next) => {
   }
 };
 
+ 
 module.exports = {
   verifyT,
   isAdmin,
