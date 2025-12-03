@@ -22,6 +22,8 @@ router.post('/reset', usuarios.restore);
 router.get('/products', productos.getAllProducts);
 router.get('/products/category/:cat', productos.getProductsByCategory);
 router.get('/products/id/:id', productos.getProductById);
+router.get('/products/oferts', productos.getProductOfert);
+router.get('/products/precio', productos.getProductsByPriceRange);
 
 // ---- CONTACTO Y SUSCRIPCIÓN ----
 router.post('/contact', contacto.sendContact);

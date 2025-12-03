@@ -283,7 +283,7 @@ const getOrderPDF = async (req, res) => {
     console.error("Error en getOrderPDF:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Error al generar PDF" });
+      .json({ success: false, message: "Error en el servidor" });
   }
 };
 
@@ -318,7 +318,7 @@ const sendOrderEmail = async (customerName, customerEmail, pdfPath) => {
 
   } catch (error) {
     console.error("Error enviando email:", error);
-    return res.status(500).json({ success:false, message: "Error al enviar el PDF" });
+    return res.status(500).json({ success:false, message: "Error en el servidor" });
   }
 };
 
