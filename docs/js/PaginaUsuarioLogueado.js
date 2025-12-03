@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (username && nombreSpan) {
         nombreSpan.textContent = `Hola, ${username}`;
     }
-
+ 
     // ===================================
     // MOSTRAR / OCULTAR CARRITO
     // ===================================
@@ -32,6 +32,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // CARGAR PRODUCTOS DESDE BACKEND
     // ===================================
     cargarProductos();
+
+    // ===================================
+    // CERRAR SESION
+    // ===================================   
+    const logoutBtn = document.querySelector(".logout-btn");
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function (event) {
+            event.preventDefault(); 
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("refreshToken");
+
+            window.location.href = "../index.html";
+        });
+    }
 });
 
 async function cargarProductos() {

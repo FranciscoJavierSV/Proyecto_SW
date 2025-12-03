@@ -16,4 +16,4 @@ router.get('/sales/total', verifyT, isAdmin, ventas.getTotalSales);
 
 router.get('/inventory', verifyT, isAdmin, productos.getInventoryByCategory);
 
-module.exports = router;
+module.exports = router; 

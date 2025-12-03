@@ -65,7 +65,7 @@ async function updateLoginAttempts(userId, attempts) {
 // ----------------------------------------------------
 async function blockUser(userId) {
   await pool.query(
-    'UPDATE usuarios SET block = DATE_ADD(NOW(), INTERVAL 15 MINUTE), intentos = 0 WHERE id = ?',
+    'UPDATE usuarios SET block = DATE_ADD(NOW(), INTERVAL 5 MINUTE), intentos = 0 WHERE id = ?',
     [userId]
   );
 }

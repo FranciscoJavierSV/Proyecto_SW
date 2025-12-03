@@ -1,3 +1,8 @@
+const path = require("path");
+const fs = require("fs");
+const PDFDocument = require("pdfkit");
+const nodemailer = require("nodemailer");
+
 // --------------------------- IMPORTS ---------------------------
 const sales = require('../models/sales');
 const cart = require('../models/cart');
@@ -153,17 +158,168 @@ const getOrderDetails = async (req, res) => {
 };
 
 const getOrderPDF = async (req, res) => {
-  return res.json({
-    success: false,
-    message: "Función PDF pendiente"
-  });
+  try {
+    const {
+      customerName,
+      customerEmail,
+      items,
+      subtotal,
+      tax,
+      shipping,
+      coupon,
+      total,
+    } = req.body;
+
+    if (!customerName || !customerEmail || !items || !subtotal || !total) {
+      return res.status(400).json({
+        success: false,
+        message: "Faltan campos obligatorios.",
+      });
+    }
+
+    // Crear PDF temporal
+    const pdfName = `order_${Date.now()}.pdf`;
+    const pdfPath = path.join(__dirname, "..", "tmp", pdfName);
+
+    const doc = new PDFDocument({ margin: 40 });
+    const stream = fs.createWriteStream(pdfPath);
+    doc.pipe(stream);
+
+    // ENCABEZADO - Datos de la compañia
+    const logoPath = path.join(
+      __dirname,
+      "..",
+      "docs",
+      "ImagenesPrincipal",
+      "f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg"
+    );
+
+    // Insertar logo si existe
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 40, 40, { width: 80 });
+    }
+
+    doc
+      .fontSize(20)
+      .text(process.env.COMPANY_NAME || "Nombre de la Compañía", 140, 50)
+      .fontSize(12)
+      .text(
+        `"${process.env.COMPANY_SLOGAN || "Nuestro lema va aquí"}"`,
+        140,
+        75
+      );
+
+    // Fecha y hora
+    doc
+      .fontSize(10)
+      .text(`Fecha: ${new Date().toLocaleDateString()}`, 40, 130)
+      .text(`Hora: ${new Date().toLocaleTimeString()}`);
+
+    doc.moveDown(2);
+
+    // DATOS DEL CLIENTE
+    doc
+      .fontSize(16)
+      .text("Información del Cliente")
+      .moveDown(0.5);
+
+    doc
+      .fontSize(12)
+      .text(`Nombre: ${customerName}`)
+      .moveDown();
+
+    // ITEMS DEL CARRITO
+    doc
+      .fontSize(16)
+      .text("Detalles de la Compra")
+      .moveDown();
+
+    items.forEach((item, idx) => {
+      doc
+        .fontSize(12)
+        .text(
+          `${idx + 1}. ${item.name} | Cant: ${item.quantity} | Precio: $${item.price} | Total: $${(
+            item.price * item.quantity).toFixed(2)}`
+        );
+    });
+
+    doc.moveDown(2);
+
+    // RESUMEN DEL COBRO
+    doc
+      .fontSize(16)
+      .text("Resumen de Pago")
+      .moveDown(0.5);
+
+    doc.fontSize(12).text(`Subtotal: $${subtotal}`);
+    doc.text(`Impuestos: $${tax || 0}`);
+    doc.text(`Envío: $${shipping || 0}`);
+
+    if (coupon) {
+      doc.text(`Cupón aplicado: -$${coupon}`);
+    }
+
+    doc.moveDown(0.5);
+    doc.fontSize(14).text(`TOTAL: $${total}`, { bold: true });
+
+    // Finalizar PDF
+    doc.end();
+
+    // ENVIAR
+    stream.on("finish", async () => {
+      await sendOrderEmail(customerName, customerEmail, pdfPath);
+
+      res.status(200).json({
+        success: true,
+        message: "PDF generado y correo enviado.",
+        pdfFile: pdfName,
+      });
+
+      // Eliminar archivo temporal
+      fs.unlink(pdfPath, () => {});
+    });
+
+  } catch (error) {
+    console.error("Error en getOrderPDF:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error al generar PDF" });
+  }
 };
 
-const sendOrderEmail = async (req, res) => {
-  return res.json({
-    success: false,
-    message: "Función email pendiente"
-  });
+
+const sendOrderEmail = async (customerName, customerEmail, pdfPath) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { 
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Tienda" <${process.env.EMAIL_USER}>`,
+      to: customerEmail,
+      subject: "Resumen de tu compra",
+      html: `
+        <p>Hola <strong>${customerName}</strong>,</p>
+        <p>¡Gracias por tu compra! Te enviamos el resumen de tu pedido adjunto en PDF.</p>
+      `,
+      attachments: [
+        { 
+          filename: "order.pdf", 
+          path: pdfPath 
+        }
+      ],
+    });
+
+    console.log("Correo enviado correctamente");
+
+  } catch (error) {
+    console.error("Error enviando email:", error);
+    return res.status(500).json({ success:false, message: "Error al enviar el PDF" });
+  }
 };
 
 // AGREGAR ESTAS FUNCIONES QUE SE USAN EN privRoutes:
@@ -211,5 +367,5 @@ module.exports = {
   getOrderPDF,
   sendOrderEmail,
   getSalesChart,    
-  getTotalSales    
+  getTotalSales
 };
