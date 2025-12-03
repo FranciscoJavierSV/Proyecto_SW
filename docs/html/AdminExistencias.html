@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existencias - Inventario</title>
+    <link rel="stylesheet" href="../css/AdminExistencias.css">
+</head> 
+<body>
+    <header class="header">
+         <div class="logo-area">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
+
+        <nav class="menu">
+            <a href="AdminPrincipal.html">Inicio</a>
+            <a href="AdminExistencias.html" class="active">Inventario</a>
+            <a href="AdminVentas.html">Ventas</a>
+        </nav>
+        <div class="perfil-admin">
+            <span class="perfil-icon">👤</span>
+            <span class="admin-name">Administrador</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-card main-card">
+                <h2 class="card-title">INVENTARIO</h2>
+                <p class="card-subtitle">Sistema de Gestión</p>
+            </div>
+
+            <a href="AdminInventario.html" class="sidebar-card">
+                <h3 class="card-title-small">Instrucciones</h3>
+                <p class="card-subtitle">Guía de uso del sistema</p>
+            </a>
+
+            <a href="AdminExistencias.html" class="sidebar-card">
+                <h3 class="card-title-small">Existencias</h3>
+                <p class="card-subtitle">Ver todos los productos</p>
+            </a>
+
+            <a href="AdminActualizar.html" class="sidebar-card">
+                <h3 class="card-title-small">Actualizar</h3>
+                <p class="card-subtitle">Modificar stock existente</p>
+            </a>
+
+            <a href="AdminAlta.html" class="sidebar-card">
+                <h3 class="card-title-small">Alta</h3>
+                <p class="card-subtitle">Dar de alta productos</p>
+            </a>
+
+            <a href="AdminBaja.html" class="sidebar-card">
+                <h3 class="card-title-small">Baja</h3>
+                <p class="card-subtitle">Dar de baja productos</p>
+            </a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1>Existencias</h1>
+                <p>Listado completo de productos en inventario</p>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Productos</h3>
+                    <p class="stat-number">24</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Stock Normal</h3>
+                    <p class="stat-number">18</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Stock Bajo</h3>
+                    <p class="stat-number">6</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock Actual</th>
+                            <th>Unidad</th>
+                            <th>Stock Mínimo</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Producto A</td>
+                            <td>Categoría 1</td>
+                            <td class="stock-number">150</td>
+                            <td>unidades</td>
+                            <td>50</td>
+                            <td><span class="status ok">OK</span></td>
+                        </tr>
+                        <tr>
+                            <td>Producto B</td>
+                            <td>Categoría 2</td>
+                            <td class="stock-number">25</td>
+                            <td>kg</td>
+                            <td>30</td>
+                            <td><span class="status low">Bajo</span></td>
+                        </tr>
+                        <tr>
+                            <td>Producto C</td>
+                            <td>Categoría 1</td>
+                            <td class="stock-number">200</td>
+                            <td>litros</td>
+                            <td>80</td>
+                            <td><span class="status ok">OK</span></td>
+                        </tr>
+                        <tr>
+                            <td>Producto D</td>
+                            <td>Categoría 3</td>
+                            <td class="stock-number">45</td>
+                            <td>cajas</td>
+                            <td>50</td>
+                            <td><span class="status low">Bajo</span></td>
+                        </tr>
+                        <tr>
+                            <td>Producto E</td>
+                            <td>Categoría 2</td>
+                            <td class="stock-number">300</td>
+                            <td>piezas</td>
+                            <td>100</td>
+                            <td><span class="status ok">OK</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025</p>
+    </footer>
+</body>
+</html>

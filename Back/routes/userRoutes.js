@@ -17,6 +17,7 @@ router.get('/paises', listarPaises);
 router.post('/recover', validar.captchaV, usuarios.recoveryUser);
 router.post('/reset', usuarios.restore);
 
+
 // ---- PRODUCTOS PUBLICOS ----
 router.get('/products', productos.getAllProducts);
 router.get('/products/category/:cat', productos.getProductsByCategory);

@@ -1,0 +1,132 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+body {
+  background: #faf3e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.header {
+  width: 100%;
+  background: #8b6b4a;
+  padding: 12px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #6b5642;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.logo-text {
+  font-size: 26px;
+  font-weight: bold;
+  color: #faf3e0;
+}
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.menu a {
+  text-decoration: none;
+  color: #f3e9dd;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.menu a:hover,
+.menu .active {
+  color: #ffe8c9;
+}
+.carrito {
+  font-size: 26px;
+  cursor: pointer;
+  color: #f3e9dd;
+  transition: 0.2s;
+}
+.carrito:hover {
+  color: #ffe8c9;
+}
+.titulo-nosotros {
+  text-align: center;
+  font-size: 40px;
+  margin: 40px 0 10px;
+  color: #8b6b4a;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+.card-wrapper {
+  width: 230px;
+}
+.card {
+  background: #f3e9dd;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.card img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+.card h3 {
+  color: #5a4632;
+  margin-bottom: 10px;
+}
+.card p {
+  color: #6b5642;
+  font-size: 0.9em;
+}
+.project-info-section {
+  background: #f3e9dd;
+  padding: 40px 20px;
+  margin-top: 40px;
+  text-align: center;
+  border-top: 2px solid #8b6b4a;
+}
+.project-info-section h3 {
+  color: #8b6b4a;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+.project-info-section p {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #5a4632;
+  line-height: 1.6;
+}
+.footer {
+  background: #6b5642;
+  color: #faf3e0;
+  padding: 20px;
+  text-align: center;
+  margin-top: auto;
+}
