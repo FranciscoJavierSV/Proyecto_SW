@@ -22,11 +22,25 @@ async function cargarProductos() {
             const card = document.createElement("div");
             card.classList.add("producto");
 
+            // Mostrar precio normal tachado y precio de oferta si existe
+            let priceHtml = '';
+            if (prod.ofertaP && prod.ofertaP !== null && prod.ofertaP !== '') {
+                priceHtml = `
+                    <div class="precio">
+                        <span class="precio-original">$${parseFloat(prod.precio).toFixed(2)}</span>
+                        <br>
+                        <span class="precio-oferta">$${parseFloat(prod.ofertaP).toFixed(2)}</span>
+                    </div>
+                `;
+            } else {
+                priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
+            }
+
             card.innerHTML = `
                 <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
                 <h3>${prod.nombre}</h3>
                 <h4>${prod.descripcion}</h4>
-                <p>$${prod.precio}</p>
+                ${priceHtml}
             `;
 
             grid.appendChild(card);

@@ -132,6 +132,22 @@ body {
     margin-top: 10px;
 }
 
+/* Estilos para precios con oferta */
+.precio-original {
+    font-size: 16px;
+    color: #8a8a8a;
+    text-decoration: line-through;
+    margin-right: 6px;
+}
+
+.precio-oferta {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    color: #bb0000; 
+    margin-top: 4px;
+}
+
 .footer {
     background: #6B5642;
     color: #FAF3E0;
