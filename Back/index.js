@@ -11,7 +11,9 @@ const app = express();
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
 app.use(cors({
-  origin: "https://franciscojaviersv.github.io", // tu frontend en GitHub Pages
+  origin: "https://franciscojaviersv.github.io",
+  origin: 'http://127.0.0.1:5500',
+  origin: 'http://localhost:5500',
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));

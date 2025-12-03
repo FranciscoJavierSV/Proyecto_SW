@@ -89,11 +89,40 @@ async function getSaleById(saleId) {
   return sale[0] || null;
 }
 
+// =====================================
+// Obtener datos para gráfica de ventas (agrupadas por fecha)
+// =====================================
+async function getSalesChart() {
+  const [rows] = await pool.query(
+    `
+      SELECT DATE(fecha) AS dia, SUM(total) AS totalDia
+      FROM sales
+      GROUP BY DATE(fecha)
+      ORDER BY dia ASC
+    `
+  );
+  return rows; // Ejemplo: [{ dia: '2025-12-01', totalDia: 1500 }, ...]
+}
+
+// =====================================
+// Obtener el total acumulado de todas las ventas
+// =====================================
+async function getTotalSales() {
+  const [rows] = await pool.query(
+    `SELECT SUM(total) AS totalVentas FROM sales`
+  );
+  return rows[0].totalVentas || 0;
+}
+
+
 module.exports = {
   createSale,
   addSaleItem,
   updateSaleProductCount,
   getUserSales,
   getSaleItems,
-  getSaleById
+  getSaleById,
+  getSalesChart,   // <- nuevo
+  getTotalSales    // <- nuevo
+
 };

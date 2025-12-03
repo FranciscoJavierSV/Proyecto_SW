@@ -168,23 +168,40 @@ const sendOrderEmail = async (req, res) => {
 
 // AGREGAR ESTAS FUNCIONES QUE SE USAN EN privRoutes:
 
+// --------------------------- GRÁFICA DE VENTAS ---------------------------
 const getSalesChart = async (req, res) => {
   try {
-    // TODO: Implementar gráfica de ventas
-    return res.json({ success: false, message: 'Función pendiente' });
+    const chartData = await sales.getSalesChart(); // <- función en el modelo
+    return res.json({
+      success: true,
+      data: chartData
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error en getSalesChart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error en el servidor"
+    });
   }
 };
 
+// --------------------------- TOTAL DE VENTAS ---------------------------
 const getTotalSales = async (req, res) => {
   try {
-    // TODO: Implementar total de ventas
-    return res.json({ success: false, message: 'Función pendiente' });
+    const total = await sales.getTotalSales(); // <- función en el modelo
+    return res.json({
+      success: true,
+      total
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error en getTotalSales:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error en el servidor"
+    });
   }
 };
+
 
 // --------------------------- EXPORT ---------------------------
 module.exports = {
