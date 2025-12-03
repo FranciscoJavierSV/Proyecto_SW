@@ -10,6 +10,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-bottom: 50px;
 }
 
 .header {
@@ -307,4 +308,9 @@ body {
     padding: 20px;
     text-align: center;
     margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
 }

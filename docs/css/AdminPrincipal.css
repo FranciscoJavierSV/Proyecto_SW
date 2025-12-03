@@ -1,9 +1,10 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+<<<<<<< HEAD
 .body{
     background: #ffcdd4;
     min-height: 100vh;
@@ -24,79 +25,114 @@
     position: sticky;
     top: 0;
     box-sizing: border-box;
+=======
+.body {
+  background: #faf3e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  width: 100%;
+  background: #8b6b4a;
+  padding: 12px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #6b5642;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+>>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
 
 .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .logo-img {
-    width: 70px;
-    height: 70px;
-    border-radius: 10px;
-    object-fit: cover;
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .logo-text {
-    font-size: 26px;
-    font-weight: bold;
-    color: #FAF3E0;
+  font-size: 26px;
+  font-weight: bold;
+  color: #faf3e0;
 }
 
 .menu {
-    display: flex;
-    align-items: center;
-    gap: 25px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
 }
 
 .menu a {
-    text-decoration: none;
-    color: #F3E9DD;
-    font-weight: bold;
-    font-size: 16px;
-    transition: color 0.2s;
+  text-decoration: none;
+  color: #f3e9dd;
+  font-weight: bold;
+  font-size: 16px;
+  transition: color 0.2s;
 }
 
 .menu a:hover,
 .menu a.active {
-    color: #FFE8C9;
+  color: #ffe8c9;
 }
 
 .perfil-admin {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .perfil-admin:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .perfil-icon {
-    font-size: 26px;
-    color: #F3E9DD;
+  font-size: 26px;
+  color: #f3e9dd;
 }
 
 .admin-name {
-    font-size: 16px;
-    color: #F3E9DD;
-    font-weight: bold;
+  font-size: 16px;
+  color: #f3e9dd;
+  font-weight: bold;
 }
 
-
 .footer {
+<<<<<<< HEAD
     background: #e57d90;
     color: #FAF3E0;
     padding: 20px;
     text-align: center;
     margin-top: auto;
+=======
+  background: #6b5642;
+  color: #faf3e0;
+  padding: 20px;
+  text-align: center;
+  margin-top: auto;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+>>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
 
-.main-content{
-    text-align: center;
-    padding: 35px;
+.main-content {
+  text-align: center;
+  padding: 35px;
 }

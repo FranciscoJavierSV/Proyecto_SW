@@ -1,16 +1,20 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+html, body {
+    height: 100%;
 }
 
-.body{
+body {
     background: #FAF3E0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
     padding: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .header {
@@ -87,13 +91,18 @@
     font-weight: bold;
 }
 
-
 .footer {
     background: ##e57d90;
     color: #FAF3E0;
     padding: 20px;
     text-align: center;
     margin-top: auto;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
 }
 
 .sidebar {
@@ -137,23 +146,22 @@
     font-size: 22px;
     font-weight: bold;
 }
+
 .card-title-small {
     font-size: 17px;
     font-weight: bold;
 }
+
 .card-subtitle {
     font-size: 13px;
     opacity: .85;
 }
 
-
-/* CONTENEDOR */
 .main-container {
     display: flex;
     flex: 1;
 }
 
-/* CONTENIDO */
 .content-area {
     flex: 1;
     padding: 40px;

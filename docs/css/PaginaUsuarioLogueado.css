@@ -274,6 +274,11 @@ body {
     padding: 20px;
     text-align: center;
     margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
 }
 
 .footer p {
@@ -290,6 +295,7 @@ body {
     color: var(--text);
     font-size: var(--font-size);
     transition: 0.3s ease;
+    padding-bottom: 50px;
 }
 
 .dark {
@@ -364,6 +370,7 @@ body {
     flex: 1;
     font-size: 18px;
 }
+<<<<<<< HEAD
 .contenedor-principal {
     max-width: 1400px;
     margin: 2rem auto;
@@ -509,4 +516,22 @@ body {
     font-size: 0.8rem;
     font-weight: bold;
     z-index: 1;
+=======
+
+.carrito-container {
+    position: relative;
+    display: inline-block;
+}
+
+.carrito-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+>>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
