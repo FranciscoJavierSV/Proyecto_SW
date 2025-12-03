@@ -370,3 +370,20 @@ body {
     flex: 1;
     font-size: 18px;
 }
+
+.carrito-container {
+    position: relative;
+    display: inline-block;
+}
+
+.carrito-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+}

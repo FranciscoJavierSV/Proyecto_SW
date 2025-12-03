@@ -1,70 +1,73 @@
-
 function activarBotonesCarrito() {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    document.querySelectorAll(".btn-agregar").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const productId = btn.dataset.id;
+  document.querySelectorAll(".btn-agregar").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const productId = btn.dataset.id;
 
-            const data = await apiPost(
-                "/auth/cart",
-                { productId, quantity: 1 },  
-                { Authorization: "Bearer " + token }
-            );
+      const data = await apiPost(
+        "/auth/cart",
+        { productId, quantity: 1 },
+        { Authorization: "Bearer " + token }
+      );
 
-            if (data.success) {
-                cargarCarrito();
-            } else {
-                alert(data.message || "Error al agregar producto");
-            }
-        });
+      if (data.success) {
+        cargarCarrito();
+      } else {
+        alert(data.message || "Error al agregar producto");
+      }
     });
+  });
 }
 
-
 async function cargarCarrito() {
-    const token = localStorage.getItem("token");
-    const contenedor = document.querySelector(".carrito-productos");
-    const subtotalElem = document.getElementById("subtotal");
-    const ivaElem = document.getElementById("iva");
-    const totalElem = document.getElementById("total");
+  const token = localStorage.getItem("token");
+  const contenedor = document.querySelector(".carrito-productos");
+  const subtotalElem = document.getElementById("subtotal");
+  const ivaElem = document.getElementById("iva");
+  const totalElem = document.getElementById("total");
+  const carritoCountElem = document.getElementById("carrito-count"); //Badge del carrito
 
-    try {
-        const data = await apiGet("/auth/cart", 
-                { "Authorization": "Bearer " + token }
-        );
+  try {
+    const data = await apiGet("/auth/cart", {
+      Authorization: "Bearer " + token,
+    });
 
-        console.log("Respuesta del servidor carrito:", data);
-        if (!data.success) {
-            contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
-            return;
-        }
+    console.log("Respuesta del servidor carrito:", data);
+    if (!data.success) {
+      contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
+      return;
+    }
 
-        const cart = data.cart;
+    const cart = data.cart;
 
-        if (!Array.isArray(cart) || cart.length === 0) {
-            contenedor.innerHTML = '<p class="carrito-vacio">No hay productos aún.</p>';
-            subtotalElem.textContent = "$0";
-            ivaElem.textContent = "$0";
-            totalElem.textContent = "$0";
-            return;
-        }
+    const cantidadTotal = cart.reduce((sum, item) => sum + item.cantidad, 0); //Badge del carrito
+    carritoCountElem.textContent = cantidadTotal; //Badge del carrito
 
-        contenedor.innerHTML = ""; // limpiar
+    if (!Array.isArray(cart) || cart.length === 0) {
+      contenedor.innerHTML =
+        '<p class="carrito-vacio">No hay productos aún.</p>';
+      subtotalElem.textContent = "$0";
+      ivaElem.textContent = "$0";
+      totalElem.textContent = "$0";
+      return;
+    }
 
-        let subtotalTotal = 0;
-        let ivaTotal = 0;
-        let totalGeneral = 0;
+    contenedor.innerHTML = ""; // limpiar
 
-        cart.forEach(item => {
-            subtotalTotal += parseFloat(item.subtotal);
-            ivaTotal += parseFloat(item.iva);
-            totalGeneral += parseFloat(item.total);
+    let subtotalTotal = 0;
+    let ivaTotal = 0;
+    let totalGeneral = 0;
 
-            const div = document.createElement("div");
-            div.classList.add("carrito-item");
+    cart.forEach((item) => {
+      subtotalTotal += parseFloat(item.subtotal);
+      ivaTotal += parseFloat(item.iva);
+      totalGeneral += parseFloat(item.total);
 
-            div.innerHTML = `
+      const div = document.createElement("div");
+      div.classList.add("carrito-item");
+
+      div.innerHTML = `
                 <img src="../ImagenesGenerales/${item.imagen}" class="carrito-img">
                 <div class="carrito-detalle">
                     <p>${item.nombre}</p>
@@ -81,80 +84,72 @@ async function cargarCarrito() {
                 <button class="btn-eliminar" data-cart-id="${item.id}"><i class="fa-regular fa-trash-can"></i></button>
             `;
 
+      contenedor.appendChild(div);
+    });
 
-            contenedor.appendChild(div);
-        });
+    subtotalElem.textContent = `$${subtotalTotal.toFixed(2)}`;
+    ivaElem.textContent = `$${ivaTotal.toFixed(2)}`;
+    totalElem.textContent = `$${totalGeneral.toFixed(2)}`;
 
-
-        subtotalElem.textContent = `$${subtotalTotal.toFixed(2)}`;
-        ivaElem.textContent = `$${ivaTotal.toFixed(2)}`;
-        totalElem.textContent = `$${totalGeneral.toFixed(2)}`;
-
-        activarBotonesEliminar();
-        activarBotonesCantidad();
-
-    } catch (error) {
-        console.error("Error cargando carrito:", error);
-        contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
-    }
+    activarBotonesEliminar();
+    activarBotonesCantidad();
+  } catch (error) {
+    console.error("Error cargando carrito:", error);
+    contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
+  }
 }
 
 function activarBotonesEliminar() {
-    const botones = document.querySelectorAll(".btn-eliminar");
+  const botones = document.querySelectorAll(".btn-eliminar");
 
-    botones.forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const cartId = btn.dataset.cartId;
-            const token = localStorage.getItem("token");
+  botones.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const cartId = btn.dataset.cartId;
+      const token = localStorage.getItem("token");
 
-            const data = await apiDelete(
-                `/auth/cart/${cartId}`,
-                { "Authorization": "Bearer " + token }
-            );
+      const data = await apiDelete(`/auth/cart/${cartId}`, {
+        Authorization: "Bearer " + token,
+      });
 
-            if (data.success) {
-                cargarCarrito();
-            } else {
-                alert(data.message);
-            }
-        });
+      if (data.success) {
+        cargarCarrito();
+      } else {
+        alert(data.message);
+      }
     });
+  });
 }
 
 function activarBotonesCantidad() {
+  // Botones +
+  document.querySelectorAll(".btn-mas").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const productId = btn.dataset.productId;
+      const token = localStorage.getItem("token");
 
-    // Botones +
-    document.querySelectorAll(".btn-mas").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const productId = btn.dataset.productId;
-            const token = localStorage.getItem("token");
+      await apiPatch(
+        `/auth/cart/${productId}`,
+        { action: "add" },
+        { Authorization: "Bearer " + token }
+      );
 
-            await apiPatch(
-                `/auth/cart/${productId}`,
-                { action: "add" },
-                { "Authorization": "Bearer " + token }
-            );
-
-            cargarCarrito();
-        });
+      cargarCarrito();
     });
+  });
 
-    // Botones -
-    document.querySelectorAll(".btn-menos").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const productId = btn.dataset.productId;
-            const token = localStorage.getItem("token");
+  // Botones -
+  document.querySelectorAll(".btn-menos").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const productId = btn.dataset.productId;
+      const token = localStorage.getItem("token");
 
-            await apiPatch(
-                `/auth/cart/${productId}`,
-                { action: "remove" },
-                { "Authorization": "Bearer " + token }
-            );
+      await apiPatch(
+        `/auth/cart/${productId}`,
+        { action: "remove" },
+        { Authorization: "Bearer " + token }
+      );
 
-            cargarCarrito();
-        });
+      cargarCarrito();
     });
+  });
 }
-
-
-

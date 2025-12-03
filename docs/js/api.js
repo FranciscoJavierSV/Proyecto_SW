@@ -1,11 +1,11 @@
-const API_URL = "http://localhost:3000/api"; 
+const API_URL = "http://localhost:4000/api";
 
 async function apiPost(endpoint, data = {}, extraHeaders = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...extraHeaders
+      ...extraHeaders,
     },
     body: JSON.stringify(data),
   });
@@ -18,8 +18,8 @@ async function apiGet(endpoint, extraHeaders = {}) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...extraHeaders
-    }
+      ...extraHeaders,
+    },
   });
 
   return res.json();
@@ -30,8 +30,8 @@ async function apiDelete(endpoint, extraHeaders = {}) {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      ...extraHeaders
-    }
+      ...extraHeaders,
+    },
   });
 
   return res.json();
@@ -42,23 +42,23 @@ async function apiPut(endpoint, data = {}, extraHeaders = {}) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      ...extraHeaders
+      ...extraHeaders,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 
   return res.json();
 }
 
 async function apiPatch(endpoint, body = {}, headers = {}) {
-    const res = await fetch(`${API_URL}${endpoint}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...headers
-        },
-        body: JSON.stringify(body)
-    });
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
 
-    return res.json();
+  return res.json();
 }
