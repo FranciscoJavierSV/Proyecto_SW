@@ -22,11 +22,18 @@ function activarBotonesCarrito() {
 
 async function cargarCarrito() {
   const token = localStorage.getItem("token");
+  
+  // Si no hay token, no hacer nada
+  if (!token) {
+    console.log("No hay token, usuario no logueado");
+    return;
+  }
+
   const contenedor = document.querySelector(".carrito-productos");
   const subtotalElem = document.getElementById("subtotal");
   const ivaElem = document.getElementById("iva");
   const totalElem = document.getElementById("total");
-  const carritoCountElem = document.getElementById("carrito-count"); //Badge del carrito
+  const carritoCountElem = document.getElementById("carrito-count");
 
   try {
     const data = await apiGet("/auth/cart", {
@@ -34,6 +41,7 @@ async function cargarCarrito() {
     });
 
     console.log("Respuesta del servidor carrito:", data);
+    
     if (!data.success) {
       contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
       return;
@@ -41,12 +49,11 @@ async function cargarCarrito() {
 
     const cart = data.cart;
 
-    const cantidadTotal = cart.reduce((sum, item) => sum + item.cantidad, 0); //Badge del carrito
-    carritoCountElem.textContent = cantidadTotal; //Badge del carrito
+    const cantidadTotal = cart.reduce((sum, item) => sum + item.cantidad, 0);
+    carritoCountElem.textContent = cantidadTotal;
 
     if (!Array.isArray(cart) || cart.length === 0) {
-      contenedor.innerHTML =
-        '<p class="carrito-vacio">No hay productos aún.</p>';
+      contenedor.innerHTML = '<p class="carrito-vacio">No hay productos aún.</p>';
       subtotalElem.textContent = "$0";
       ivaElem.textContent = "$0";
       totalElem.textContent = "$0";
@@ -68,21 +75,20 @@ async function cargarCarrito() {
       div.classList.add("carrito-item");
 
       div.innerHTML = `
-                <img src="../ImagenesGenerales/${item.imagen}" class="carrito-img">
-                <div class="carrito-detalle">
-                    <p>${item.nombre}</p>
-
-                    <div class="cantidad-control">
-                        <button class="btn-menos" data-product-id="${item.producto_id}">-</button>
-                        <span class="cantidad">${item.cantidad}</span>
-                        <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
-                    </div>
-
-                    <p>$${item.total}</p>
-                </div>
-
-                <button class="btn-eliminar" data-cart-id="${item.id}"><i class="fa-regular fa-trash-can"></i></button>
-            `;
+        <img src="../ImagenesGenerales/${item.imagen}" class="carrito-img">
+        <div class="carrito-detalle">
+          <p>${item.nombre}</p>
+          <div class="cantidad-control">
+            <button class="btn-menos" data-product-id="${item.producto_id}">-</button>
+            <span class="cantidad">${item.cantidad}</span>
+            <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
+          </div>
+          <p>$${item.total}</p>
+        </div>
+        <button class="btn-eliminar" data-cart-id="${item.id}">
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+      `;
 
       contenedor.appendChild(div);
     });

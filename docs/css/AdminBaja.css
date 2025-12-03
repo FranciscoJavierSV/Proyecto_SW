@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 
-.body {
+body {
   background: #faf3e0;
   min-height: 100vh;
   display: flex;
@@ -14,29 +14,16 @@
 }
 
 .header {
-<<<<<<< HEAD
-    width: 100%;
-    background: #ffcdd4;
-    padding: 12px 40px; 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #6B5642;
-    position: sticky;
-    top: 0;
-    box-sizing: border-box;
-=======
   width: 100%;
-  background: #8b6b4a;
+  background: #e57d90;
   padding: 12px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #6b5642;
+  border-bottom: 2px solid #f99aaa;
   position: sticky;
   top: 0;
   box-sizing: border-box;
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
 
 .logo-area {
@@ -100,36 +87,39 @@
   font-weight: bold;
 }
 
+.logout-btn {
+  font-size: 16px;
+  color: #f3e9dd;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logout-btn:hover {
+  color: #ffe8c9;
+}
+
 .footer {
-<<<<<<< HEAD
-    background: #ffcdd4;
-    color: #FAF3E0;
-    padding: 20px;
-    text-align: center;
-    margin-top: auto;
-=======
-  background: #6b5642;
-  color: #faf3e0;
-  padding: 20px;
+  background: #e57d90;
+  color: #FAF3E0;
+  padding: 18px;
   text-align: center;
-  margin-top: auto;
-  width: 100%;
   position: fixed;
   bottom: 0;
-  left: 0;
   width: 100%;
-  z-index: 100;
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
+  left: 0;
+  border-top: 2px solid #f99aaa;
 }
 
 .sidebar {
   width: 260px;
-  background: #e5d3b3;
+  background: #f99aaa;
   padding: 20px;
   display: flex;
   gap: 18px;
   flex-direction: column;
   border-right: 2px solid #c0a98e;
+  min-height: calc(100vh - 60px);
 }
 
 .sidebar-card {
@@ -137,7 +127,7 @@
   border-radius: 12px;
   padding: 18px;
   text-decoration: none;
-  color: #4b3b2a;
+  color: #f1889b;
   display: block;
   transition: all 0.15s;
   border: 1px solid #d4c4b0;
@@ -150,11 +140,17 @@
 .sidebar-card.active {
   background: #c0a98e;
   color: #faf3e0;
-  border-color: #8b6b4a;
+  border-color: #fdb4bf;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  margin-bottom: 60px;
 }
 
 .main-card {
-  background: #8b6b4a;
+  background: #fdb4bf;
   color: #faf3e0;
   text-align: center;
 }
@@ -163,22 +159,119 @@
   font-size: 22px;
   font-weight: bold;
 }
+
 .card-title-small {
   font-size: 17px;
   font-weight: bold;
 }
+
 .card-subtitle {
   font-size: 13px;
   opacity: 0.85;
 }
 
-.main-container {
-  display: flex;
+.content-area {
   flex: 1;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-.main-card {
-  background: #8b6b4a;
-  text-align: center;
-  color: #faf3e0;
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  color: #fdb4bf;
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: #f1889b;
+}
+
+.warning-box {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.warning-box h3 {
+  color: #856404;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.warning-box p {
+  color: #856404;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.delete-list {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid #d4c4b0;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f0e6d8;
+  transition: background 0.2s;
+}
+
+.product-item:hover {
+  background: #fef7f0;
+}
+
+.product-item:last-child {
+  border-bottom: none;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #d4c4b0;
+}
+
+.product-details h4 {
+  color: #5b3a29;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.product-details p {
+  color: #f1889b;
+  font-size: 14px;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background: #c82333;
 }

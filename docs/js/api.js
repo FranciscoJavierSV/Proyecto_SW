@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 const API_URL = "http://localhost:4000/api"; 
-=======
-const API_URL = "http://localhost:4000/api";
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 
 async function apiPost(endpoint, data = {}, extraHeaders = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {

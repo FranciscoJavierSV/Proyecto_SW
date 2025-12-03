@@ -10,7 +10,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-bottom: 50px;
 }
 
 .header {
@@ -23,7 +22,7 @@ body {
     border-bottom: 2px solid #6B5642;
     position: sticky;
     top: 0;
-    z-index: 100;
+    box-sizing: border-box;
 }
 
 .logo-area {
@@ -55,11 +54,12 @@ body {
     text-decoration: none;
     color: #F3E9DD;
     font-weight: bold;
-    transition: 0.2s;
+    font-size: 16px;
+    transition: color 0.2s;
 }
 
 .menu a:hover,
-.menu .active {
+.menu a.active {
     color: #FFE8C9;
 }
 
@@ -67,17 +67,20 @@ body {
     font-size: 26px;
     cursor: pointer;
     color: #F3E9DD;
-    transition: 0.2s;
+    transition: all 0.2s;
 }
 
 .carrito:hover {
     color: #FFE8C9;
+    transform: scale(1.1);
 }
 
 .contenedor-principal {
+    flex: 1;
     max-width: 1400px;
     margin: 2rem auto;
     padding: 0 2rem;
+    margin-bottom: 80px;
 }
 
 .panel-filtros {
@@ -104,10 +107,6 @@ body {
 .filtro-seccion {
     flex: 1;
     min-width: 200px;
-}
-
-.filtro-seccion:last-of-type {
-    border-bottom: none;
 }
 
 .filtro-seccion h4 {
@@ -158,12 +157,9 @@ body {
     border-radius: 5px;
     background: #D4C4B0;
     outline: none;
-    -webkit-appearance: none;
 }
 
 .slider-precio::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -231,13 +227,20 @@ body {
     padding: 15px;
     text-align: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: 0.3s;
+    transition: all 0.3s;
     position: relative;
+    cursor: pointer;
 }
 
 .producto:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    transform: scale(1.1);
+    z-index: 100;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.producto:active {
+    transform: scale(1.15);
+    z-index: 200;
 }
 
 .producto img {
@@ -258,6 +261,7 @@ body {
     font-size: 15px;
     color: #6B5642;
     margin: 10px 0;
+    line-height: 1.4;
 }
 
 .precio {
@@ -265,6 +269,13 @@ body {
     font-weight: bold;
     color: #8B6B4A;
     margin-top: 10px;
+}
+
+.precio-anterior {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+    margin-top: 5px;
 }
 
 .badge-oferta {
@@ -277,7 +288,37 @@ body {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: bold;
-    z-index: 1;
+}
+
+.badge-sin-stock {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #9E9E9E;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.producto.sin-stock {
+    opacity: 0.6;
+}
+
+.producto.sin-stock img {
+    filter: grayscale(100%);
+}
+
+.producto.sin-stock::after {
+    content: '⛔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    opacity: 0.9;
+    pointer-events: none;
 }
 
 .btn-agregar {
@@ -293,9 +334,15 @@ body {
     transition: background 0.3s, transform 0.2s;
 }
 
-.btn-agregar:hover {
+.btn-agregar:hover:not(:disabled) {
     background: #6B5642;
     transform: translateY(-2px);
+}
+
+.btn-agregar:disabled {
+    background: #CCCCCC;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .producto.oculto {
@@ -305,12 +352,11 @@ body {
 .footer {
     background: #6B5642;
     color: #FAF3E0;
-    padding: 20px;
+    padding: 18px;
     text-align: center;
-    margin-top: auto;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    z-index: 100;
+    border-top: 2px solid #8B6B4A;
 }
