@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { enviarCorreo } = require('../utils/mailer'); // AGREGA ESTO ARRIBA
+const crypto = require("crypto");
+const { captchas } = require("../utils/captchaStore");
+const svgCaptcha = require("svg-captcha");
 
 // Importar modelos 
 const {
@@ -39,7 +42,7 @@ const login = async (req, res) => {
 
     // Usuario no existe
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Datos inválidos' });
+      return res.status(401).json({ success: false, message: 'El usuario no existe' });
     }
 
     // Revisar si está bloqueado
@@ -66,7 +69,7 @@ const login = async (req, res) => {
         });
       }
 
-      return res.status(401).json({ success: false, message: 'Datos inválidos' });
+      return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
     }
 
     // Si inició sesión exitosamente, resetear intentos
@@ -147,6 +150,28 @@ const newUser = async (req, res) => {
     console.error('Error en registro:', error);
     return res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
+};
+
+// ======================================================
+// GENERAR CAPTCHA
+// ======================================================
+const generarCaptcha = async (req, res) => {
+  // Crear el captcha con las especificaciones indicadas (tamaño, que tan distorsionado se puede ver, estilos)
+  const captcha = svgCaptcha.create({
+    size: 5,
+    noise: 3,
+    color: true,
+    background: '#f2f2f2'
+  });
+
+  const token = crypto.randomUUID();
+
+  captchas[token] = {
+    texto: captcha.text,
+    expira: Date.now() + 5 * 60 * 1000 // 5 minutos
+  };
+
+  res.json({ token, svg: captcha.data }); // Devolvemos el captcha creado
 };
 
 // ======================================================
@@ -349,6 +374,7 @@ const refresh = async (req, res) => {
 module.exports = {
   login,
   newUser,
+  generarCaptcha,
   recoveryUser,
   restore,
   editUser,
