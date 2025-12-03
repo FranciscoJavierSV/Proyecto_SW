@@ -358,25 +358,69 @@ const sendOrderEmail = async (customerName, customerEmail, pdfPath) => {
   }
 };
 
-// AGREGAR ESTAS FUNCIONES QUE SE USAN EN privRoutes:
 
 const getSalesChart = async (req, res) => {
   try {
-    // TODO: Implementar gráfica de ventas
-    return res.json({ success: false, message: 'Función pendiente' });
+    const categorias = await sales.getSalesByCategory();
+
+    return res.json({
+      success: true,
+      categorias
+    });
+
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
-const getTotalSales = async (req, res) => {
+const getTotalCompanySales = async (req, res) => {
   try {
-    // TODO: Implementar total de ventas
-    return res.json({ success: false, message: 'Función pendiente' });
+    const total = await sales.getCompanyTotalSales();
+
+    return res.json({
+      success: true,
+      totalGeneral: total
+    });
+
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    return res.status(500).json({
+      success: false,
+      message: 'Error al obtener el total general'
+    });
   }
 };
+
+
+const getSalesProducts = async (req, res) => {
+  try {
+    const rows = await sales.getSalesByProduct();
+
+    // Ordenar por categorías
+    const categorias = {
+      bebida: [],
+      salado: [],
+      dulce: [] 
+    };
+
+    rows.forEach(r => {
+      if (categorias[r.categoria]) {
+        categorias[r.categoria].push(r);
+      }
+    });
+
+    return res.json({
+      success: true,
+      categorias
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error obteniendo datos'
+    });
+  }
+}
 
 // --------------------------- EXPORT ---------------------------
 module.exports = {
@@ -386,5 +430,6 @@ module.exports = {
   getOrderPDF,
   sendOrderEmail,
   getSalesChart,    
-  getTotalSales
+  getSalesProducts,
+  getTotalCompanySales
 };

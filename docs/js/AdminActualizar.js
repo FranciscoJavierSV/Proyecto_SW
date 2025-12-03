@@ -37,6 +37,17 @@ const btnUpdate = document.getElementById("btnUpdate");
 
 let token = localStorage.getItem("token");
 
+// Vista previa al seleccionar imagen
+imagenInput.addEventListener("change", () => {
+    if (imagenInput.files && imagenInput.files[0]) {
+        const newImgURL = URL.createObjectURL(imagenInput.files[0]);
+        imagePreview.innerHTML = `
+            <p><strong>Nueva imagen seleccionada:</strong></p>
+            <img src="${newImgURL}" style="max-width: 150px;">
+        `;
+    }
+});
+
 
 // ---------------------- CARGAR PRODUCTOS ----------------------
 

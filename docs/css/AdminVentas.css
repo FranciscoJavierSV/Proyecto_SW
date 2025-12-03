@@ -239,3 +239,34 @@
   z-index: 100;
 }
  
+.total-general-card {
+  width: 100%;
+  max-width: 330px;
+  margin-top: 25px;
+  background: #f5efe7;
+  border: 2px solid #d4c4b0;
+  padding: 25px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(107, 86, 66, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.total-general-card:hover {
+  transform: translateY(-4px);
+}
+
+.total-general-card h2 {
+  color: #6b5642;
+  font-size: 22px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e8dcc8;
+  padding-bottom: 8px;
+}
+
+.total-general-card p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #8b6b4a;
+  margin-top: 5px;
+}
