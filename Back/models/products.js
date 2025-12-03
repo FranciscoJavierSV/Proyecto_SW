@@ -81,6 +81,26 @@ async function deleteProduct(id) {
   return result.affectedRows > 0;
 }
 
+async function getOftertas() {
+  const [rows] = await pool.query(
+    `SELECT id, nombre, precio, ofertaP, categoria, inventario, imagen, descripcion
+    FROM productos
+    WHERE ofertaP IS NOT NULL
+      AND ofertaP <> ''`
+  );
+  return rows;
+}
+
+async function getProductsByPriceRange(min, max) {
+  const [rows] = await pool.query(
+    `SELECT id, nombre, precio, ofertaP, categoria, inventario, imagen, descripcion
+     FROM productos
+     WHERE precio BETWEEN ? AND ?`,
+    [min, max]
+  );
+  return rows;
+}
+
 // ----------------------------------------
 // Disminuir inventario (seguro)
 // ----------------------------------------
@@ -99,5 +119,7 @@ module.exports = {
   addProduct,
   updateProduct,
   deleteProduct,
-  decreaseInventory // <- agregado
+  decreaseInventory, // <- agregado
+  getOftertas,
+  getProductsByPriceRange
 };

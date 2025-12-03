@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+ 
     // ====================================================
     //  LOGIN
     // ====================================================
@@ -11,13 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const correo = document.getElementById("correo").value.trim();
             const contrasena = document.getElementById("pass").value.trim();
+            const captchaIngresado = document.getElementById("captcha-input").value;
+            const tokenCaptcha = window.tokenCaptcha;
 
-            if (!correo || !contrasena) {
+            if (!correo || !contrasena || !captchaIngresado || !tokenCaptcha) {
                 alert("Ingresa todos los campos");
                 return;
             }
 
-            const res = await apiPost("/public/login", { correo, contrasena });
+            const res = await apiPost("/public/login", { correo, contrasena, captchaIngresado, tokenCaptcha });
 
             
             const token = res?.token ?? res?.data?.token ?? null;
@@ -27,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!success || !token) {
                 alert(res?.message || "Datos inválidos");
+                cargarCaptcha();
                 return;
             }
 
@@ -115,6 +118,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
             console.error("Error al obtener países:", error);
+        }
+    }
+
+    // ==========================================
+    // CAPTCHA
+    // ==========================================
+    const captchaImg = document.getElementById("captchaImg");
+    const btnNuevoCaptcha = document.querySelector(".btn-nuevo");
+
+    if (captchaImg) {
+        cargarCaptcha();
+    }
+
+    if (btnNuevoCaptcha) {
+        btnNuevoCaptcha.addEventListener("click", cargarCaptcha);
+    }
+
+    async function cargarCaptcha() {
+        try {
+            const data = await apiGet("/public/generarCaptcha");
+            // Insertar SVG en el div
+            captchaImg.innerHTML = data.svg;
+            // Guardar token temporal
+            window.tokenCaptcha = data.token;
+        } catch (error) {
+            console.error("Error cargando captcha:", error);
         }
     }
 
