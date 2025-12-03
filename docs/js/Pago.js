@@ -3,12 +3,16 @@ function mostrarFormularioPago() {
 
     document.getElementById("pagoTarjeta").classList.add("oculto");
     document.getElementById("pagoOxxo").classList.add("oculto");
+    document.getElementById("pagoTransferencia").classList.add("oculto");
 
     if (metodo === "tarjeta") {
         document.getElementById("pagoTarjeta").classList.remove("oculto");
     }
     if (metodo === "oxxo") {
         document.getElementById("pagoOxxo").classList.remove("oculto");
+    }
+    if (metodo === "transferencia") {
+        document.getElementById("pagoTransferencia").classList.remove("oculto")
     }
 }
 
