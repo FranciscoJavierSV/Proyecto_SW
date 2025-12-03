@@ -8,27 +8,15 @@ const cors = require('cors');
 // Inicializa la aplicación
 const app = express();
 
-const allowedOrigins = [
-    "https://franciscojaviersv.github.io",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500"
-];
-
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permite herramientas como Postman (sin origen)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("❌ CORS bloqueado para origen:", origin);
-      callback(new Error("No permitido por CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  origin: [
+    "https://franciscojaviersv.github.io",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
