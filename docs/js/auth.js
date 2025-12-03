@@ -36,7 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (user?.username) localStorage.setItem("username", user.username);
             else if (res?.username) localStorage.setItem("username", res.username);
 
-            window.location.href = "PaginaUsuarioLogueado.html";
+            if(res.user.rol === "admin"){
+                window.location.href = "AdminPrincipal.html";
+            }
+            else{
+                window.location.href = "PaginaUsuarioLogueado.html";
+            }
         });
     }
 

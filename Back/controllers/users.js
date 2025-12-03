@@ -57,12 +57,12 @@ const login = async (req, res) => {
       const newAttempts = user.intentos + 1;
       await updateLoginAttempts(user.id, newAttempts);
 
-      // Bloquear si pasa 5 intentos
-      if (newAttempts >= 5) {
+      // Bloquear si pasa 3 intentos
+      if (newAttempts >= 3) {
         await blockUser(user.id);
         return res.status(403).json({
           success: false,
-          message: 'Cuenta bloqueada por demasiados intentos. Intenta en 15 minutos.'
+          message: 'Cuenta bloqueada por demasiados intentos. Intenta en 5 minutos.'
         });
       }
 

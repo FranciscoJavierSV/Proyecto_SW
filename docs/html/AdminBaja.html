@@ -9,18 +9,19 @@
 <body> 
     <header class="header">
          <div class="logo-area">
-            <img src="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
             <span class="logo-text">Sexta Armonía</span>
         </div>
-
+ 
         <nav class="menu">
-            <a href="/docs/html/AdminPrincipal.html">Inicio</a>
-            <a href="/docs/html/AdminInventario.html" class="active">Inventario</a>
-            <a href="/docs/html/AdminVentas.html">Ventas</a>
+            <a href="AdminPrincipal.html">Inicio</a>
+            <a href="AdminInventario.html" class="active">Inventario</a>
+            <a href="AdminVentas.html">Ventas</a>
         </nav>
         <div class="perfil-admin">
             <span class="perfil-icon">👤</span>
-            <span class="admin-name">Administrador</span>
+            <span class="admin-name"></span>
+            <a class="logout-btn">Cerrar sesión</a>
         </div>
     </header>
 
@@ -31,27 +32,27 @@
                 <p class="card-subtitle">Sistema de Gestión</p>
             </div>
 
-            <a href="/docs/html/AdminInventario.html" class="sidebar-card">
+            <a href="AdminInventario.html" class="sidebar-card">
                 <h3 class="card-title-small">Instrucciones</h3>
                 <p class="card-subtitle">Guía de uso del sistema</p>
             </a>
 
-            <a href="/docs/html/AdminExistencias.html" class="sidebar-card">
+            <a href="AdminExistencias.html" class="sidebar-card">
                 <h3 class="card-title-small">Existencias</h3>
                 <p class="card-subtitle">Ver todos los productos</p>
             </a>
 
-            <a href="/docs/html/AdminActualizar.html" class="sidebar-card">
+            <a href="AdminActualizar.html" class="sidebar-card">
                 <h3 class="card-title-small">Actualizar</h3>
                 <p class="card-subtitle">Modificar stock existente</p>
             </a>
 
-            <a href="/docs/html/AdminAlta.html" class="sidebar-card">
+            <a href="AdminAlta.html" class="sidebar-card">
                 <h3 class="card-title-small">Alta</h3>
                 <p class="card-subtitle">Dar de alta productos</p>
             </a>
 
-            <a href="/docs/html/AdminBaja.html" class="sidebar-card">
+            <a href="AdminBaja.html" class="sidebar-card">
                 <h3 class="card-title-small">Baja</h3>
                 <p class="card-subtitle">Dar de baja productos</p>
             </a>
@@ -68,57 +69,15 @@
                 <p>La eliminación de productos es permanente. Asegúrate de seleccionar el producto correcto antes de confirmar.</p>
             </div>
 
-            <div class="delete-list">
-                <div class="delete-item">
-                    <div class="product-info">
-                        <h3>Producto A</h3>
-                        <p>Stock actual: <strong>150 unidades</strong></p>
-                        <span class="category-tag">Categoría 1</span>
-                    </div>
-                    <button class="btn-delete">Eliminar</button>
-                </div>
-
-                <div class="delete-item">
-                    <div class="product-info">
-                        <h3>Producto B</h3>
-                        <p>Stock actual: <strong>25 kg</strong></p>
-                        <span class="category-tag">Categoría 2</span>
-                    </div>
-                    <button class="btn-delete">Eliminar</button>
-                </div>
-
-                <div class="delete-item">
-                    <div class="product-info">
-                        <h3>Producto C</h3>
-                        <p>Stock actual: <strong>200 litros</strong></p>
-                        <span class="category-tag">Categoría 1</span>
-                    </div>
-                    <button class="btn-delete">Eliminar</button>
-                </div>
-
-                <div class="delete-item">
-                    <div class="product-info">
-                        <h3>Producto D</h3>
-                        <p>Stock actual: <strong>45 cajas</strong></p>
-                        <span class="category-tag">Categoría 3</span>
-                    </div>
-                    <button class="btn-delete">Eliminar</button>
-                </div>
-
-                <div class="delete-item">
-                    <div class="product-info">
-                        <h3>Producto E</h3>
-                        <p>Stock actual: <strong>300 piezas</strong></p>
-                        <span class="category-tag">Categoría 2</span>
-                    </div>
-                    <button class="btn-delete">Eliminar</button>
-                </div>
-            </div>
+            <div class="delete-list"></div>
         </main>
     </div>
 
     <footer class="footer">
         <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025</p>
     </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/AdminBaja.js"></script>
 </body>
 </html>
