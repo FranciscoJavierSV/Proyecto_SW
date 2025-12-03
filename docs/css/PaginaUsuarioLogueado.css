@@ -370,7 +370,6 @@ body {
     flex: 1;
     font-size: 18px;
 }
-<<<<<<< HEAD
 .contenedor-principal {
     max-width: 1400px;
     margin: 2rem auto;
@@ -516,7 +515,6 @@ body {
     font-size: 0.8rem;
     font-weight: bold;
     z-index: 1;
-=======
 
 .carrito-container {
     position: relative;
@@ -533,5 +531,4 @@ body {
     font-weight: bold;
     padding: 2px 6px;
     border-radius: 50%;
->>>>>>> 84aabeede0082a04305332ebbe97f9e518b1a0c0
 }
