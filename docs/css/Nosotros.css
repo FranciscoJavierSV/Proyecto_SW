@@ -9,6 +9,10 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+<<<<<<< HEAD
+=======
+  padding-bottom: 50px;
+>>>>>>> main
 }
 .header {
   width: 100%;
@@ -129,4 +133,12 @@ body {
   padding: 20px;
   text-align: center;
   margin-top: auto;
+<<<<<<< HEAD
+=======
+  position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+>>>>>>> main
 }

@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
+const bwipjs = require("bwip-js");
+const { v4: uuidv4 } = require("uuid");
 
 // --------------------------- IMPORTS ---------------------------
 const sales = require('../models/sales');
@@ -168,9 +170,10 @@ const getOrderPDF = async (req, res) => {
       shipping,
       coupon,
       total,
+      metodoPago
     } = req.body;
 
-    if (!customerName || !customerEmail || !items || !subtotal || !total) {
+    if (!customerName || !customerEmail || !items || !subtotal || !total || metodoPago) {
       return res.status(400).json({
         success: false,
         message: "Faltan campos obligatorios.",
@@ -238,8 +241,7 @@ const getOrderPDF = async (req, res) => {
       doc
         .fontSize(12)
         .text(
-          `${idx + 1}. ${item.name} | Cant: ${item.quantity} | Precio: $${item.price} | Total: $${(
-            item.price * item.quantity).toFixed(2)}`
+          `${idx + 1}. ${item.nombre} | Cant: ${item.cantidad} | Precio: $${(item.subtotal / item.cantidad).toFixed(2)} | Total: $${item.total}`
         );
     });
 
@@ -261,6 +263,40 @@ const getOrderPDF = async (req, res) => {
 
     doc.moveDown(0.5);
     doc.fontSize(14).text(`TOTAL: $${total}`, { bold: true });
+
+    doc.moveDown(2);
+
+    // Si es pago en OXXO se genera un código de barras
+    if (paymentMethod === "pagoOxxo"){
+      // Generamos un ID único para el pago OXXO
+      const oxxoReference = uuidv4().replace(/-/g, "").slice(0, 12);
+
+      doc
+        .fontSize(18)
+        .text("PAGO EN OXXO")
+        .moveDown();
+
+      doc
+        .fontSize(12)
+        .text("Presenta este código en caja para realizar tu pago.")
+        .moveDown();
+
+      // Generar código de barras con bwip-js
+      const barcodeBuffer = await bwipjs.toBuffer({
+        bcid: "code128",       // Formato estándar
+        text: oxxoReference,   // Referencia OXXO
+        scale: 3,
+        height: 15,
+        includetext: true,
+        textxalign: "center",
+      });
+
+      // Insertar en PDF
+      doc.image(barcodeBuffer, { width: 260 });
+
+      doc.moveDown(1);
+      doc.fontSize(12).text(`Referencia: ${oxxoReference}`);
+    }
 
     // Finalizar PDF
     doc.end();
