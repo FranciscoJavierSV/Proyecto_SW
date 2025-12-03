@@ -61,7 +61,7 @@ body {
     color: #FFE8C9;
 }
 
-.Carrito {
+.carrito {
     font-size: 26px;
     cursor: pointer;
     color: #F3E9DD;
@@ -114,15 +114,22 @@ body {
 }
 
 .producto h3 {
-    font-size: 18px;
+    font-size: 20px;
     color: #5A4632;
     margin-bottom: 5px;
 }
 
-.producto p {
+.descripcion {
+    font-size: 15px;
+    color: #6B5642;
+    margin: 10px 0;
+}
+
+.precio {
     font-size: 18px;
     font-weight: bold;
     color: #8B6B4A;
+    margin-top: 10px;
 }
 
 .footer {

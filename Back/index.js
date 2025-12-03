@@ -30,7 +30,7 @@ app.use(cors({
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
-}))
+}));
 
 
 // Importa las rutas
@@ -44,15 +44,20 @@ app.use('/api/public', userRoutes);
 app.use('/api/account', privRoutes);
 
 // Ruta por defecto si no se encuentra la solicitada
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Ruta no encontrada'
-  });
+// app.use((req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: 'Ruta no encontrada'
+//   });
+// });
+
+// Solo para verificar si funciona
+app.get('/', (req, res) => {
+  res.json({ message: 'API funcionando correctamente' });
 });
 
 // Configura el puerto desde .env y levanta el servidor
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

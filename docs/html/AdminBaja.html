@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baja - Inventario</title>
+    <link rel="stylesheet" href="../css/AdminBaja.css">
+    <link rel="icon" type="image/jpg" href="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg">
+</head>
+<body> 
+    <header class="header">
+         <div class="logo-area">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
+ 
+        <nav class="menu">
+            <a href="AdminPrincipal.html">Inicio</a>
+            <a href="AdminInventario.html" class="active">Inventario</a>
+            <a href="AdminVentas.html">Ventas</a>
+        </nav>
+        <div class="perfil-admin">
+            <span class="perfil-icon">👤</span>
+            <span class="admin-name"></span>
+            <a class="logout-btn">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-card main-card">
+                <h2 class="card-title">INVENTARIO</h2>
+                <p class="card-subtitle">Sistema de Gestión</p>
+            </div>
+
+            <a href="AdminInventario.html" class="sidebar-card">
+                <h3 class="card-title-small">Instrucciones</h3>
+                <p class="card-subtitle">Guía de uso del sistema</p>
+            </a>
+
+            <a href="AdminExistencias.html" class="sidebar-card">
+                <h3 class="card-title-small">Existencias</h3>
+                <p class="card-subtitle">Ver todos los productos</p>
+            </a>
+
+            <a href="AdminActualizar.html" class="sidebar-card">
+                <h3 class="card-title-small">Actualizar</h3>
+                <p class="card-subtitle">Modificar stock existente</p>
+            </a>
+
+            <a href="AdminAlta.html" class="sidebar-card">
+                <h3 class="card-title-small">Alta</h3>
+                <p class="card-subtitle">Dar de alta productos</p>
+            </a>
+
+            <a href="AdminBaja.html" class="sidebar-card">
+                <h3 class="card-title-small">Baja</h3>
+                <p class="card-subtitle">Dar de baja productos</p>
+            </a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1>Baja de Productos</h1>
+                <p>Elimina productos del inventario</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>Advertencia</h3>
+                <p>La eliminación de productos es permanente. Asegúrate de seleccionar el producto correcto antes de confirmar.</p>
+            </div>
+
+            <div class="delete-list"></div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025</p>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/AdminBaja.js"></script>
+</body>
+</html>

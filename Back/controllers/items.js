@@ -5,6 +5,10 @@ const getAllProducts = async (req, res) => {
   try {
     const allProducts = await products.getProducts();
 
+    if (allProducts.length === 0) {
+      return res.status(404).json({ success: false, message: "Productos no encontrados" });
+    }
+
     return res.json({
       success: true,
       products: allProducts
@@ -19,13 +23,17 @@ const getAllProducts = async (req, res) => {
 // Productos por categoría
 const getProductsByCategory = async (req, res) => {
   try {
-    const { categoria } = req.params;
+    const { cat } = req.params;
 
-    if (!categoria || !['bebida','salado','dulce'].includes(categoria)) {
+    if (!cat || !['bebida','salado','dulce'].includes(cat)) {
       return res.status(400).json({ success: false, message: "Categoría inválida" });
     }
 
-    const product = await products.getProductCategory(categoria);
+    const product = await products.getProductCategory(cat);
+
+    if (product.length === 0) {
+      return res.status(404).json({ success: false, message: "Productos no encontrados" });
+    }
 
     return res.json({
       success: true,
@@ -49,7 +57,7 @@ const getProductById = async (req, res) => {
 
     const product = await products.getProductId(id);
 
-    if (!product) {
+    if (product.length === 0) {
       return res.status(404).json({ success: false, message: "Producto no encontrado" });
     }
 
@@ -64,7 +72,54 @@ const getProductById = async (req, res) => {
   }
 };
 
+// Productos que tienen ofertas
+const getProductOfert = async (req, res) => {
+  try {
+
+    const product = await products.getOftertas();
+
+    if (product.length === 0) {
+      return res.status(404).json({ success: false, message: "No hay productos con descuentos" });
+    }
+
+    return res.json({
+      success: true,
+      product
+    });
+
+  } catch (error) {
+    console.error('Error al encontrar productos con descuentos:', error);
+    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+  }
+};
+
+const getProductsByPriceRange = async (req, res) => {
+  try{
+    const { min, max } = req.query;
+
+    if(!min || !max){
+      return res.status(400).json({ success: false, message: "Debes ingresar min y max en la URL" });
+    }
+
+    const products = await productosModel.getProductsByPriceRange(min, max);
+
+    if (product.length === 0) {
+      return res.status(404).json({ success: false, message: "No hay productos dentro de ese rango" });
+    }
+
+    return res.json({
+      success: true,
+      products
+    });
+
+  }catch{
+    console.error("Error al obtener productos por rango:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
+  }
+};
+
 // AGREGAR ESTAS FUNCIONES:
+// FUNCIONES QUE SOLO EL ADMIN USA
 
 const createProduct = async (req, res) => {
   try {
@@ -127,5 +182,7 @@ module.exports = {
   updateProduct,      // NUEVO
   deleteProduct,      // NUEVO
   getInventory,       // NUEVO
-  getInventoryByCategory // NUEVO
+  getInventoryByCategory, // NUEVO
+  getProductOfert,
+  getProductsByPriceRange
 };

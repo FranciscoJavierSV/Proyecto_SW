@@ -65,7 +65,7 @@ async function updateLoginAttempts(userId, attempts) {
 // ----------------------------------------------------
 async function blockUser(userId) {
   await pool.query(
-    'UPDATE usuarios SET block = DATE_ADD(NOW(), INTERVAL 15 MINUTE), intentos = 0 WHERE id = ?',
+    'UPDATE usuarios SET block = DATE_ADD(NOW(), INTERVAL 5 MINUTE), intentos = 0 WHERE id = ?',
     [userId]
   );
 }
@@ -118,6 +118,31 @@ async function getUserById(id) {
   return rows[0] || null;
 }
 
+// Para recuperar contraseña
+async function saveRecoveryToken(id, token) {
+  return await pool.query(
+    "UPDATE usuarios SET recovery_token = ?, recovery_expires = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE id = ?",
+    [token, id]
+  );
+}
+
+async function validateRecoveryToken(correo, token) {
+  const result = await pool.query(
+    "SELECT * FROM usuarios WHERE correo = ? AND recovery_token = ? AND recovery_expires > NOW()",
+    [correo, token]
+  );
+  return result[0];
+}
+
+async function updatePasswordByEmail(correo, newPassword) {
+  const [result] = await pool.query(
+    "UPDATE usuarios SET contrasena = ? WHERE correo = ?",
+    [newPassword, correo]
+  );
+
+  return result.affectedRows > 0;
+}
+
 // ----------------------------------------------------
 // EXPORTAR
 // ----------------------------------------------------
@@ -132,5 +157,8 @@ module.exports = {
   updateLoginAttempts,
   blockUser,
   resetAttempts,
-  getUserById
+  getUserById,
+  saveRecoveryToken,
+  validateRecoveryToken,
+  updatePasswordByEmail
 };

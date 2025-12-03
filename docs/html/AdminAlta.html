@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta - Inventario</title>
+    <link rel="stylesheet" href="../css/AdminAlta.css">
+    <link rel="icon" type="image/jpg" href="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg">
+</head> 
+<body>
+    <header class="header">
+         <div class="logo-area">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" alt="Logo" class="logo-img">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
+
+        <nav class="menu">
+            <a href="AdminPrincipal.html">Inicio</a>
+            <a href="AdminInventario.html" class="active">Inventario</a>
+            <a href="AdminVentas.html">Ventas</a>
+        </nav>
+        <div class="perfil-admin">
+            <span class="perfil-icon">👤</span>
+            <span class="admin-name"></span>
+            <a class="logout-btn">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-card main-card">
+                <h2 class="card-title">INVENTARIO</h2>
+                <p class="card-subtitle">Sistema de Gestión</p>
+            </div>
+
+            <a href="AdminInventario.html" class="sidebar-card">
+                <h3 class="card-title-small">Instrucciones</h3>
+                <p class="card-subtitle">Guía de uso del sistema</p>
+            </a>
+
+            <a href="AdminExistencias.html" class="sidebar-card">
+                <h3 class="card-title-small">Existencias</h3>
+                <p class="card-subtitle">Ver todos los productos</p>
+            </a>
+
+            <a href="AdminActualizar.html" class="sidebar-card">
+                <h3 class="card-title-small">Actualizar</h3>
+                <p class="card-subtitle">Modificar stock existente</p>
+            </a>
+
+            <a href="AdminAlta.html" class="sidebar-card">
+                <h3 class="card-title-small">Alta</h3>
+                <p class="card-subtitle">Dar de alta productos</p>
+            </a>
+
+            <a href="AdminBaja.html" class="sidebar-card">
+                <h3 class="card-title-small">Baja</h3>
+                <p class="card-subtitle">Dar de baja productos</p>
+            </a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1>Alta de Productos</h1>
+                <p>Registra nuevos productos en el sistema</p>
+            </div>
+
+            <div class="form-container">
+                <form class="product-form" id="altaForm">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" placeholder="Ingresa el nombre del producto" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imagen">Imagen</label>
+                        <input type="text" id="imagen" placeholder="imagen.png" required>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" required>
+                            <option value="">Selecciona una categoría</option>
+                            <option value="bebida">Bebida</option>
+                            <option value="salado">Salado</option>
+                            <option value="dulce">Dulce</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" rows="4" placeholder="Describe el producto..." required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="precio">Precio</label>
+                            <input type="number" id="precio" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" placeholder="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ofertaP">Precio de oferta (opcional)</label>
+                        <input type="number" id="ofertaP" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="btnSubmit">Registrar Producto</button>
+                        <button type="reset" class="btn-reset" id="btnReset">Limpiar Formulario</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025</p>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/AdminAlta.js"></script>
+</body>
+</html>

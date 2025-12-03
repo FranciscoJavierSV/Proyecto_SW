@@ -3,3 +3,5 @@ node_modules/
 cambios/"cambios/" 
 .git
 .vscode
+.DS_Store
+docs/.DS_Store

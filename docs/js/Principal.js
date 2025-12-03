@@ -1,7 +1,12 @@
-let swiper = null; // variable global para el swiper
+/* =============================
+   🟤 SWIPER DINÁMICO PRODUCTOS
+============================= */
+
+let swiper = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarProductos();
+    inicializarContacto(); // también inicializa el formulario
 });
 
 async function cargarProductos() {
@@ -16,17 +21,13 @@ async function cargarProductos() {
             return;
         }
 
-        // limpiar
-        grid.innerHTML = "";
+        grid.innerHTML = ""; // limpiar
 
-        // Agregar slides
+        // Crear slides
         data.products.forEach(prod => {
             const card = document.createElement("div");
             card.className = "swiper-slide";
 
-            // Ajusta la ruta de la imagen según la ubicación real de la carpeta
-            // Si ImagenesGenerales está en la raíz con index.html: "ImagenesGenerales/..."
-            // Si está en otra carpeta, cámbialo aquí.
             const img = document.createElement("img");
             img.src = `ImagenesGenerales/${prod.imagen}`;
             img.alt = prod.nombre || "Producto";
@@ -35,12 +36,7 @@ async function cargarProductos() {
             grid.appendChild(card);
         });
 
-        // Inicializar o actualizar Swiper después de añadir slides
-        if (typeof Swiper === "undefined") {
-            console.warn("Swiper no está cargado aún. Asegúrate de incluir el script de Swiper antes de Principal.js.");
-            return;
-        }
-
+        // Inicializar Swiper
         if (swiper) {
             swiper.update();
         } else {
@@ -59,4 +55,38 @@ async function cargarProductos() {
         console.error("Error al cargar productos:", error);
         grid.innerHTML = "<p>No se pudieron cargar los productos.</p>";
     }
+}
+
+
+/* =============================
+   🟤 FORMULARIO DE CONTACTO
+============================= */
+
+function inicializarContacto() {
+    const form = document.getElementById("contactForm");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById("contactName").value.trim();
+        const correo = document.getElementById("contactEmail").value.trim();
+        const mensaje = document.getElementById("contactMessage").value.trim();
+
+        const res = await fetch("http://localhost:3000/api/public/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, correo, mensaje })
+        });
+
+        const data = await res.json();
+        console.log("Respuesta del backend:", data);
+
+        if (data.success) {
+            form.reset(); // limpiar
+            alert("Mensaje enviado correctamente ✔");
+        } else {
+            alert("Hubo un error al enviar el mensaje.");
+        }
+    });
 }
