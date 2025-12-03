@@ -1,4 +1,6 @@
 const { enviarCorreo } = require('../utils/mailer');
+const nodemailer = require("nodemailer");
+const path = require("path");
 
 // Contacto y suscripción
 const sendContact = async (req, res) => {
@@ -18,7 +20,7 @@ const sendContact = async (req, res) => {
       });
     }
 
-    // --- 1. CORREO QUE LLEGA AL CAFÉ ---
+    // CORREO QUE LLEGA AL CAFÉ 
     const contenidoHTML_admin = `
       <h2>Nuevo mensaje de contacto</h2>
       <p><strong>Nombre:</strong> ${nombre}</p>
@@ -33,7 +35,7 @@ const sendContact = async (req, res) => {
       html: contenidoHTML_admin
     });
 
-    // --- 2. CORREO AUTOMÁTICO AL USUARIO ---
+    // CORREO AUTOMÁTICO AL USUARIO 
     const contenidoHTML_usuario = `
       <center>
         <img src="https://i.imgur.com/gx6QxzL.png" width="120">
