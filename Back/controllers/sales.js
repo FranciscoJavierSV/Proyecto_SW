@@ -350,5 +350,5 @@ module.exports = {
   getOrderPDF,
   sendOrderEmail,
   getSalesChart,    
-  getTotalSales    
+  getTotalSales
 };
