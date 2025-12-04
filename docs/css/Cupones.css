@@ -76,6 +76,25 @@ body {
     transition: color 0.2s;
 }
 
+.carrito-container {
+  position: relative;
+  display: inline-block;
+}
+
+.carrito-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #d84315;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    min-width: 20px;
+    text-align: center;
+}
+
 .carrito:hover {
     color: #FFE8C9;
 }
