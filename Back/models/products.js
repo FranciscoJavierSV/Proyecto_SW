@@ -67,7 +67,7 @@ async function updateProduct(id, product) {
   );
 
   return result.affectedRows > 0;
-}
+} 
 
 // ----------------------------------------
 // Eliminar producto (admin)
@@ -139,7 +139,7 @@ async function decreaseInventory(productId, amount) {
   console.log(">>> Resultado del UPDATE:", result);
 
   return result.affectedRows > 0;
-}
+} 
 
 
 

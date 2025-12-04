@@ -73,12 +73,14 @@ const getProductById = async (req, res) => {
 };
 
 // Productos por filtros
-async function getProducts(req, res) {
+async function getProductsbyFilters(req, res) {
   try {
+
+    const { min, max, categoria, oferta } = req.query;
 
     // Filtro por categoría
     if (categoria) {
-      productos = await products.getProductsByCategory(categoria);
+      productos = await products.getProductsCategory(categoria);
     }
 
     // Filtro precio
@@ -93,7 +95,7 @@ async function getProducts(req, res) {
 
     // Sin oferta
     else if (oferta === "no") {
-      productos = await products.getProductsWithoutOferta();
+      productos = await products.getProductsWithoutOfert();
     }
 
     // Todos los productos
@@ -178,5 +180,5 @@ module.exports = {
   deleteProduct,      // NUEVO
   getInventory,       // NUEVO
   getInventoryByCategory, // NUEVO
-  getProducts
+  getProductsbyFilters
 };

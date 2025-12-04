@@ -22,58 +22,97 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // CARGAR PRODUCTOS DESDE BACKEND
     cargarProductos();
 }); 
 
 async function cargarProductos() {
-    const grid = document.querySelector(".delete-list");
+    const deleteList = document.querySelector(".delete-list");
 
-    if (!grid) return;
+    if (!deleteList) return;
 
     try {
         const data = await apiGet("/public/products");
 
         if (!data.success) {
-            grid.innerHTML = "<p>Error al cargar productos.</p>";
+            deleteList.innerHTML = `
+                <div class="table-header">
+                    <span>Imagen</span>
+                    <span>Nombre</span>
+                    <span>Stock</span>
+                    <span>Categoría</span>
+                    <span>Acción</span>
+                </div>
+                <p style="text-align: center; padding: 20px; color: #e57d90;">Error al cargar productos.</p>
+            `;
+            return;
+        }
+        deleteList.innerHTML = `
+            <div class="table-header">
+                <span>Imagen</span>
+                <span>Nombre</span>
+                <span>Stock</span>
+                <span>Categoría</span>
+                <span>Acción</span>
+            </div>
+        `;
+
+        if (data.products.length === 0) {
+            deleteList.innerHTML += `
+                <p style="text-align: center; padding: 30px; color: #7a7a7a; grid-column: 1 / -1;">
+                    No hay productos disponibles para eliminar.
+                </p>
+            `;
             return;
         }
 
-        grid.innerHTML = "";
-
         data.products.forEach(prod => {
-            const card = document.createElement("div");
-            card.classList.add("delete-item");
+            const productItem = document.createElement("div");
+            productItem.classList.add("product-item");
 
-            card.innerHTML = `
-                <div class="product-info">
-                    <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
-                    <h3>${prod.nombre}</h3>
-                    <p>Stock actual: <strong>${prod.inventario}</strong></p>
-                    <span class="category-tag">${prod.categoria}</span>
-                </div>
+            productItem.innerHTML = `
+                <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}" class="product-image">
+                <h4>${prod.nombre}</h4>
+                <p><strong>${prod.inventario}</strong></p>
+                <p>${prod.categoria}</p>
                 <button class="btn-delete" data-id="${prod.id}">Eliminar</button>
             `;
 
-            grid.appendChild(card);
+            deleteList.appendChild(productItem);
         });
 
-        // ASIGNAR EVENTOS A TODOS LOS BOTONES
         document.querySelectorAll(".btn-delete").forEach(btn => {
             btn.addEventListener("click", confirmarEliminacion);
         });
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
-        grid.innerHTML = "<p>No se pudieron cargar los productos.</p>";
+        deleteList.innerHTML = `
+            <div class="table-header">
+                <span>Imagen</span>
+                <span>Nombre</span>
+                <span>Stock</span>
+                <span>Categoría</span>
+                <span>Acción</span>
+            </div>
+            <p style="text-align: center; padding: 20px; color: #e57d90;">No se pudieron cargar los productos.</p>
+        `;
     }
 }
 
 async function confirmarEliminacion(e) {
     const id = e.target.dataset.id;
-    const confirmar = alertaConfirmacion("¿Seguro que deseas eliminar este producto? Esta acción es permanente.");
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción es permanente y no se puede deshacer",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#95a5a6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
 
-    if (!confirmar) return;
+    if (!result.isConfirmed) return;
 
     try {
         const token = localStorage.getItem("token");
@@ -83,18 +122,29 @@ async function confirmarEliminacion(e) {
         });
 
         if (!res.success) {
-            alertaError(res.message);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: res.message || 'No se pudo eliminar el producto'
+            });
             return;
         }
 
-        alertaExito("Producto eliminado correctamente.");
-
-        // Recargar lista
+        await Swal.fire({
+            icon: 'success',
+            title: '¡Eliminado!',
+            text: 'Producto eliminado correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
         cargarProductos();
 
     } catch (error) {
         console.error("Error al eliminar producto:", error);
-        alertaError("No se pudo eliminar el producto.");
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo eliminar el producto. Intenta nuevamente.'
+        });
     }
 }
-

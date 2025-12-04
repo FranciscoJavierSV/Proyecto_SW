@@ -169,7 +169,7 @@ const applyCoupon = async (req, res) => {
     });
   }
 };
-
+ 
 // Limpar carrito de compra
 const clearCart = async (req, res) => {
   try {

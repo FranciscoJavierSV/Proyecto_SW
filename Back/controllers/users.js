@@ -4,6 +4,7 @@ const { enviarCorreo } = require('../utils/mailer'); // AGREGA ESTO ARRIBA
 const crypto = require("crypto");
 const { captchas } = require("../utils/captchaStore");
 const svgCaptcha = require("svg-captcha");
+const { subscribe } = require('./contac');
 
 // Importar modelos 
 const {
@@ -111,7 +112,7 @@ const login = async (req, res) => {
 // ======================================================
 const newUser = async (req, res) => {
   try {
-    const { username, contrasena, correo, pais } = req.body;
+    const { username, contrasena, correo, pais, suscribirse} = req.body;
 
     if (!username || !contrasena || !correo || !pais) {
       return res.status(400).json({ success: false, message: 'Datos incompletos' });
@@ -143,6 +144,17 @@ const newUser = async (req, res) => {
     if (!success) {
       return res.status(500).json({ success: false, message: 'Error al crear usuario' });
     }
+
+    // SUSCRIPCIÓN OPCIONAL
+    if (suscribirse) {
+      try {
+        await subscribe({ nombre: username, email: correo });
+      } catch (err) {
+        console.error("Error enviando correo de suscripción:", err);
+        // No rompemos el registro si falla el correo
+      }
+    }
+
 
     return res.status(200).json({ success: true, message: 'Usuario registrado con éxito' });
 
