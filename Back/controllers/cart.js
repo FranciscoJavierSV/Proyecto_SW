@@ -9,8 +9,10 @@ const { json } = require('express');
 // Obtener carrito del usuario
 const getCart = async (req, res) => {
   try {
+    console.log("DEBUG GET /api/auth/cart - req.user:", req.user && req.user.id); // <- LOG
     const userId = req.user.id;
     const verCarrito = await cart.getCart(userId);
+    console.log("DEBUG GET /api/auth/cart - itemsFound:", verCarrito.length); // <- LOG
 
     return res.json({
       success: true,

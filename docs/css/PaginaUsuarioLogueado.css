@@ -105,7 +105,7 @@ body {
   top: 0;
   right: -380px;
   width: 350px;
-  height: 100vh;
+  height: calc(100vh - 55px);
   background: #f3e9dd;
   border-left: 3px solid #6b5642;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);

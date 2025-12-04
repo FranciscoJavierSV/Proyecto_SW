@@ -15,5 +15,6 @@ router.get('/sales/chart', verifyT, isAdmin, ventas.getSalesChart);
 router.get('/sales/total', verifyT, isAdmin, ventas.getTotalSales);
 
 router.get('/inventory', verifyT, isAdmin, productos.getInventoryByCategory);
+router.post("/orders/pdf", verifyT, ventas.getOrderPDF);
 
 module.exports = router; 
