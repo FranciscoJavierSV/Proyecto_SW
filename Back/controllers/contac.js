@@ -1,7 +1,6 @@
 const { enviarCorreo } = require('../utils/mailer');
 const nodemailer = require("nodemailer");
 const path = require("path");
-const { createCoupon } = require('../models/coupons');
 
 
 // Contacto y suscripción
@@ -75,7 +74,7 @@ const sendContact = async (req, res) => {
 };
 
 
-// Codigo para hacer la suscripcion
+// Funcion para suscribirse en caso de hacerlo 
 const subscribe = async (req, res) => {
   try {
     const { nombre, email } = req.body;
@@ -87,32 +86,13 @@ const subscribe = async (req, res) => {
       });
     }
 
-    // Generar código único para el cupón
-    const codigo = "WELCOME-" + Math.floor(Math.random() * 100000);
-
-    // Definir datos del cupón
-    const nuevoCupon = {
-      codigo,
-      tipo: "descuento",
-      valor: 10, // ejemplo: 10% de descuento
-      expiracion: new Date(Date.now() + 7*24*60*60*1000), // expira en 7 días
-      uso_maximo: 1,
-      activo: 1
-    };
-
-    // Crear el cupón en la base de datos
-    const creado = await createCoupon(nuevoCupon);
-
-    if (!creado) {
-      return res.status(500).json({
-        success: false,
-        message: "No se pudo crear el cupón"
-      });
-    }
+    // Rutas absolutas a imágenes locales
+    const logoPath = path.join(process.cwd(), "assets", "logo.png");
+    const cuponPath = path.join(process.cwd(), "assets", "cupon.png");
 
     // Configurar transporte de correo
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // o tu servidor SMTP
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
@@ -121,41 +101,44 @@ const subscribe = async (req, res) => {
       }
     });
 
-    // Plantilla HTML adaptada con logo y estilo de Sexta Armonía
+    // Plantilla HTML con imágenes locales
     const contenidoHTML_suscripcion = `
       <center>
-        <img src="https://i.imgur.com/gx6QxzL.png" width="120">
-        <h2 style="color:#8B5E3C;">Sexta Armonía</h2>
-        <h4>"Armonía que se saborea"</h4>
+        <img src="cid:logoEmpresa" width="120">
+        <h2 style="color:#8B5E3C;">${process.env.COMPANY_NAME}</h2>
+        <h4>"${process.env.COMPANY_SLOGAN}"</h4>
       </center>
 
       <p>Hola <strong>${nombre}</strong>,</p>
       <p>¡Gracias por suscribirte a nuestra comunidad! 🎉</p>
 
-      <p>Como agradecimiento, aquí tienes tu cupón exclusivo:</p>
-      <blockquote style="background:#f7f3e9;padding:10px;border-left:4px solid #8B5E3C;">
-        <strong>${codigo}</strong> — válido hasta el <b>${nuevoCupon.expiracion.toLocaleDateString()}</b>
-      </blockquote>
+      <p>Aquí tienes tu cupón exclusivo:</p>
+
+      <center>
+        <img src="cid:imagenCupon" width="300">
+      </center>
 
       <p>Podrás usarlo en tu próxima compra y disfrutar de un descuento especial.</p>
 
       <br>
-      <p>Atentamente,<br><strong>Sexta Armonía</strong></p>
+      <p>Atentamente,<br><strong>${process.env.COMPANY_NAME}</strong></p>
     `;
 
-    // Enviar correo al usuario
+    // Enviar correo
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: email,
       subject: "Tu cupón de bienvenida - Sexta Armonía",
-      html: contenidoHTML_suscripcion
+      html: contenidoHTML_suscripcion,
+      attachments: [
+        { filename: "logo.png", path: logoPath, cid: "logoEmpresa" },
+        { filename: "cupon.png", path: cuponPath, cid: "imagenCupon" }
+      ]
     });
 
-    // Responder al frontend
     return res.status(200).json({
       success: true,
-      message: `Suscripción exitosa. Cupón enviado a ${email}`,
-      coupon: codigo
+      message: `Suscripción exitosa. Cupón enviado a ${email}`
     });
 
   } catch (error) {
