@@ -194,7 +194,7 @@ body.dark .logout-btn:hover {
   right: -380px;
   width: 350px;
   height: calc(100vh - 5.7em); 
-  top: 0;
+  top: 5.7em; /* <-- esto era lo que faltaba */
   background: var(--bg-secondary);
   border-left: 3px solid var(--header-border);
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);
@@ -202,7 +202,6 @@ body.dark .logout-btn:hover {
   flex-direction: column;
   transition: right 0.3s ease;
   z-index: 999;
-  /* margin-top: 5.7em; */
 }
 
 .panel-carrito-header {
