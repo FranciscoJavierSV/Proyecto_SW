@@ -92,19 +92,19 @@ function inicializarCarrito() {
         if (!username && !token) {
             
             Swal.fire({
-                icon: 'info',
-                title: 'Inicia sesión',
-                text: 'Debes iniciar sesión para acceder al carrito',
-                confirmButtonText: 'Ir a Iniciar Sesión',
-                confirmButtonColor: '#8B6B4A',
-                showCancelButton: true,
-                cancelButtonText: 'Cancelar',
-                cancelButtonColor: '#6B5642'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = 'html/IniciarSesion.html';
-                }
-            });
+                    title: "No has iniciado sesión",
+                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#8b6b4a",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ir a iniciar sesión",
+                    cancelButtonText: "Cancelar"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "../html/IniciarSesion.html"; 
+                    }
+                });
         } else {
             window.location.href = 'html/PaginaUsuarioLogueado.html';
         }
@@ -120,20 +120,20 @@ function inicializarCarrito() {
         const token = localStorage.getItem('token');
         
         if (!username && !token) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Inicia sesión',
-                text: 'Debes iniciar sesión para acceder al carrito',
-                confirmButtonText: 'Ir a Iniciar Sesión',
-                confirmButtonColor: '#8B6B4A',
-                showCancelButton: true,
-                cancelButtonText: 'Cancelar',
-                cancelButtonColor: '#6B5642'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = 'html/IniciarSesion.html';
-                }
-            });
+             Swal.fire({
+                    title: "No has iniciado sesión",
+                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#8b6b4a",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ir a iniciar sesión",
+                    cancelButtonText: "Cancelar"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "./html/IniciarSesion.html"; 
+                    }
+                });
         } else {
             window.location.href = 'html/PaginaUsuarioLogueado.html';
         }

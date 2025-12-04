@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("carritoIcon:", carritoIcon);
     console.log("panelCarrito:", panelCarrito);
     console.log("cerrarBtn:", cerrarBtn);
-
+ 
     if (carritoIcon && panelCarrito) {
         carritoIcon.addEventListener("click", (e) => {
             e.stopPropagation();
