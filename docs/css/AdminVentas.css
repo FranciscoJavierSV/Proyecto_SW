@@ -6,12 +6,12 @@
  
 .header {
   width: 100%;
-  background: #8b6b4a;
+  background: #e57d90;
   padding: 12px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #6b5642;
+  border-bottom: 2px solid #f99aaa;
   position: sticky;
   top: 0;
   box-sizing: border-box;
@@ -84,6 +84,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 60px;
 }
  
 .ventas-container {
@@ -93,18 +94,20 @@
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(107, 86, 66, 0.15);
   overflow: hidden;
+  border: 1px solid #d4c4b0;
 }
  
 .header-title {
-  background: #f5efe7;
+  background: #fdb4bf;
   padding: 25px;
-  border-bottom: 3px solid #d4c4b0;
+  border-bottom: 3px solid #f99aaa;
 }
  
 .header-title h1 {
   font-size: 32px;
-  color: #6b5642;
+  color: #faf3e0;
   text-align: center;
+  font-weight: bold;
 }
  
 .content-grid {
@@ -124,10 +127,11 @@
  
 .category-section h2 {
   font-size: 24px;
-  color: #6b5642;
+  color: #f1889b;
   margin-bottom: 15px;
   padding-bottom: 10px;
   border-bottom: 2px solid #e8dcc8;
+  font-weight: bold;
 }
  
 .checkbox-group {
@@ -147,14 +151,14 @@
 }
  
 .checkbox-group label:hover {
-  background: #f9f6f1;
+  background: #fef7f0;
 }
  
 .checkbox-group input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #8b6b4a;
+  accent-color: #f1889b;
 }
  
 .checkbox-group span {
@@ -165,8 +169,8 @@
 .ventas-count {
   margin-left: auto;
   font-weight: bold;
-  color: #8b6b4a;
-  background: #e8dcc8;
+  color: #faf3e0;
+  background: #f99aaa;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 14px;
@@ -211,7 +215,7 @@
   width: 25px;
   height: 25px;
   border-radius: 5px;
-  border: 2px solid #6b5642;
+  border: 2px solid #f1889b;
 }
  
 .legend-item span:nth-child(2) {
@@ -221,7 +225,7 @@
  
 .legend-percent {
   font-weight: bold;
-  color: #8b6b4a;
+  color: #f1889b;
   font-size: 18px;
 }
  
@@ -230,12 +234,40 @@
   color: #faf3e0;
   padding: 20px;
   text-align: center;
-  margin-top: auto;
-  width: 100%;
   position: fixed;
   bottom: 0;
-  left: 0;
   width: 100%;
   z-index: 100;
 }
  
+.total-general-card {
+  width: 100%;
+  max-width: 330px;
+  margin-top: 25px;
+  background: #f5efe7;
+  border: 2px solid #d4c4b0;
+  padding: 25px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(107, 86, 66, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.total-general-card:hover {
+  transform: translateY(-4px);
+}
+
+.total-general-card h2 {
+  color: #6b5642;
+  font-size: 22px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e8dcc8;
+  padding-bottom: 8px;
+}
+
+.total-general-card p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #8b6b4a;
+  margin-top: 5px;
+}

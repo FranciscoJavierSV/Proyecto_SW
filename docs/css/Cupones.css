@@ -87,18 +87,23 @@ body {
 }
 
 .logout-btn {
-    text-decoration: none;
-    color: #FAF3E0;
-    background: #5A4632;
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background 0.2s;
+  background: #faf3e0;
+  color: #8b6b4a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 2px solid #faf3e0;
 }
 
 .logout-btn:hover {
-    background: #3D2E1F;
+  background: transparent;
+  color: #faf3e0;
+  border: 2px solid #faf3e0;
+  transform: translateY(-2px);
 }
 
 .panel-carrito {
@@ -179,19 +184,22 @@ body {
 .btn-continuar {
     display: block;
     margin: 15px 20px 20px;
-    padding: 14px;
+    padding: 0.8rem;
     background: #8B6B4A;
     color: #FAF3E0;
+    border: none;
+    border-radius: 8px;
     text-align: center;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 16px;
-    border-radius: 8px;
-    transition: background 0.2s;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
 }
 
 .btn-continuar:hover {
-    background: #5A4632;
+    background: #6B5642;
+    transform: translateY(-2px);
 }
 
 .main-content {

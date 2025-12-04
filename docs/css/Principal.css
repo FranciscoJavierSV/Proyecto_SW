@@ -7,7 +7,9 @@
 
 body {
     background: #FAF3E0;
-    padding-bottom: 50px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
@@ -20,7 +22,7 @@ body {
     border-bottom: 2px solid #6B5642;
     position: sticky;
     top: 0;
-    z-index: 10;
+    box-sizing: border-box;
 }
 
 .logo-area {
@@ -52,11 +54,12 @@ body {
     text-decoration: none;
     color: #F3E9DD;
     font-weight: bold;
-    transition: 0.2s;
+    font-size: 16px;
+    transition: color 0.2s;
 }
 
 .menu a:hover,
-.menu .active {
+.menu a.active {
     color: #FFE8C9;
 }
 
@@ -64,15 +67,17 @@ body {
     font-size: 26px;
     cursor: pointer;
     color: #F3E9DD;
-    transition: 0.2s;
+    transition: all 0.2s;
 }
 
 .carrito:hover {
     color: #FFE8C9;
+    transform: scale(1.1);
 }
 
 .main-content {
-    padding-bottom: 80px;
+    flex: 1;
+    margin-bottom: 60px;
 }
 
 .carrusel {
@@ -126,6 +131,7 @@ body {
     background: #F3E9DD;
     padding: 30px;
     border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .preguntas h2,
@@ -190,6 +196,16 @@ body {
     color: #5A4632;
 }
 
+.contacto-info a {
+    color: #8B6B4A;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.contacto-info a:hover {
+    text-decoration: underline;
+}
+
 .contacto-formulario {
     flex: 1;
     min-width: 320px;
@@ -227,7 +243,7 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: background 0.2s;
 }
 
 .contacto-formulario button:hover {
@@ -235,13 +251,13 @@ body {
 }
 
 .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
     background: #6B5642;
     color: #FAF3E0;
-    padding: 20px;
+    padding: 18px;
     text-align: center;
-    z-index: 100;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    border-top: 2px solid #8B6B4A;
 }

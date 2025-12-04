@@ -41,46 +41,39 @@
         </div>
 
         <div class="content-grid">
-          <div class="left-section">
-            <div class="category-section">
-              <h2>Bebida</h2>
-              <ul class="product-list">
-                <li><span>Agua</span> <span class="ventas-count">12</span></li>
-                <li>
-                  <span>Refresco</span> <span class="ventas-count">8</span>
-                </li>
-                <li><span>Jugo</span> <span class="ventas-count">15</span></li>
-                <li><span>Café</span> <span class="ventas-count">20</span></li>
-              </ul>
-            </div>
+        <div class="left-section">
 
-            <div class="category-section">
-              <h2>Salado</h2>
-              <ul class="product-list">
-                <li><span>Torta</span> <span class="ventas-count">25</span></li>
-                <li>
-                  <span>Sandwich</span> <span class="ventas-count">18</span>
-                </li>
-                <li><span>Taco</span> <span class="ventas-count">30</span></li>
-                <li><span>Pizza</span> <span class="ventas-count">10</span></li>
-              </ul>
-            </div>
+          <h2>Ventas por Categoría</h2>
 
-            <div class="category-section">
-              <h2>Postre</h2>
-              <ul class="product-list">
-                <li>
-                  <span>Pastel</span> <span class="ventas-count">22</span>
-                </li>
-                <li>
-                  <span>Galleta</span> <span class="ventas-count">35</span>
-                </li>
-                <li>
-                  <span>Helado</span> <span class="ventas-count">28</span>
-                </li>
+          <div class="category-section">
+              <h3>Bebida</h3>
+              <ul class="product-list" id="ventas-bebida">
+                  
               </ul>
-            </div>
           </div>
+
+          <div class="category-section">
+              <h3>Salado</h3>
+              <ul class="product-list" id="ventas-salado">
+                  
+              </ul>
+          </div>
+
+          <div class="category-section">
+              <h3>Dulce</h3>
+              <ul class="product-list" id="ventas-dulce">
+                  
+              </ul>
+          </div>
+
+          <hr>
+
+          <div class="total-general-card">
+            <h2>Total General</h2>
+            <div id="total-general"></div>
+        </div>
+      </div>
+
           <div class="right-section">
             <div class="chart-container">
               <canvas id="ventasChart"></canvas>
@@ -117,6 +110,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/docs/js/AdminVentas.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/AdminVentas.js"></script>
   </body>
 </html>
+ 

@@ -89,11 +89,50 @@ async function getSaleById(saleId) {
   return sale[0] || null;
 }
 
+async function getSalesByCategory() {
+  const [rows] = await pool.query(`
+    SELECT p.categoria, SUM(si.cantidad) AS cantidad
+    FROM sales_items si
+    JOIN productos p ON p.id = si.producto_id
+    GROUP BY p.categoria
+  `);
+  return rows;
+}
+
+async function getCompanyTotalSales() {
+  const [rows] = await pool.query(`
+    SELECT SUM(total) AS totalGeneral 
+    FROM sales
+  `);
+
+  return rows[0].totalGeneral || 0;
+}
+
+async function getSalesByProduct() {
+  const [rows] = await pool.query(`
+    SELECT 
+      p.nombre AS producto,
+      si.categoria,
+      SUM(si.cantidad) AS cantidadVendida,
+      SUM(si.subtotal) AS totalGenerado
+    FROM sales_items si
+    INNER JOIN productos p ON si.producto_id = p.id
+    GROUP BY si.producto_id, si.categoria
+    ORDER BY si.categoria, producto
+  `);
+
+  return rows;
+}
+
+
 module.exports = {
   createSale,
   addSaleItem,
   updateSaleProductCount,
   getUserSales,
   getSaleItems,
-  getSaleById
+  getSaleById,
+  getSalesByCategory,
+  getSalesByProduct,
+  getCompanyTotalSales
 };
