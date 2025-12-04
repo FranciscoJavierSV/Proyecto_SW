@@ -248,7 +248,7 @@ body.dark .logout-btn:hover {
   display: flex;
   flex-direction: column;
   transition: right 0.3s ease;
-  z-index: 50; /* Cambió para que abarque más que las tarjetas y entonces no se sobrepongan */
+  z-index: 50; /*Cambió para que abarque más que las tarjetas y entonces no se sobrepongan*/
 }
 
 .panel-carrito-header {
@@ -425,6 +425,7 @@ body.dark .carrito-vacio {
   font-size: 16px;
   border-radius: 8px;
   transition: background 0.2s;
+  margin-bottom: 7em;
 }
 
 .btn-continuar:hover {

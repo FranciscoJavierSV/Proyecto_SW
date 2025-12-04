@@ -62,15 +62,7 @@ async function cargarCarrito() {
 
     contenedor.innerHTML = ""; // limpiar
 
-    let subtotalTotal = 0;
-    let ivaTotal = 0;
-    let totalGeneral = 0;
-
     cart.forEach((item) => {
-      subtotalTotal += parseFloat(item.subtotal);
-      ivaTotal += parseFloat(item.iva);
-      totalGeneral += parseFloat(item.total);
-
       const div = document.createElement("div");
       div.classList.add("carrito-item");
 
@@ -83,7 +75,7 @@ async function cargarCarrito() {
             <span class="cantidad">${item.cantidad}</span>
             <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
           </div>
-          <p>$${item.total}</p>
+          <p>$${Number(item.subtotal).toFixed(2)}</p>
         </div>
         <button class="btn-eliminar" data-cart-id="${item.id}">
           <i class="fa-regular fa-trash-can"></i>
@@ -93,9 +85,14 @@ async function cargarCarrito() {
       contenedor.appendChild(div);
     });
 
-    subtotalElem.textContent = `$${subtotalTotal.toFixed(2)}`;
-    ivaElem.textContent = `$${ivaTotal.toFixed(2)}`;
-    totalElem.textContent = `$${totalGeneral.toFixed(2)}`;
+
+    const resumen = data.resumen;
+
+    subtotalElem.textContent = `$${resumen.subtotal.toFixed(2)}`;
+    ivaElem.textContent = `$${resumen.iva.toFixed(2)}`;
+    document.getElementById("envio").textContent = `$${resumen.envio.toFixed(2)}`;
+    totalElem.textContent = `$${resumen.totalFinal.toFixed(2)}`;
+
 
     activarBotonesEliminar();
     activarBotonesCantidad();

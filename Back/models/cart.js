@@ -3,7 +3,10 @@ const pool = require('../db/conexion'); // usa tu conexión existente
 // -----------------------------
 // Obtener carrito de un usuario
 // -----------------------------
+
 async function getCart(userId) {
+
+  // traer items del carrito
   const [rows] = await pool.query(
     `SELECT 
         c.id,
@@ -16,8 +19,6 @@ async function getCart(userId) {
         c.subtotal,
         c.iva,
         c.total,
-        c.codigo_cupon,
-        c.descuento,
         p.imagen
      FROM cart c
      JOIN productos p ON c.producto_id = p.id
@@ -25,8 +26,43 @@ async function getCart(userId) {
     [userId]
   );
 
-  return rows;
+  // traer IVA y envío según país
+  const [[usuario]] = await pool.query(
+    `SELECT p.iva, p.envio
+     FROM usuarios u
+     JOIN paises p ON u.pais_id = p.id
+     WHERE u.id = ?`,
+    [userId]
+  );
+
+  const envio = usuario?.envio ?? 0;
+
+  // totales base
+  let subtotal = 0;
+  let iva = 0;
+  let totalProductos = 0;
+
+  rows.forEach(item => {
+    subtotal += Number(item.subtotal);
+    iva += Number(item.iva);
+    totalProductos += Number(item.total);
+  });
+
+  // total final: productos (con IVA) + envío
+  const totalFinal = totalProductos + envio;
+
+  return {
+    items: rows,
+    resumen: {
+      subtotal,
+      iva,
+      envio,
+      totalFinal
+    }
+  };
 }
+
+
 
 // -----------------------------
 // Agregar producto al carrito
