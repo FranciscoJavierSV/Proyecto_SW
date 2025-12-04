@@ -72,51 +72,46 @@ const getProductById = async (req, res) => {
   }
 };
 
-// Productos que tienen ofertas
-const getProductOfert = async (req, res) => {
+// Productos por filtros
+async function getProducts(req, res) {
   try {
 
-    const product = await products.getOftertas();
-
-    if (product.length === 0) {
-      return res.status(404).json({ success: false, message: "No hay productos con descuentos" });
+    // Filtro por categoría
+    if (categoria) {
+      productos = await products.getProductsByCategory(categoria);
     }
 
-    return res.json({
+    // Filtro precio
+    else if (min !== undefined && max !== undefined) {
+      productos = await products.getProductsByPriceRange(min, max);
+    }
+
+    // Solo ofertas
+    else if (oferta === "si") {
+      productos = await products.getOfertas();
+    }
+
+    // Sin oferta
+    else if (oferta === "no") {
+      productos = await products.getProductsWithoutOferta();
+    }
+
+    // Todos los productos
+    else {
+      productos = await products.getProducts();
+    }
+
+    res.json({
       success: true,
-      product
+      products: productos
     });
 
   } catch (error) {
-    console.error('Error al encontrar productos con descuentos:', error);
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
-  }
-};
-
-const getProductsByPriceRange = async (req, res) => {
-  try{
-    const { min, max } = req.query;
-
-    if(!min || !max){
-      return res.status(400).json({ success: false, message: "Debes ingresar min y max en la URL" });
-    }
-
-    const products = await productosModel.getProductsByPriceRange(min, max);
-
-    if (product.length === 0) {
-      return res.status(404).json({ success: false, message: "No hay productos dentro de ese rango" });
-    }
-
-    return res.json({
-      success: true,
-      products
+    console.error("Error en getProducts: ", error);
+    res.status(500).json({ success: false, message: "Error del servidor"
     });
-
-  }catch{
-    console.error("Error al obtener productos por rango:", error);
-    return res.status(500).json({ success: false, message: "Error en el servidor" });
   }
-};
+}
 
 // AGREGAR ESTAS FUNCIONES:
 // FUNCIONES QUE SOLO EL ADMIN USA
@@ -183,6 +178,5 @@ module.exports = {
   deleteProduct,      // NUEVO
   getInventory,       // NUEVO
   getInventoryByCategory, // NUEVO
-  getProductOfert,
-  getProductsByPriceRange
+  getProducts
 };

@@ -81,16 +81,35 @@ async function deleteProduct(id) {
   return result.affectedRows > 0;
 }
 
+// ----------------------------------------
+// Obtener productos en oferta
+// ----------------------------------------
 async function getOftertas() {
   const [rows] = await pool.query(
     `SELECT id, nombre, precio, ofertaP, categoria, inventario, imagen, descripcion
     FROM productos
     WHERE ofertaP IS NOT NULL
-      AND ofertaP <> ''`
+      AND ofertaP <> '' `
   );
   return rows;
 }
 
+// ----------------------------------------
+// Obtener productos sin oferta
+// ----------------------------------------
+async function getProductsWithoutOfert() {
+  const [rows] = await pool.query(
+    `SELECT id, nombre, precio, ofertaP, categoria, inventario, imagen, descripcion
+    FROM productos
+    WHERE ofertaP IS NULL OR ofertaP = ''
+    `
+  );
+  return rows;
+}
+
+// ----------------------------------------
+// Productos por rango de precio
+// ----------------------------------------
 async function getProductsByPriceRange(min, max) {
   const [rows] = await pool.query(
     `SELECT id, nombre, precio, ofertaP, categoria, inventario, imagen, descripcion
@@ -133,5 +152,6 @@ module.exports = {
   deleteProduct,
   decreaseInventory, // <- agregado
   getOftertas,
-  getProductsByPriceRange
+  getProductsByPriceRange,
+  getProductsWithoutOfert
 };

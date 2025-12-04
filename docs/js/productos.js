@@ -100,46 +100,124 @@ function inicializarFiltros() {
     }
 }
 
-function aplicarFiltros() {
-    const productos = document.querySelectorAll('.producto');
-    const precioMaximo = parseInt(document.getElementById('rangoPrecio').value);
+async function aplicarFiltros() {
+  try {
+    const rangoInput = document.getElementById('rangoPrecio');
+    const precioMaximo = rangoInput ? Number(rangoInput.value) : NaN;
+
+    const categoriasSeleccionadas = Array.from(
+      document.querySelectorAll('input[name="categoria"]:checked')
+    ).map(cb => cb.value);
+
+    const conOferta = !!document.getElementById('conOferta')?.checked;
+    const sinOferta = !!document.getElementById('sinOferta')?.checked;
+
+    const base = '/public/products';
+    const params = new URLSearchParams();
+
+    // precio: solo si es número (>=0)
+    if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
+      params.set('min', 0);
+      params.set('max', precioMaximo);
+    }
+
+    // categoría: enviar la primera seleccionada 
+    if (categoriasSeleccionadas.length > 0) {
+      params.set('categoria', categoriasSeleccionadas[0]);
+    }
+
+    if (conOferta && !sinOferta) params.set('oferta', 'si');
+    else if (!conOferta && sinOferta) params.set('oferta', 'no');
+
+    const url = params.toString() ? `${base}?${params.toString()}` : base;
+    console.log('[aplicarFiltros] URL ->', url);
+
+    const res = await apiGet(url); 
+
+    console.log('[aplicarFiltros] respuesta ->', res);
+
+    let productos = res.products || res.product || [];
+
+    // Aplicar filtrado final en frontend 
+    let resultado = productos.slice();
+
+    if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
+      resultado = resultado.filter(p => {
+        const tieneOferta = p.ofertaP && Number(p.ofertaP) > 0;
+        const precioReal = tieneOferta ? Number(p.ofertaP) : Number(p.precio);
+        return !Number.isNaN(precioReal) && precioReal <= precioMaximo;
+      });
+    }
+
+    if (categoriasSeleccionadas.length > 0) {
+      resultado = resultado.filter(p => categoriasSeleccionadas.includes(p.categoria));
+    }
+
+    if (conOferta && !sinOferta) {
+      resultado = resultado.filter(p => p.ofertaP && Number(p.ofertaP) > 0);
+    } else if (!conOferta && sinOferta) {
+      resultado = resultado.filter(p => !p.ofertaP || p.ofertaP === '' || Number(p.ofertaP) === 0);
+    }
+
+    renderProductos(resultado);
+
+  }catch (err) {
+    console.error('Error en aplicar filtros: ', err);
+    renderProductos([]);
+  }
+}
+
+function renderProductos(productos) {
+    const contenedor = document.querySelector(".grid-productos");
+    if (!contenedor) return;
     
-    const categoriasSeleccionadas = Array.from(document.querySelectorAll('input[name="categoria"]:checked'))
-        .map(cb => cb.value);
-    
-    const conOferta = document.getElementById('conOferta')?.checked;
-    const sinOferta = document.getElementById('sinOferta')?.checked;
+    contenedor.innerHTML = "";
 
-    productos.forEach(producto => {
-        let mostrar = true;
-        
-        const precio = parseFloat(producto.dataset.precio);
-        const categoria = producto.dataset.categoria;
-        const tieneOferta = producto.querySelector('.badge-oferta') !== null;
+    if (!productos || productos.length === 0) {
+        contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
+        return;
+    }
 
-        if (precio > precioMaximo) {
-            mostrar = false;
+    productos.forEach(prod => {
+        const card = document.createElement("div");
+        card.classList.add("producto");
+        card.dataset.categoria = prod.categoria || "";
+
+        const tieneOferta = prod.ofertaP && prod.ofertaP > 0;
+        const precioMostrar = tieneOferta ? prod.ofertaP : prod.precio;
+        card.dataset.precio = precioMostrar;
+        card.dataset.inventario = prod.inventario || 0;
+
+        const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
+
+        card.innerHTML = `
+            ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
+            ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+            <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
+            <h3>${prod.nombre}</h3>
+            <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
+            <p class="precio">${precioMostrar} MXN</p>
+            ${tieneOferta && !sinStock ? `<p class="precio-anterior">Antes: ${prod.precio} MXN</p>` : ''}
+            <button class="btn-agregar" data-id="${prod.id}" ${sinStock ? 'disabled' : ''}>
+                ${sinStock ? 'No disponible' : 'Agregar al carrito'}
+            </button>
+        `;
+
+        if (sinStock) {
+            card.classList.add("sin-stock");
         }
 
-        if (categoriasSeleccionadas.length > 0 && !categoriasSeleccionadas.includes(categoria)) {
-            mostrar = false;
-        }
-
-        if (conOferta && !tieneOferta) {
-            mostrar = false;
-        }
-        
-        if (sinOferta && tieneOferta) {
-            mostrar = false;
-        }
-
-        producto.classList.toggle('oculto', !mostrar);
+        contenedor.appendChild(card);
     });
+
+    if (typeof activarBotonesCarrito === 'function') {
+        activarBotonesCarrito();
+    }
 }
 
 function limpiarFiltros() {
-    document.getElementById('rangoPrecio').value = 10000;
-    document.getElementById('precioMax').textContent = '10000';
+    document.getElementById('rangoPrecio').value = 100;
+    document.getElementById('precioMax').textContent = '100';
     
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
@@ -148,4 +226,6 @@ function limpiarFiltros() {
     document.querySelectorAll('.producto').forEach(producto => {
         producto.classList.remove('oculto');
     });
+
+    cargarProductos();
 }

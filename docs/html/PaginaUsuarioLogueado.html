@@ -57,24 +57,16 @@
             <div class="filtro-seccion">
                 <h4>Categorías</h4>
                 <label class="checkbox-item">
-                    <input type="checkbox" name="categoria" value="guitarras">
-                    <span>Guitarras</span>
+                    <input type="checkbox" name="categoria" value="dulce">
+                    <span>Dulce</span>
                 </label>
                 <label class="checkbox-item">
-                    <input type="checkbox" name="categoria" value="bajos">
-                    <span>Bajos</span>
+                    <input type="checkbox" name="categoria" value="salado">
+                    <span>Salado</span>
                 </label>
                 <label class="checkbox-item">
-                    <input type="checkbox" name="categoria" value="baterias">
-                    <span>Baterías</span>
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" name="categoria" value="teclados">
-                    <span>Teclados</span>
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" name="categoria" value="accesorios">
-                    <span>Accesorios</span>
+                    <input type="checkbox" name="categoria" value="bebida">
+                    <span>Bebida</span>
                 </label>
             </div>
 
@@ -82,9 +74,9 @@
                 <h4>Rango de Precio</h4>
                 <div class="precio-valores">
                     <span>$<span id="precioMin">0</span></span>
-                    <span>$<span id="precioMax">10000</span></span>
+                    <span>$<span id="precioMax">100</span></span>
                 </div>
-                <input type="range" id="rangoPrecio" min="0" max="10000" value="10000" class="slider-precio">
+                <input type="range" id="rangoPrecio" min="0" max="100" value="100" class="slider-precio">
             </div>
 
             <div class="filtro-seccion">
@@ -102,10 +94,10 @@
             <button class="btn-limpiar-filtros">Limpiar Filtros</button>
         </aside>
 
-        <main class="main-content">
-            <h2 class="titulo-seccion">Productos disponibles</h2>
-            <div class="productos-grid"></div>
-        </main>
+        <section class="productos-contenedor">
+            <h2>Nuestros Productos</h2>
+            <div class="grid-productos"></div>
+        </section>
     </div>
 
     <div id="accessibility-btn"><i class="fa-brands fa-accessible-icon"></i></div>
