@@ -4,7 +4,7 @@ const { enviarCorreo } = require('../utils/mailer'); // AGREGA ESTO ARRIBA
 const crypto = require("crypto");
 const { captchas } = require("../utils/captchaStore");
 const svgCaptcha = require("svg-captcha");
-const { subscribe } = require('./contactos');
+const { subscribe } = require('./contac');
 
 // Importar modelos 
 const {
