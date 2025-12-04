@@ -12,7 +12,7 @@ body {
   margin: 0;
   padding: 0;
 }
-
+ 
 .header {
   width: 100%;
   background: #e57d90;
@@ -25,32 +25,32 @@ body {
   top: 0;
   box-sizing: border-box;
 }
-
+ 
 .logo-area {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .logo-img {
   width: 70px;
   height: 70px;
   border-radius: 10px;
   object-fit: cover;
 }
-
+ 
 .logo-text {
   font-size: 26px;
   font-weight: bold;
   color: #faf3e0;
 }
-
+ 
 .menu {
   display: flex;
   align-items: center;
   gap: 25px;
 }
-
+ 
 .menu a {
   text-decoration: none;
   color: #f3e9dd;
@@ -58,23 +58,23 @@ body {
   font-size: 16px;
   transition: color 0.2s;
 }
-
+ 
 .menu a:hover,
 .menu a.active {
   color: #ffe8c9;
 }
-
+ 
 .perfil-admin {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .perfil-icon {
   font-size: 26px;
   color: #f3e9dd;
 }
-
+ 
 .admin-name {
   font-size: 16px;
   color: #f3e9dd;
@@ -112,7 +112,7 @@ body {
   left: 0;
   border-top: 2px solid #f99aaa;
 }
-
+ 
 .main-content {
   flex: 1;
   display: flex;

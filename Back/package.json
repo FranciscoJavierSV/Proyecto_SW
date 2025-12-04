@@ -29,6 +29,7 @@
     "mysql2": "^3.15.3",
     "nodemailer": "^7.0.11",
     "pdfkit": "^0.17.2",
+    "svg-captcha": "^1.4.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

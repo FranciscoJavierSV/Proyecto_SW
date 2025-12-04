@@ -8,7 +8,7 @@
     <link rel="icon" type="image/jpg" href="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg">
 </head>
 <body>
-
+ 
     <header class="header">
         <div class="logo-area">
             <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img" alt="Logo">
@@ -35,6 +35,18 @@
                 <label for="pass">Contraseña:</label>
                 <input type="password" id="pass" placeholder="Tu contraseña">
 
+                <label for="captcha-input">Valida que eres un humano</label>
+                <div id="captcha-card">
+                    <div class="captcha-image-wrapper">
+                        <div id="captchaImg"></div>
+                    </div>
+
+                    <input type="text" id="captcha-input" class="captcha-input" placeholder="Escribe el texto del captcha">
+
+                    <button type="button" class="btn-nuevo">
+                        ↻ Nuevo Captcha
+                    </button>
+                </div>
                 <button type="submit" class="btn-login">Iniciar Sesión</button>
 
                 <p class="forgot-link">

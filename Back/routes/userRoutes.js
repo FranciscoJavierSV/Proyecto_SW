@@ -10,11 +10,12 @@ const { listarPaises } = require('../controllers/paises');
 
 // ---- USUARIO ----
 router.post('/register', usuarios.newUser);
-router.post('/login', usuarios.login);
+router.post('/login',validar.captchaV, usuarios.login);
 router.get('/paises', listarPaises);
+router.get('/generarCaptcha', usuarios.generarCaptcha);
 
 // ---- RECUPERACIÓN ----
-router.post('/recover', validar.captchaV, usuarios.recoveryUser);
+router.post('/recover', usuarios.recoveryUser);
 router.post('/reset', usuarios.restore);
 
 

@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function cargarProductos() {
-    // CORREGIDO: Cambié 'productos-grid' a 'grid-productos' para que coincida con tu HTML
     const grid = document.querySelector(".grid-productos");
     if (!grid) return;
 
@@ -27,11 +26,22 @@ async function cargarProductos() {
 
             const tieneOferta = prod.ofertaP && prod.ofertaP > 0;
             const precioMostrar = tieneOferta ? prod.ofertaP : prod.precio;
-            // Verificar si hay inventario (considerar null, undefined, 0, "0")
             const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
-            // Debug en consola para verificar
             console.log(`Producto: ${prod.nombre}, Inventario: ${prod.inventario}, Sin stock: ${sinStock}`);
+
+            let priceHtml = '';
+            if (prod.ofertaP && prod.ofertaP !== null && prod.ofertaP !== '') {
+                priceHtml = `
+                    <div class="precio">
+                        <span class="precio-original">$${parseFloat(prod.precio).toFixed(2)}</span>
+                        <br>
+                        <span class="precio-oferta">$${parseFloat(prod.ofertaP).toFixed(2)}</span>
+                    </div>
+                `;
+            } else {
+                priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
+            }
 
             card.innerHTML = `
                 ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
@@ -53,7 +63,6 @@ async function cargarProductos() {
             grid.appendChild(card);
         });
 
-        // Activar botones de agregar al carrito (lo maneja carrito.js)
         if (typeof activarBotonesCarrito === 'function') {
             activarBotonesCarrito();
         }

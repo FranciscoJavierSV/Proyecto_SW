@@ -12,7 +12,7 @@ body {
   margin: 0;
   padding: 0;
 }
-
+ 
 .header {
   width: 100%;
   background: #e57d90;
@@ -25,32 +25,32 @@ body {
   top: 0;
   box-sizing: border-box;
 }
-
+ 
 .logo-area {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .logo-img {
   width: 70px;
   height: 70px;
   border-radius: 10px;
   object-fit: cover;
 }
-
+ 
 .logo-text {
   font-size: 26px;
   font-weight: bold;
   color: #faf3e0;
 }
-
+ 
 .menu {
   display: flex;
   align-items: center;
   gap: 25px;
 }
-
+ 
 .menu a {
   text-decoration: none;
   color: #f3e9dd;
@@ -58,12 +58,12 @@ body {
   font-size: 16px;
   transition: color 0.2s;
 }
-
+ 
 .menu a:hover,
 .menu a.active {
   color: #ffe8c9;
 }
-
+ 
 .perfil-admin {
   display: flex;
   align-items: center;
@@ -71,16 +71,16 @@ body {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-
+ 
 .perfil-admin:hover {
   opacity: 0.8;
 }
-
+ 
 .perfil-icon {
   font-size: 26px;
   color: #f3e9dd;
 }
-
+ 
 .admin-name {
   font-size: 16px;
   color: #f3e9dd;
@@ -110,7 +110,7 @@ body {
   left: 0;
   border-top: 2px solid #f99aaa;
 }
-
+ 
 .sidebar {
   width: 260px;
   background: #f99aaa;
@@ -121,7 +121,7 @@ body {
   border-right: 2px solid #c0a98e;
   min-height: calc(100vh - 60px);
 }
-
+ 
 .sidebar-card {
   background: #faf3e0;
   border-radius: 12px;
@@ -132,11 +132,11 @@ body {
   transition: all 0.15s;
   border: 1px solid #d4c4b0;
 }
-
+ 
 .sidebar-card:hover {
   transform: translateY(-3px);
 }
-
+ 
 .sidebar-card.active {
   background: #c0a98e;
   color: #faf3e0;
@@ -148,13 +148,13 @@ body {
   flex: 1;
   margin-bottom: 60px;
 }
-
+ 
 .main-card {
   background: #fdb4bf;
   color: #faf3e0;
   text-align: center;
 }
-
+ 
 .card-title {
   font-size: 22px;
   font-weight: bold;
@@ -169,7 +169,6 @@ body {
   font-size: 13px;
   opacity: 0.85;
 }
-
 .content-area {
   flex: 1;
   padding: 40px;
@@ -190,13 +189,13 @@ body {
   font-size: 16px;
   color: #f1889b;
 }
-
+ 
 .stats-cards {
   display: flex;
   gap: 20px;
   margin-bottom: 30px;
 }
-
+ 
 .stat-card {
   flex: 1;
   background: #f99aaa;
@@ -212,14 +211,14 @@ body {
   margin-bottom: 10px;
   font-weight: bold;
 }
-
+ 
 .stat-number {
   font-size: 36px;
   color: #faf3e0;
   font-weight: bold;
   margin: 0;
 }
-
+ 
 .table-container {
   background: white;
   border-radius: 12px;
@@ -227,12 +226,12 @@ body {
   overflow-x: auto;
   border: 1px solid #d4c4b0;
 }
-
+ 
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
 }
-
+ 
 .inventory-table thead {
   background: #fdb4bf;
 }
@@ -244,7 +243,6 @@ body {
   font-weight: bold;
   font-size: 14px;
 }
-
 .inventory-table td {
   padding: 12px 15px;
   border-bottom: 1px solid #f0e6d8;
@@ -260,7 +258,7 @@ body {
   font-weight: bold;
   color: #f1889b;
 }
-
+ 
 .status {
   padding: 6px 12px;
   border-radius: 20px;
@@ -268,12 +266,12 @@ body {
   font-weight: bold;
   display: inline-block;
 }
-
+ 
 .status.ok {
   background: #d4edda;
   color: #155724;
 }
-
+ 
 .status.low {
   background: #f8d7da;
   color: #721c24;
