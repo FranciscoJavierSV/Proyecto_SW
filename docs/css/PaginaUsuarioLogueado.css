@@ -193,8 +193,8 @@ body.dark .logout-btn:hover {
   position: fixed;
   right: -380px;
   width: 350px;
-  height: 100vh;
-  top: 0;
+  height: calc(100vh - 5.7em); 
+  top: 5.7em; /* <-- esto era lo que faltaba */
   background: var(--bg-secondary);
   border-left: 3px solid var(--header-border);
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);
@@ -378,6 +378,7 @@ body.dark .carrito-vacio {
   font-size: 16px;
   border-radius: 8px;
   transition: background 0.2s;
+  /* margin-bottom: 7em; */
 }
 
 .btn-continuar:hover {
