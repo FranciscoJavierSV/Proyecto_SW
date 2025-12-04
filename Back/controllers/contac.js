@@ -84,8 +84,8 @@ const subscribe = async ({ nombre, email }) => {
     }
 
     // Rutas absolutas a imágenes locales
-    const logoPath = path.join(process.cwd(), "assets", "logo.png");
-    const cuponPath = path.join(process.cwd(), "assets", "cupon.png");
+    const logoPath = path.join(process.cwd(), "assets", "logo.jpg");
+    const cuponPath = path.join(process.cwd(), "assets", "cupon.jpg");
 
     // Configurar transporte de correo
     const transporter = nodemailer.createTransport({
