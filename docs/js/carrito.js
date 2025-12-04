@@ -1,8 +1,14 @@
 function activarBotonesCarrito() {
-  const token = localStorage.getItem("token");
 
   document.querySelectorAll(".btn-agregar").forEach((btn) => {
     btn.addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alertaError("Debes iniciar sesión para agregar productos.");
+        return;
+      }
+
       const productId = btn.dataset.id;
 
       const data = await apiPost(
@@ -10,16 +16,18 @@ function activarBotonesCarrito() {
         { productId, quantity: 1 },
         { Authorization: "Bearer " + token }
       );
+ 
+       console.log("Respuesta agregar:", data); // <-- IMPORTANTE
 
       if (data.success) {
         cargarCarrito();
       } else {
-        alert(data.message || "Error al agregar producto");
+        alertaError(data.message || "Error al agregar producto");
       }
     });
   });
-}
-
+} 
+ 
 async function cargarCarrito() {
   const token = localStorage.getItem("token");
   
@@ -117,7 +125,7 @@ function activarBotonesEliminar() {
       if (data.success) {
         cargarCarrito();
       } else {
-        alert(data.message);
+        alertaError(data.message);
       }
     });
   });

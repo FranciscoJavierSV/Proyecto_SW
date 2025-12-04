@@ -29,7 +29,7 @@
             <span class="usuario-nombre"></span>
             <a class="logout-btn">Cerrar sesión</a>
         </div>
-    </header>
+    </header> 
 
     <div id="panelCarrito" class="panel-carrito">
         <div class="panel-carrito-header">
@@ -109,21 +109,31 @@
         </main>
     </div>
 
-    <div id="accessibility-btn"><i class="fa-brands fa-accessible-icon"></i></div>
+    <div id="accessibility-btn">
+        <i class="fas fa-universal-access"></i>
+    </div>
 
     <div id="accessibility-panel" class="hidden">
         <h3>Accesibilidad</h3>
 
         <button id="toggle-theme" class="acc-btn icon-btn">
-            <span><i id="theme-icon" class="fa-solid fa-moon"></i></span>
+            <i id="theme-icon" class="fas fa-moon"></i> Cambiar tema
         </button>
 
         <div class="text-size-controls">
-            <button id="increase-text" class="acc-btn">A+</button>
             <button id="decrease-text" class="acc-btn">A-</button>
-            <button id="reset-text" class="acc-btn">Reset</button>
+            <button id="reset-text" class="acc-btn">A</button>
+            <button id="increase-text" class="acc-btn">A+</button>
         </div>
     </div>
+    Panel de Lista de Deseos
+    <div id="wishlist-btn"><i class="fas fa-heart"></i></div>
+        <div id="wishlist-panel" class="hidden">
+            <h3>Lista de Deseos</h3>
+            <div class="wishlist-productos">
+                <p class="wishlist-vacio">No hay productos en tu lista de deseos</p>
+            </div>
+        </div>
 
     <footer class="footer">
         <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programación de Sistemas Web © 2025</p>
@@ -131,8 +141,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/api.js"></script>
-    <script src="../js/carrito.js"></script>
     <script src="../js/productos.js"></script>
+    <script src="../js/carrito.js"></script>
+    <script src="../js/Alerts.js"></script>
     <script src="../js/PaginaUsuarioLogueado.js"></script>
     <script src="../js/Accesibilidad.js"></script>
 </body>

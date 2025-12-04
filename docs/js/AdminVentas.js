@@ -27,18 +27,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     const chartData = await apiGet('/account/sales/chart', {
         Authorization: `Bearer ${token}`
     });
+    console.log("DATOS DE LA GRAFICA:", chartData);
     const categorias = ["bebida", "salado", "dulce"];
     const cantidades = categorias.map(cat => {
         let obj = chartData.categorias.find(c => c.categoria === cat);
-        return obj ? obj.cantidad : 0;
+        return obj ? Number(obj.cantidad) : 0;
     });
-
+ 
     const total = cantidades.reduce((a, b) => a + b, 0);
 
-    document.getElementById("bebida-percent").innerText = ((cantidades[0] / total) * 100).toFixed(1) + "%";
-    document.getElementById("salado-percent").innerText = ((cantidades[1] / total) * 100).toFixed(1) + "%";
-    document.getElementById("postre-percent").innerText = ((cantidades[2] / total) * 100).toFixed(1) + "%";
-
+    if (total === 0) {
+        document.getElementById("bebida-percent").innerText = "0%";
+        document.getElementById("salado-percent").innerText = "0%";
+        document.getElementById("postre-percent").innerText = "0%";
+    } else {
+        document.getElementById("bebida-percent").innerText = ((cantidades[0] / total) * 100).toFixed(1) + "%";
+        document.getElementById("salado-percent").innerText = ((cantidades[1] / total) * 100).toFixed(1) + "%";
+        document.getElementById("postre-percent").innerText = ((cantidades[2] / total) * 100).toFixed(1) + "%";
+    }
+        
     // Graficar
     let ctx = document.getElementById("ventasChart").getContext("2d");
     new Chart(ctx, {
@@ -47,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             labels: ["Bebida", "Salado", "Dulce"],
             datasets: [{
                 data: cantidades,
-                backgroundColor: ["#C19A6B", "#8B6B4A", "#D4C4B0"]
+                backgroundColor: ["#913d4cff", "#e57d90", "#f8c6cfff"]
             }]
         },
         options: { plugins: { legend: { display: false } } }
@@ -57,13 +64,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const productosData = await apiGet('/account/sales/products', {
         Authorization: `Bearer ${token}`
     });
-
+    console.log("DATOS DE PRODUCTOS:", productosData);
     renderVentasPorProducto(productosData);
 
     const empresaTotal = await apiGet('/account/sales/company-total', {
         Authorization: `Bearer ${token}`
     });
-
+    console.log("TOTAL GENERAL:", empresaTotal);
     document.getElementById("total-general").innerHTML =
     `<strong>$${empresaTotal.totalGeneral}MXN</strong>`;
 });

@@ -42,7 +42,6 @@ imagenInput.addEventListener("change", () => {
     if (imagenInput.files && imagenInput.files[0]) {
         const newImgURL = URL.createObjectURL(imagenInput.files[0]);
         imagePreview.innerHTML = `
-            <p><strong>Nueva imagen seleccionada:</strong></p>
             <img src="${newImgURL}" style="max-width: 150px;">
         `;
     }
@@ -62,7 +61,7 @@ async function cargarProductos() {
             grid.innerHTML = "<p>Error al cargar productos.</p>";
             return;
         }
-
+ 
         grid.innerHTML = "";
 
         data.products.forEach(prod => {
@@ -123,7 +122,7 @@ function validarCampos() {
     const stock = document.getElementById("stock").value;
 
     if (!nombre || !precio || !categoria || !descripcion || !stock) {
-        alert("⚠️ Por favor llena todos los campos obligatorios.");
+        alertaWarning("Por favor llena todos los campos obligatorios");
         return false;
     }
 
@@ -138,7 +137,7 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     if (!selectedProductId) {
-        alert("Selecciona un producto primero.");
+        alertaWarning("Selecciona un producto primero.");
         return;
     }
 
@@ -170,14 +169,14 @@ form.addEventListener("submit", async (e) => {
         );
 
         if (response.success) {
-            alert("Producto actualizado correctamente");
+            await alertaExito("Producto actualizado correctamente");
             location.reload();
         } else {
-            alert("Error al actualizar producto");
+            alertaError("Error al actualizar producto");
         }
 
     } catch (error) {
         console.error(error);
-        alert("No se pudo actualizar el producto");
+        alertaError("No se pudo actualizar el producto");
     }
 });

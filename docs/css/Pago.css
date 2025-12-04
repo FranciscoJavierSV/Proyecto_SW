@@ -5,24 +5,88 @@
     font-family: Arial, sans-serif;
 }
 
+:root {
+    --font-size: 16px;
+    --bg-primary: #faf3e0;
+    --bg-secondary: #fff8f0;
+    --bg-form: #f7eee6;
+    --text-primary: #222222;
+    --text-secondary: #666666;
+    --border-color: #d7ccc8;
+    --border-input: #bcae9e;
+    --border-focus: #8d6e63;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+
+    --header-bg: #8b6b4a;
+    --header-border: #4e342e;
+    --accent-color: #8b6b4a;
+    --accent-hover: #6b5642;
+    --text-light: #ffe5d0;
+    --text-lighter: #fff3e0;
+}
+
+body.dark {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2c2c2c;
+    --bg-form: #3a3a3a;
+    --text-primary: #e2e2e2;
+    --text-secondary: #b0b0b0;
+    --border-color: #444;
+    --border-input: #555;
+    --border-focus: #777;
+    --shadow-light: rgba(255, 255, 255, 0.1);
+
+    --header-bg: #2c2c2c;
+    --header-border: #444;
+    --accent-color: #6b5642;
+    --accent-hover: #8b6b4a;
+    --text-light: #d0d0d0;
+    --text-lighter: #e0e0e0;
+}
+
 body {
-    background: #FAF3E0;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     padding-bottom: 50px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: var(--font-size);
+}
+
+/* Control de tamaño de fuente para el contenido principal */
+.formulario-envio *:not(.header):not(.header *):not(.footer):not(.footer *):not(#accessibility-btn):not(#accessibility-btn *):not(#accessibility-panel):not(#accessibility-panel *) {
+    font-size: inherit;
+}
+
+/* Mantener tamaño fijo para header y footer */
+.header,
+.header *,
+.footer,
+.footer * {
+    font-size: 16px !important;
+}
+
+/* Mantener tamaño fijo para panel de accesibilidad */
+#accessibility-btn,
+#accessibility-btn *,
+#accessibility-panel,
+#accessibility-panel * {
+    font-size: 16px !important;
 }
 
 .header {
     width: 100%;
-    background: #8B6B4A; 
+    background: var(--header-bg);
     padding: 12px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 3px solid #4e342e;
+    border-bottom: 3px solid var(--header-border);
     position: sticky;
     top: 0;
+    z-index: 1000;
 }
 
 .logo-area {
@@ -41,7 +105,7 @@ body {
 .logo-text {
     font-size: 26px;
     font-weight: bold;
-    color: #fff3e0;
+    color: var(--text-lighter);
 }
 
 .menu {
@@ -52,12 +116,15 @@ body {
 
 .menu a {
     text-decoration: none;
-    color: #ffe5d0;
+    color: var(--text-light);
     font-weight: bold;
+    font-size: 16px;
+    transition: color 0.2s;
 }
 
-.menu a:hover {
-    color: #fff;
+.menu a:hover,
+.menu a.active {
+    color: var(--text-lighter);
 }
 
 .user-section {
@@ -67,8 +134,8 @@ body {
 }
 
 .logout-btn {
-    background: #faf3e0;
-    color: #8b6b4a;
+    background: var(--bg-primary);
+    color: var(--accent-color);
     padding: 10px 20px;
     border-radius: 8px;
     font-size: 14px;
@@ -76,20 +143,37 @@ body {
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s;
-    border: 2px solid #faf3e0;
+    border: 2px solid var(--bg-primary);
 }
 
 .logout-btn:hover {
     background: transparent;
-    color: #faf3e0;
-    border: 2px solid #faf3e0;
+    color: var(--bg-primary);
+    border: 2px solid var(--bg-primary);
     transform: translateY(-2px);
+}
+
+body.dark .logout-btn {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+body.dark .logout-btn:hover {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--text-primary);
 }
 
 .carrito {
     font-size: 28px;
     cursor: pointer;
-    color: #ffe5d0;
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.carrito:hover {
+    color: var(--text-lighter);
 }
 
 .usuario-menu {
@@ -99,35 +183,37 @@ body {
 .usuario-nombre {
     cursor: pointer;
     font-weight: bold;
-    color: #ffe5d0;
+    color: var(--text-light);
+    font-size: 15px;
 }
 
 .menu-usuario-opciones {
     position: absolute;
-    background: #fff8f0;
-    border: 1px solid #d7ccc8;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     width: 150px;
     right: 0;
     margin-top: 5px;
     display: none;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow-light);
 }
 
 .menu-usuario-opciones a {
     display: block;
-    background: #8B6B4A;
-    color: #FAF3E0;
+    background: var(--accent-color);
+    color: var(--bg-primary);
     padding: 0.8rem;
     text-decoration: none;
     font-weight: 600;
     text-align: center;
     transition: background 0.3s, transform 0.2s;
+    font-size: 16px;
 }
 
 .menu-usuario-opciones a:hover {
-    background: #6B5642;
+    background: var(--accent-hover);
 }
 
 .usuario-menu:hover .menu-usuario-opciones {
@@ -135,13 +221,13 @@ body {
 }
 
 .formulario-envio {
-    background: #fff8f0; 
+    background: var(--bg-secondary);
     width: 80%;
     margin: 40px auto;
     padding: 40px;
     border-radius: 12px;
-    border: 2px solid #d7ccc8;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 0 15px var(--shadow-light);
 }
 
 .formulario-envio input,
@@ -149,15 +235,17 @@ body {
     width: 100%;
     padding: 12px;
     border-radius: 6px;
-    border: 1px solid #bcae9e;
+    border: 1px solid var(--border-input);
     margin-bottom: 20px;
-    background: #f7eee6;
+    background: var(--bg-form);
+    color: var(--text-primary);
+    transition: border-color 0.3s;
 }
 
 .formulario-envio input:focus,
 .formulario-envio select:focus {
     outline: none;
-    border-color: #8d6e63;
+    border-color: var(--border-focus);
 }
 
 .form-pago {
@@ -172,8 +260,8 @@ body {
 button[type="submit"] {
     width: 100%;
     padding: 0.8rem;
-    background: #8B6B4A;
-    color: #FAF3E0;
+    background: var(--accent-color);
+    color: var(--bg-primary);
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -188,26 +276,111 @@ button[type="submit"] {
 
 .btn-confirmar:hover:not(:disabled),
 button[type="submit"]:hover:not(:disabled) {
-    background: #6B5642;
+    background: var(--accent-hover);
     transform: translateY(-2px);
 }
 
 .btn-confirmar:disabled,
 button[type="submit"]:disabled {
-    background: #CCCCCC;
+    background: #cccccc;
     cursor: not-allowed;
     transform: none;
 }
 
+body.dark .btn-confirmar:disabled,
+body.dark button[type="submit"]:disabled {
+    background: #4a4a4a;
+    color: #888;
+}
+
 .footer {
     margin-top: auto;
-    background: #8B6B4A; 
-    color: white;
+    background: var(--header-bg);
+    color: var(--text-lighter);
     padding: 20px;
     text-align: center;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    z-index: 100;
+    z-index: 997;
+    border-top: 2px solid var(--header-border);
+}
+
+/* Botón de accesibilidad */
+#accessibility-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: var(--accent-color);
+    color: var(--bg-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    transition: background 0.3s, transform 0.2s;
+    z-index: 998;
+    border: none;
+}
+
+#accessibility-btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.1);
+}
+
+/* Panel de accesibilidad */
+#accessibility-panel {
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    width: 200px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    z-index: 998;
+}
+
+#accessibility-panel.hidden {
+    display: none;
+}
+
+#accessibility-panel h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.acc-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: var(--accent-color);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.acc-btn:hover {
+    background: var(--accent-hover);
+}
+
+.text-size-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.text-size-controls .acc-btn {
+    width: auto;
+    flex: 1;
 }

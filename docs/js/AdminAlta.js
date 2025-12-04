@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // CERRAR SESIÓN    
     const logoutBtn = document.querySelector(".logout-btn");
- 
+
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function (event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             localStorage.removeItem("token");
             localStorage.removeItem("username");
@@ -23,6 +23,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+/* ============================================================
+   PREVIEW DE IMAGEN
+============================================================ */
+const imageInput = document.getElementById("imagen");
+const preview = document.getElementById("imagePreview");
+
+imageInput.addEventListener("change", () => {
+    const file = imageInput.files[0];
+
+    if (!file) {
+        preview.innerHTML = "";
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        preview.innerHTML = `<img src="${reader.result}" alt="Preview">`;
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+
+/* ============================================================
+   SUBMIT FORM
+============================================================ */
 document.getElementById("altaForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -32,7 +60,7 @@ document.getElementById("altaForm").addEventListener("submit", async (e) => {
         categoria: document.getElementById("categoria"),
         descripcion: document.getElementById("descripcion"),
         precio: document.getElementById("precio"),
-        stock: document.getElementById("stock"),
+        stock: document.getElementById("stock")
     };
 
     let valido = true;
@@ -41,8 +69,18 @@ document.getElementById("altaForm").addEventListener("submit", async (e) => {
     document.querySelectorAll(".error-msg").forEach(el => el.remove());
     Object.values(campos).forEach(c => c.classList.remove("input-error"));
 
-    // validar cada campo
+    // validar (imagen requiere validación especial)
     for (let key in campos) {
+
+        if (key === "imagen") {
+            // si no hay archivo seleccionado
+            if (campos[key].files.length === 0) {
+                valido = false;
+                marcarError(campos[key], "Debe seleccionar una imagen");
+            }
+            continue;
+        }
+
         if (campos[key].value.trim() === "") {
             valido = false;
             marcarError(campos[key], "Este campo es obligatorio");
@@ -54,16 +92,27 @@ document.getElementById("altaForm").addEventListener("submit", async (e) => {
         return;
     }
 
-    // Datos preparados para enviar
+
+    /* ============================================================
+       OBTENER SOLO EL NOMBRE DEL ARCHIVO (archivo.png)
+    ============================================================ */
+    const archivo = campos.imagen.files[0];
+    const nombreImagen = archivo ? archivo.name : "";
+
+
+    /* ============================================================
+       ARMAR EL OBJETO PARA ENVIAR A LA API
+    ============================================================ */
     const data = {
         nombre: campos.nombre.value,
-        imagen: campos.imagen.value,
+        imagen: nombreImagen,      
         categoria: campos.categoria.value,
         descripcion: campos.descripcion.value,
         precio: parseFloat(campos.precio.value),
         inventario: parseInt(campos.stock.value),
         ofertaP: parseFloat(document.getElementById("ofertaP").value) || null
     };
+
 
     try {
         const token = localStorage.getItem("token");
@@ -73,20 +122,25 @@ document.getElementById("altaForm").addEventListener("submit", async (e) => {
         });
 
         if (!res.success) {
-            alert("Error: " + res.message);
+            alertaError(res.message);
             return;
         }
 
-        alert("Producto registrado con éxito");
+        alertaExito("Producto registrado con éxito");
         document.getElementById("altaForm").reset();
+        preview.innerHTML = ""; // limpiar preview
 
     } catch (err) {
         console.error(err);
-        alert("Ocurrió un error al registrar el producto.");
+        alertaError("Ocurrió un error al registrar el producto.");
     }
 });
 
-// función para mostrar mensajes
+
+
+/* ============================================================
+   FUNCIÓN PARA MOSTRAR MENSAJES DE ERROR
+============================================================ */
 function marcarError(input, mensaje) {
     input.classList.add("input-error");
 
@@ -96,5 +150,3 @@ function marcarError(input, mensaje) {
 
     input.parentNode.appendChild(error);
 }
-
-

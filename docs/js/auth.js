@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const tokenCaptcha = window.tokenCaptcha;
 
             if (!correo || !contrasena || !captchaIngresado || !tokenCaptcha) {
-                alert("Ingresa todos los campos");
+                alertaWarning("Ingresa todos los campos");
                 return;
             }
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const success = res?.success ?? (token !== null);
 
             if (!success || !token) {
-                alert(res?.message || "Datos inválidos");
+                alertaError(res?.message || "Datos inválidos");
                 cargarCaptcha();
                 return;
             }
@@ -40,10 +40,27 @@ document.addEventListener("DOMContentLoaded", () => {
             else if (res?.username) localStorage.setItem("username", res.username);
 
             if(res.user.rol === "admin"){
-                window.location.href = "AdminPrincipal.html";
+                Swal.fire({
+                    title: "¡Bienvenido administrador!",
+                    text: "Inicio de sesión exitoso",
+                    icon: "success",
+                    confirmButtonColor: "#8b6b4a",
+                    timer: 1800,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => { window.location.href = "AdminPrincipal.html"; });
             }
             else{
-                window.location.href = "PaginaUsuarioLogueado.html";
+                Swal.fire({
+                    title: "¡Bienvenid@!",
+                    text: "Inicio de sesión exitoso",
+                    icon: "success",
+                    confirmButtonColor: "#ec85b2ff",
+                    timer: 1800,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => { window.location.href = "PaginaUsuarioLogueado.html"; });
+                
             }
         });
     }
@@ -63,14 +80,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const pais      = document.getElementById("pais").value;
             const pass      = document.getElementById("pass").value.trim();
             const pass2     = document.getElementById("pass2").value.trim();
+            // leer radio "suscripcion"
+            const suscripcion = document.querySelector('input[name="suscripcion"]:checked').value;
+            const suscribirse = suscripcion === "si"; 
 
             if (!username || !correo || !pais || !pass || !pass2) {
-                alert("Completa todos los campos");
+                alertaWarning("Completa todos los campos");
                 return;
             }
 
             if (pass !== pass2) {
-                alert("Las contraseñas no coinciden");
+                alertaError("Las contraseñas no coinciden");
                 return;
             }
 
@@ -78,15 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 username,
                 contrasena: pass,
                 correo,
-                pais  
+                pais,
+                suscribirse
             });
 
             if (!res.success) {
-                alert(res.message || "Error al crear cuenta");
+                alertaError(res.message || "Error al crear cuenta");
                 return;
             }
 
-            alert("Cuenta creada correctamente. Inicia sesión.");
+            await alertaExito("Cuenta creada correctamente. Inicia sesión.");
             window.location.href = "IniciarSesion.html";
         });
     }

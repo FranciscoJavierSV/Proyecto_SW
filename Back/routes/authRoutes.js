@@ -17,7 +17,7 @@ router.post("/validate-token", users.validateToken);      // Validar token
 router.post("/change-password", users.changePassword);    // Cambiar contraseña
 
 // ---- LOGING Y REGISTER ----
-router.post('/login', users.login);
+router.post('/login', users.login); 
 router.post('/register', users.newUser);
 
 // ---- CARRITO ----

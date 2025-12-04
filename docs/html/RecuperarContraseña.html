@@ -10,61 +10,62 @@
 <body>
 
 <header class="header">
-    <div class="logo-area">
-        <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img">
-        <span class="logo-text">Sexta Armonía</span>
-    </div>
+        <div class="logo-area">
+            <img src="../ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg" class="logo-img">
+            <span class="logo-text">Sexta Armonía</span>
+        </div>
 
-    <nav class="menu">
-        <a href="../index.html">Inicio</a>
-        <a href="Productos.html">Productos</a>
-        <a href="IniciarSesion.html">Iniciar Sesión</a>
-        <a href="CrearCuenta.html">Crear Cuenta</a>
-        <span class="carrito">🛒</span>
-    </nav>
-</header>
+        <nav class="menu">
+            <a href="../index.html">Inicio</a>
+            <a href="Productos.html">Productos</a>
+            <a href="IniciarSesion.html">Iniciar Sesión</a>
+            <a href="CrearCuenta.html">Crear Cuenta</a>
+            <span class="carrito">🛒</span>
+        </nav>
+    </header>
 
-<main class="main-content">
+    <main class="main-content">
 
-<section class="recuperar-cuenta">
-    <h2>Recuperar Contraseña</h2>
-    <p class="descripcion">Ingresa tu correo para recibir un token de recuperación.</p>
+    <section class="recuperar-cuenta">
+        <h2>Recuperar Contraseña</h2>
+        <p class="descripcion">Ingresa tu correo para recibir un token de recuperación.</p>
 
-    <!-- Paso 1: Enviar token -->
-    <div class="paso paso-1">
-        <label>Correo registrado:</label>
-        <input type="email" id="correo" placeholder="Ej: correo@ejemplo.com">
-        <button class="btn-enviar">Enviar Token</button>
-    </div>
+        <!-- Paso 1: Enviar token -->
+        <div class="paso paso-1">
+            <label>Correo registrado:</label>
+            <input type="email" id="correo" placeholder="Ej: correo@ejemplo.com">
+            <button class="btn-enviar">Enviar Token</button>
+        </div>
 
-    <!-- Paso 2: Validar token -->
-    <div class="paso paso-2" style="display:none;">
-        <label>Ingresa el token enviado a tu correo:</label>
-        <input type="text" id="token" placeholder="Ej: AB12CD">
-        <button class="btn-validar">Validar Token</button>
-    </div>
+        <!-- Paso 2: Validar token -->
+        <div class="paso paso-2" style="display:none;">
+            <label>Ingresa el token enviado a tu correo:</label>
+            <input type="text" id="token" placeholder="Ej: AB12CD">
+            <button class="btn-validar">Validar Token</button>
+        </div>
 
-    <!-- Paso 3: Nueva contraseña -->
-    <div class="paso paso-3" style="display:none;">
-        <label>Nueva contraseña:</label>
-        <input type="password" id="newPassword" placeholder="Nueva contraseña">
+        <!-- Paso 3: Nueva contraseña -->
+        <div class="paso paso-3" style="display:none;">
+            <label>Nueva contraseña:</label>
+            <input type="password" id="newPassword" placeholder="Nueva contraseña">
 
-        <button class="btn-cambiar">Cambiar Contraseña</button>
-    </div>
+            <button class="btn-cambiar">Cambiar Contraseña</button>
+        </div>
 
-    <p class="volver-link">
-        <a href="IniciarSesion.html">← Volver a Iniciar Sesión</a>
-    </p>
-</section>
+        <p class="volver-link">
+            <a href="IniciarSesion.html">← Volver a Iniciar Sesión</a>
+        </p>
+    </section>
 
-</main>
+    </main>
 
-<footer class="footer">
-    <p>Sexta Armonía © 2025</p>
-</footer>
+    <footer class="footer">
+        <p>Sexta Armonía. Proyecto Universitario Correspondiente a la Materia de Programacion de Sistemas Web © 2025 </p>
+    </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/RecuperarContrasena.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/Alerts.js"></script>
+    <script src="../js/RecuperarContrasena.js"></script>
 
 </body>
 </html>

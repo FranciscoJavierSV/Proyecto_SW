@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("carritoIcon:", carritoIcon);
     console.log("panelCarrito:", panelCarrito);
     console.log("cerrarBtn:", cerrarBtn);
-
+ 
     if (carritoIcon && panelCarrito) {
         carritoIcon.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cerrarBtn) {
         cerrarBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            console.log("❌ Cerrando carrito");
+            console.log("Cerrando carrito");
             panelCarrito.style.right = "-380px";
         });
     }
@@ -155,3 +155,8 @@ async function actualizarBadgeCarrito() {
         console.error("Error actualizando badge:", error);
     }
 }
+
+document.getElementById('wishlist-btn').addEventListener('click', function() {
+    const panel = document.getElementById('wishlist-panel');
+    panel.classList.toggle('hidden');
+});
