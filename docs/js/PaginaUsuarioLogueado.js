@@ -88,6 +88,10 @@ async function cargarProductos() {
             return;
         }
 
+        // Cargar wishlist UNA sola vez
+        const wishlist = await obtenerWishlist();
+        const wishlistIds = wishlist.map(item => item.producto_id);
+
         grid.innerHTML = "";
 
         data.products.forEach(prod => {
@@ -115,7 +119,9 @@ async function cargarProductos() {
             } else {
                 priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
             }
-            const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+
+            // Wishlist correcta usando la API
+            const estaEnWishlistActual = wishlistIds.includes(prod.id);
             const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
             const claseActiva = estaEnWishlistActual ? 'active' : '';
 
@@ -145,6 +151,7 @@ async function cargarProductos() {
         if (typeof activarBotonesCarrito === 'function') {
             activarBotonesCarrito();
         }
+
         activarBotonesWishlist();
 
     } catch (error) {
@@ -264,7 +271,7 @@ async function aplicarFiltros() {
   }
 }
 
-function renderProductos(productos) {
+async function renderProductos(productos) {
     const contenedor = document.querySelector(".grid-productos");
     if (!contenedor) return;
     
@@ -274,6 +281,10 @@ function renderProductos(productos) {
         contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
         return;
     }
+
+    // Cargar wishlist UNA sola vez
+    const wishlist = await obtenerWishlist();
+    const wishlistIds = wishlist.map(item => item.producto_id);
 
     productos.forEach(prod => {
         const card = document.createElement("div");
@@ -287,7 +298,8 @@ function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
-        const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+        // Wishlist correcta usando la API
+        const estaEnWishlistActual = wishlistIds.includes(prod.id);
         const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
         const claseActiva = estaEnWishlistActual ? 'active' : '';
 
@@ -317,6 +329,7 @@ function renderProductos(productos) {
     if (typeof activarBotonesCarrito === 'function') {
         activarBotonesCarrito();
     }
+
     activarBotonesWishlist();
 }
 
@@ -337,43 +350,55 @@ function limpiarFiltros() {
 
 function activarBotonesWishlist() {
     document.querySelectorAll('.btn-wishlist').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const productoId = btn.dataset.id;
-            
-            const productoCard = btn.closest('.producto');
-            const nombre = productoCard.querySelector('h3').textContent;
-            const descripcion = productoCard.querySelector('.descripcion').textContent;
-            const imagen = productoCard.querySelector('img').src.split('/').pop();
-            const precioTexto = productoCard.querySelector('.precio').textContent;
-            const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
 
-            const precioOfertaElem = productoCard.querySelector('.precio-oferta');
-            const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
-            
-            const producto = {
-                id: productoId,
-                nombre: nombre,
-                descripcion: descripcion,
-                imagen: imagen,
-                precio: precio,
-                ofertaP: ofertaP,
-                categoria: productoCard.dataset.categoria
-            };
+            const token = localStorage.getItem("token");
+            if (!token) {
+                mostrarAlertaLogin();
+                return;
+            }
 
-            if (typeof estaEnWishlist === 'function' && estaEnWishlist(productoId)) {
-                if (typeof eliminarDeWishlist === 'function') {
-                    eliminarDeWishlist(productoId);
-                }
+            // Obtener wishlist actual desde API
+            const wishlist = await obtenerWishlist();
+            const ids = wishlist.map(item => item.producto_id);
+            const yaEsta = ids.includes(Number(productoId));
+
+            // Construir objeto producto SOLO si se va a agregar
+            let producto = null;
+
+            if (!yaEsta) {
+                const productoCard = btn.closest('.producto');
+                const nombre = productoCard.querySelector('h3').textContent;
+                const descripcion = productoCard.querySelector('.descripcion').textContent;
+                const imagen = productoCard.querySelector('img').src.split('/').pop();
+                const precioTexto = productoCard.querySelector('.precio').textContent;
+                const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
+
+                const precioOfertaElem = productoCard.querySelector('.precio-oferta');
+                const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
+
+                producto = {
+                    id: productoId,
+                    nombre,
+                    descripcion,
+                    imagen,
+                    precio,
+                    ofertaP,
+                    categoria: productoCard.dataset.categoria
+                };
+            }
+
+            // Alternar agregar / eliminar
+            if (yaEsta) {
+                await eliminarDeWishlist(productoId);
             } else {
-                if (typeof agregarAWishlist === 'function') {
-                    agregarAWishlist(producto);
-                }
+                await agregarAWishlist(producto);
             }
-            
-            if (typeof actualizarCorazones === 'function') {
-                actualizarCorazones();
-            }
+
+            // Actualizar corazones globalmente
+            actualizarCorazones();
         });
     });
 }

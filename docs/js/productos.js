@@ -14,7 +14,11 @@ async function cargarProductos() {
             grid.innerHTML = "<p>Error al cargar productos.</p>";
             return;
         }
- 
+
+        // Cargar wishlist UNA sola vez
+        const wishlist = await obtenerWishlist();
+        const wishlistIds = wishlist.map(item => item.producto_id);
+
         grid.innerHTML = "";
 
         data.products.forEach(prod => {
@@ -28,19 +32,7 @@ async function cargarProductos() {
             const precioMostrar = tieneOferta ? prod.ofertaP : prod.precio;
             const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
-            let priceHtml = '';
-            if (prod.ofertaP && prod.ofertaP !== null && prod.ofertaP !== '') {
-                priceHtml = `
-                    <div class="precio">
-                        <span class="precio-original">$${parseFloat(prod.precio).toFixed(2)}</span>
-                        <br>
-                        <span class="precio-oferta">$${parseFloat(prod.ofertaP).toFixed(2)}</span>
-                    </div>
-                `;
-            } else {
-                priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
-            }
-            const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+            const estaEnWishlistActual = wishlistIds.includes(prod.id);
             const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
             const claseActiva = estaEnWishlistActual ? 'active' : '';
 
@@ -78,41 +70,29 @@ async function cargarProductos() {
 
 function activarBotonesWishlist() {
     document.querySelectorAll('.btn-wishlist').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const productoId = btn.dataset.id;
 
-            const productoCard = btn.closest('.producto');
-            const nombre = productoCard.querySelector('h3').textContent;
-            const descripcion = productoCard.querySelector('.descripcion').textContent;
-            const imagen = productoCard.querySelector('img').src.split('/').pop();
-            const precioTexto = productoCard.querySelector('.precio').textContent;
-            const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
-            
-            const precioOfertaElem = productoCard.querySelector('.precio-oferta');
-            const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
-            
-            const producto = {
-                id: productoId,
-                nombre: nombre,
-                descripcion: descripcion,
-                imagen: imagen,
-                precio: precio,
-                ofertaP: ofertaP,
-                categoria: productoCard.dataset.categoria
-            };
-            if (typeof estaEnWishlist === 'function' && estaEnWishlist(productoId)) {
-                if (typeof eliminarDeWishlist === 'function') {
-                    eliminarDeWishlist(productoId);
-                }
+            const token = localStorage.getItem("token");
+            if (!token) {
+                mostrarAlertaLogin();
+                return;
+            }
+
+            // Obtener wishlist actual
+            const wishlist = await obtenerWishlist();
+            const ids = wishlist.map(item => item.producto_id);
+            const yaEsta = ids.includes(Number(productoId));
+
+            if (yaEsta) {
+                await eliminarDeWishlist(productoId);
             } else {
-                if (typeof agregarAWishlist === 'function') {
-                    agregarAWishlist(producto);
-                }
+                await agregarAWishlist({ id: productoId });
             }
-            if (typeof actualizarCorazones === 'function') {
-                actualizarCorazones();
-            }
+
+            // Actualizar corazones en toda la página
+            actualizarCorazones();
         });
     });
 }
@@ -212,16 +192,20 @@ async function aplicarFiltros() {
   }
 }
 
-function renderProductos(productos) {
+async function renderProductos(productos) {
     const contenedor = document.querySelector(".grid-productos");
     if (!contenedor) return;
-    
+
     contenedor.innerHTML = "";
 
     if (!productos || productos.length === 0) {
         contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
         return;
     }
+
+    // ✅ Cargar wishlist una sola vez
+    const wishlist = await obtenerWishlist();
+    const wishlistIds = wishlist.map(item => item.producto_id);
 
     productos.forEach(prod => {
         const card = document.createElement("div");
@@ -235,7 +219,7 @@ function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
-        const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+        const estaEnWishlistActual = wishlistIds.includes(prod.id);
         const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
         const claseActiva = estaEnWishlistActual ? 'active' : '';
 
@@ -263,8 +247,9 @@ function renderProductos(productos) {
     });
 
     activarBotonesCarrito();
-    activarBotonesWishlist(); 
+    activarBotonesWishlist();
 }
+
 function limpiarFiltros() {
     // Reset slider
     const slider = document.getElementById('rangoPrecio');
