@@ -11,6 +11,7 @@ async function getCart(userId) {
         p.nombre,
         p.precio,
         p.ofertaP,
+        p.inventario,
         c.cantidad,
         c.subtotal,
         c.iva,
@@ -71,11 +72,19 @@ async function addCart(userId, productId, quantity) {
 
 async function getCartItem(userId, productId) {
   const [rows] = await pool.query(
-    "SELECT * FROM cart WHERE usuario_id = ? AND producto_id = ?",
+    `SELECT 
+        c.*, 
+        p.inventario,
+        p.precio,
+        p.ofertaP
+     FROM cart c
+     JOIN productos p ON c.producto_id = p.id
+     WHERE c.usuario_id = ? AND c.producto_id = ?`,
     [userId, productId]
   );
   return rows[0];
 }
+
 
 // -----------------------------
 // Actualizar cantidad
@@ -173,13 +182,13 @@ async function aplicarCupon(userId, codigo) {
   return { success: true };
 }
 
-// Limpiar carrito completo
+// Limpiar carrito
 async function clearCart(userId) {
   const [result] = await pool.query(
     "DELETE FROM cart WHERE usuario_id = ?",
     [userId]
   );
-  return result.affectedRows > 0;
+  return result;
 }
 
 module.exports = {

@@ -105,12 +105,24 @@ async function getProductsByPriceRange(min, max) {
 // Disminuir inventario (seguro)
 // ----------------------------------------
 async function decreaseInventory(productId, amount) {
+  console.log(">>> decreaseInventory llamado con:", { productId, amount });
+
   const [result] = await pool.query(
-    "UPDATE productos SET inventario = GREATEST(inventario - ?, 0) WHERE id = ?",
-    [amount, productId]
+    `
+    UPDATE productos 
+    SET inventario = inventario - ? 
+    WHERE id = ? 
+      AND inventario >= ?
+    `,
+    [amount, productId, amount]
   );
+
+  console.log(">>> Resultado del UPDATE:", result);
+
   return result.affectedRows > 0;
 }
+
+
 
 module.exports = {
   getProducts,

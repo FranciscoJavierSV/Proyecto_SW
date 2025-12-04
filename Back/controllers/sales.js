@@ -7,10 +7,11 @@ const bwipjs = require("bwip-js");
 const { v4: uuidv4 } = require("uuid");
 
 // --------------------------- IMPORTS ---------------------------
-const sales = require('../models/sales');
-const cart = require('../models/cart');
-const products = require('../models/products');
-const coupons = require('../models/coupons');
+const sales = require('../models/sales.js');
+const cart = require('../models/cart.js');
+const products = require('../models/products.js');
+const coupons = require('../models/coupons.js');
+const pool = require("../db/conexion.js");  
 
 // --------------------------- CREAR ORDEN ---------------------------
 const createOrder = async (req, res) => {
@@ -61,7 +62,13 @@ const createOrder = async (req, res) => {
     // ------------------------
     let count = 0;
 
+    console.log(">>> Items del carrito recibidos en createOrder:");
+    console.log(items);
+
     for (const item of items) {
+
+      console.log(">>> Restando inventario de producto:", item.producto_id, "cantidad:", item.cantidad);
+
       await sales.addSaleItem(
         saleId,
         item.producto_id,
@@ -162,18 +169,12 @@ const getOrderDetails = async (req, res) => {
 
 const getOrderPDF = async (req, res) => {
   try {
-    console.log("DEBUG POST /api/auth/ordenar/pdf - req.user:", req.user && req.user.id);
-    console.log("DEBUG body:", req.body && Object.keys(req.body));
+    //console.log("DEBUG POST /api/auth/ordenar/pdf - req.user:", req.user && req.user.id);
 
     const {
       customerName,
       customerEmail,
       items,
-      subtotal,
-      tax,
-      shipping,
-      coupon,
-      total,
       metodoPago
     } = req.body;
 
@@ -184,14 +185,47 @@ const getOrderPDF = async (req, res) => {
       });
     }
 
-    // Asegurar tmp existe
+    
+    const [[usuario]] = await pool.query(
+      `SELECT pais_id FROM usuarios WHERE id = ?`,
+      [req.user.id]
+    );
+
+    if (!usuario) {
+      return res.status(400).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // obtener iva y envio de la bd en la tabla paises
+    const [[pais]] = await pool.query(
+      `SELECT iva, envio FROM paises WHERE id = ?`,
+      [usuario.pais_id]
+    );
+
+    if (!pais) {
+      return res.status(400).json({ success: false, message: "País no encontrado" });
+    }
+
+    const ivaRate = Number(pais.iva);    // ejemplo: 0.16
+    const envio = Number(pais.envio);    // ejemplo: 100
+
+    // se calcula subtotal
+    const subtotal = items.reduce((acc, it) => {
+      const cantidad = it.cantidad || 1;
+      const precio = it.precioUnitario ?? (it.subtotal / cantidad);
+      return acc + (precio * cantidad);
+    }, 0);
+
+    // Base antes de IVA
+    const base = subtotal + envio;
+    const total = Number((base * (1 + ivaRate)).toFixed(2));
+
+    // Crear carpeta PDF temporal
     const tmpDir = path.join(__dirname, "..", "tmp");
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
 
     const pdfName = `order_${Date.now()}.pdf`;
     const pdfPath = path.join(tmpDir, pdfName);
 
-    // Crear doc
     const doc = new PDFDocument({ margin: 40 });
     const stream = fs.createWriteStream(pdfPath);
     doc.pipe(stream);
@@ -237,12 +271,11 @@ const getOrderPDF = async (req, res) => {
     doc.moveDown(2);
 
     doc.fontSize(16).text("Resumen de Pago").moveDown(0.5);
-    doc.fontSize(12).text(`Subtotal: $${Number(subtotal).toFixed(2)}`);
-    doc.text(`Impuestos: $${Number(tax || 0).toFixed(2)}`);
-    doc.text(`Envío: $${Number(shipping || 0).toFixed(2)}`);
-    if (coupon) doc.text(`Cupón aplicado: -$${Number(coupon).toFixed(2)}`);
+    doc.fontSize(12).text(`Subtotal: $${subtotal.toFixed(2)}`);
+    doc.text(`Envío: $${envio.toFixed(2)}`);
+    doc.text(`IVA (${ivaRate * 100}%): $${(base * ivaRate).toFixed(2)}`);
     doc.moveDown(0.5);
-    doc.fontSize(14).text(`TOTAL: $${Number(total).toFixed(2)}`);
+    doc.fontSize(14).text(`TOTAL: $${total.toFixed(2)}`);
 
     doc.moveDown(2);
 

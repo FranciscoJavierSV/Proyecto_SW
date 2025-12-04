@@ -26,6 +26,7 @@ router.post('/cart', verifyT, cartController.addToCart);
 router.patch('/cart/:productId', verifyT, cartController.updateCartItem);
 router.delete('/cart/:id', verifyT, cartController.deleteCartItem);
 router.post('/cart/coupon', verifyT, cartController.applyCoupon);
+router.delete("/cart", verifyT, cartController.clearCart);
 
 // ---- WISHLIST ----
 router.get('/wishlist', verifyT, wishlistController.getWishlist);

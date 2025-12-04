@@ -53,70 +53,81 @@ async function confirmPurchase(event) {
         ];
     }
 
-    // === CALCULAR TOTALES ===
-    const subtotal = items.reduce((s, it) => s + (it.subtotal ?? (it.precioUnitario * it.cantidad)), 0);
-    const tax = +(subtotal * 0.16).toFixed(2);
-    const shipping = 50.0;
-    const coupon = 0;
-    const total = +(subtotal + tax + shipping - coupon).toFixed(2);
+    const orderResp = await fetch("http://localhost:3000/api/auth/ordenar", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    });
 
-    // === PAYLOAD AL BACKEND ===
+    const orderResult = await orderResp.json();
+
+    if (!orderResp.ok || !orderResult.success) {
+        console.error(orderResult);
+        return Swal.fire("Error", orderResult.message || "No se pudo crear la orden.", "error");
+    }
+
+    console.log("Orden creada con ID:", orderResult.saleId);
+
+    // para generar pdf
     const payload = {
         customerName,
         customerEmail,
         items,
-        subtotal,
-        tax,
-        shipping,
-        coupon,
-        total,
         metodoPago
     };
 
-    try {
-        const response = await fetch("http://localhost:3000/api/auth/ordenar/pdf", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify(payload),
-        });
+    const pdfResp = await fetch("http://localhost:3000/api/auth/ordenar/pdf", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(payload),
+    });
 
-        const result = await response.json();
+    const result = await pdfResp.json();
 
-        if (!response.ok || !result.success) {
-            console.error(result);
-            return Swal.fire("Error", result.message || "No se pudo generar PDF", "error");
-        }
-
-        await Swal.fire({ icon: "success", title: "Compra finalizada", showConfirmButton: true });
-        await Swal.fire({
-            icon: "success",
-            title: "La nota se envió a tu correo electrónico",
-            text: `Se envió a ${customerEmail}`,
-            showConfirmButton: true
-        });
-
-        // Mostrar PDF si lo regresa el backend
-        if (result.pdfBase64) {
-            const byteCharacters = atob(result.pdfBase64);
-            const byteNumbers = Array.from(byteCharacters).map(c => c.charCodeAt(0));
-            const byteArray = new Uint8Array(byteNumbers);
-
-            const blob = new Blob([byteArray], { type: "application/pdf" });
-            const url = URL.createObjectURL(blob);
-            window.open(url, "_blank");
-        } else if (result.pdfUrl) {
-            window.open(result.pdfUrl, "_blank");
-        } else {
-            console.warn("No se devolvió pdfBase64 ni pdfUrl desde el servidor.");
-        }
-
-    } catch (error) {
-        console.error("Error al generar PDF:", error);
-        Swal.fire("Error", "Ocurrió un error al generar la nota.", "error");
+    if (!pdfResp.ok || !result.success) {
+        console.error(result);
+        return Swal.fire("Error", result.message || "No se pudo generar el PDF", "error");
     }
+
+    await Swal.fire({
+        icon: "success",
+        title: "Compra finalizada",
+        showConfirmButton: true
+    });
+
+    await Swal.fire({
+        icon: "success",
+        title: "La nota se envió a tu correo electrónico",
+        text: `Se envió a ${customerEmail}`,
+        showConfirmButton: true
+    });
+
+    // se limpia carrito
+    await fetch("http://localhost:3000/api/auth/cart", {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    });
+
+    // el pdf se abre en una pestaña nueva
+    if (result.pdfBase64) {
+        const byteCharacters = atob(result.pdfBase64);
+        const byteNumbers = Array.from(byteCharacters).map(c => c.charCodeAt(0));
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+    }
+
+    setTimeout(() => {
+        window.location.href = "/html/PaginaUsuarioLogueado.html";
+    }, 1500);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
