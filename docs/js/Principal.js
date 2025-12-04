@@ -83,10 +83,40 @@ function inicializarContacto() {
         console.log("Respuesta del backend:", data);
 
         if (data.success) {
-            form.reset(); // limpiar
-            alert("Mensaje enviado correctamente ✔");
+            form.reset();
+            alertaExito("Tu mensaje ha sido enviado correctamente", "Mensaje enviado");
         } else {
-            alert("Hubo un error al enviar el mensaje.");
+            alertaError("Hubo un error al enviar el mensaje");
+        }
+    });
+}
+
+function inicializarCarrito() {
+    const carritoIcon = document.querySelector('.carrito');
+    if (!carritoIcon) return;
+
+    carritoIcon.addEventListener('click', function() {
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+        
+        if (!username && !token) {
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'Inicia sesión',
+                text: 'Debes iniciar sesión para acceder al carrito',
+                confirmButtonText: 'Ir a Iniciar Sesión',
+                confirmButtonColor: '#8B6B4A',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                cancelButtonColor: '#6B5642'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'html/IniciarSesion.html';
+                }
+            });
+        } else {
+            window.location.href = 'html/PaginaUsuarioLogueado.html';
         }
     });
 }

@@ -7,6 +7,62 @@ const increaseText = document.getElementById("increase-text");
 const decreaseText = document.getElementById("decrease-text");
 const resetText = document.getElementById("reset-text");
 
+let currentFontSize = 16;
+let currentUserId = null;
+
+function obtenerUsuarioActual() {
+    const username = localStorage.getItem("username");
+    
+    if (username) {
+        currentUserId = username;
+        return currentUserId;
+    }
+    
+    const usuarioLogueado = sessionStorage.getItem("usuarioLogueado");
+    
+    if (usuarioLogueado) {
+        try {
+            const usuario = JSON.parse(usuarioLogueado);
+            currentUserId = usuario.idUsuario || usuario.id || usuario.email || usuario.username;
+            return currentUserId;
+        } catch (error) {
+            currentUserId = usuarioLogueado;
+            return currentUserId;
+        }
+    }
+    
+    return null;
+}
+
+function guardarPreferencia(clave, valor) {
+    if (!currentUserId) {
+        console.warn("No hay usuario logueado");
+        alertaError("No hay usuario logueado");
+        return;
+    }
+    
+    const claveCompleta = `accessibility_${currentUserId}_${clave}`;
+    localStorage.setItem(claveCompleta, valor);
+}
+
+function obtenerPreferencia(clave) {
+    if (!currentUserId) {
+        return null;
+    }
+    
+    const claveCompleta = `accessibility_${currentUserId}_${clave}`;
+    return localStorage.getItem(claveCompleta);
+}
+
+function limpiarPreferenciasUsuario() {
+    if (!currentUserId) {
+        return;
+    }
+    
+    localStorage.removeItem(`accessibility_${currentUserId}_theme`);
+    localStorage.removeItem(`accessibility_${currentUserId}_fontSize`);
+}
+
 btnPanel.addEventListener("click", () => {
     panel.classList.toggle("hidden");
 });

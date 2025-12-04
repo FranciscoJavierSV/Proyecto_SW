@@ -71,8 +71,7 @@ async function cargarProductos() {
 
 async function confirmarEliminacion(e) {
     const id = e.target.dataset.id;
-
-    const confirmar = confirm("¿Seguro que deseas eliminar este producto? Esta acción es permanente.");
+    const confirmar = alertaConfirmacion("¿Seguro que deseas eliminar este producto? Esta acción es permanente.");
 
     if (!confirmar) return;
 
@@ -84,18 +83,18 @@ async function confirmarEliminacion(e) {
         });
 
         if (!res.success) {
-            alert("Error al eliminar: " + res.message);
+            alertaError(res.message);
             return;
         }
 
-        alert("Producto eliminado correctamente.");
+        alertaExito("Producto eliminado correctamente.");
 
         // Recargar lista
         cargarProductos();
 
     } catch (error) {
         console.error("Error al eliminar producto:", error);
-        alert("No se pudo eliminar el producto.");
+        alertaError("No se pudo eliminar el producto.");
     }
 }
 

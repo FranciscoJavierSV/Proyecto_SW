@@ -19,7 +19,7 @@ document.querySelector(".btn-enviar").addEventListener("click", async () => {
     const correo = correoInput.value.trim();
 
     if (!correo) {
-        alert("Ingresa tu correo.");
+        alertaWarning("Ingresa tu correo");
         return;
     }
 
@@ -33,11 +33,11 @@ document.querySelector(".btn-enviar").addEventListener("click", async () => {
     console.log("Paso 1:", data);
 
     if (!data.success) {
-        alert(data.message);
+        alertaError(data.message);
         return;
     }
 
-    alert("Token enviado. Revisa tu correo.");
+    alertaExito("Token enviado. Revisa tu correo.");
 
     correoGuardado = correo;
 
@@ -53,7 +53,7 @@ document.querySelector(".btn-validar").addEventListener("click", async () => {
     const token = tokenInput.value.trim();
 
     if (!token) {
-        alert("Ingresa el token.");
+        alertaWarning("Ingresa el token.");
         return;
     }
 
@@ -67,11 +67,11 @@ document.querySelector(".btn-validar").addEventListener("click", async () => {
     console.log("Paso 2:", data);
 
     if (!data.success) {
-        alert("Token inválido o expirado.");
+        alertaError("Token inválido o expirado.");
         return;
     }
 
-    alert("Token válido. Ahora escribe tu nueva contraseña.");
+    alertaExito("Token válido. Ahora escribe tu nueva contraseña.");
 
     paso2.style.display = "none";
     paso3.style.display = "block";
@@ -85,7 +85,7 @@ document.querySelector(".btn-cambiar").addEventListener("click", async () => {
     const newPassword = newPasswordInput.value.trim();
 
     if (!newPassword) {
-        alert("Ingresa tu nueva contraseña.");
+        alertaWarning("Ingresa tu nueva contraseña.");
         return;
     }
 
@@ -102,10 +102,10 @@ document.querySelector(".btn-cambiar").addEventListener("click", async () => {
     console.log("Paso 3:", data);
 
     if (!data.success) {
-        alert(data.message);
+        alertaError(data.message);
         return;
     }
 
-    alert("Contraseña actualizada correctamente.");
+    alertaExito("Contraseña actualizada correctamente.");
     window.location.href = "IniciarSesion.html";
 });

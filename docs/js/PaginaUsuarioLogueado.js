@@ -23,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     if (cerrarBtn) {
-        cerrarBtn.addEventListener("click", () => {
+        cerrarBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Cerrando carrito");
             panelCarrito.style.right = "-380px";
         });
     }

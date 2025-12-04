@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             labels: ["Bebida", "Salado", "Dulce"],
             datasets: [{
                 data: cantidades,
-                backgroundColor: ["#C19A6B", "#8B6B4A", "#D4C4B0"]
+                backgroundColor: ["#913d4cff", "#e57d90", "#f8c6cfff"]
             }]
         },
         options: { plugins: { legend: { display: false } } }
