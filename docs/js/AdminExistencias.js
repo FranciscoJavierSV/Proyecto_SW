@@ -77,6 +77,7 @@ function llenarTabla(productos) {
             <td>${prod.nombre}</td>
             <td>${prod.categoria}</td>
             <td class="stock-number">${prod.inventario}</td>
+            <td>${prod.precio}</td>
             <td>${prod.descripcion}</td>
             <td>${estado}</td>
         `;

@@ -271,4 +271,57 @@
   color: #e57d90;
   margin-top: 5px;
 }
- 
+
+/* Estilos de listas de productos */
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-list li {
+  display: flex;
+  align-items: center;
+  
+  /* Espaciado */
+  padding: 12px 15px;
+  border-radius: 12px;
+
+  /* Colores pastel */
+  background: #fff5f7;
+  border: 2px solid #f7d6dc;
+
+  /* Letra */
+  font-size: 15px;
+  color: #8b5b6a;
+  font-weight: 500;
+
+  /* Animación */
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.product-list li:hover {
+  background: #ffe8ed;
+  transform: translateX(4px);
+}
+
+/* Nombre del producto */
+.product-list li span:first-child {
+  flex: 1;
+  font-weight: bold;
+  color: #b04a5d;
+}
+
+/* Ajustes para cantidades y precios */
+.product-list li .ventas-count {
+  background: #f99aaa;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 8px;
+  margin-left: 10px;
+  min-width: 70px;
+  text-align: center;
+}
