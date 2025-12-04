@@ -19,7 +19,8 @@ const createOrder = async (req, res) => {
     const userId = req.user.id;
 
     // Obtener carrito completo del usuario
-    const items = await cart.getCart(userId);
+    const cartData = await cart.getCart(userId);
+    const items = cartData.items;   // ← AQUÍ tomas el arreglo real
 
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -36,6 +37,15 @@ const createOrder = async (req, res) => {
     let iva = 0;
     let total = 0;
     let codigoCupon = null;
+
+    // Normalizar valores del carrito: convertir strings formateados a números reales
+    for (const item of items) {
+      item.subtotal = Number(item.subtotal) || 0;
+      item.descuento = Number(item.descuento) || 0;
+      item.iva = Number(item.iva) || 0;
+      item.total = Number(item.total) || 0;
+    }
+
 
     for (const item of items) {
       subtotal += item.subtotal;
@@ -97,9 +107,10 @@ const createOrder = async (req, res) => {
     // 5. Vaciar carrito - AGREGAR ESTA FUNCIÓN AL MODELO
     // Temporal: eliminar todos los items
     const cartItems = await cart.getCart(userId);
-    for (const item of cartItems) {
+    for (const item of cartItems.items) {
       await cart.deleteItem(item.id, userId);
     }
+
 
     return res.json({
       success: true,
