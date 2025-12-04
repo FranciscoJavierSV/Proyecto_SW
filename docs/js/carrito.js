@@ -1,8 +1,14 @@
 function activarBotonesCarrito() {
-  const token = localStorage.getItem("token");
 
   document.querySelectorAll(".btn-agregar").forEach((btn) => {
     btn.addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alertaError("Debes iniciar sesión para agregar productos.");
+        return;
+      }
+
       const productId = btn.dataset.id;
 
       const data = await apiPost(
@@ -10,6 +16,8 @@ function activarBotonesCarrito() {
         { productId, quantity: 1 },
         { Authorization: "Bearer " + token }
       );
+ 
+       console.log("Respuesta agregar:", data); // <-- IMPORTANTE
 
       if (data.success) {
         cargarCarrito();
@@ -18,8 +26,8 @@ function activarBotonesCarrito() {
       }
     });
   });
-}
-
+} 
+ 
 async function cargarCarrito() {
   const token = localStorage.getItem("token");
   

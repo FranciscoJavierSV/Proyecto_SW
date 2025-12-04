@@ -14,7 +14,7 @@ async function cargarProductos() {
             grid.innerHTML = "<p>Error al cargar productos.</p>";
             return;
         }
-
+ 
         grid.innerHTML = "";
 
         data.products.forEach(prod => {
