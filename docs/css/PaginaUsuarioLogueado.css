@@ -230,7 +230,7 @@ body.dark .logout-btn:hover {
   top: 0;
   right: -380px;
   width: 350px;
-  height: 100vh;
+  height: calc(100vh - 55px);
   background: var(--bg-secondary);
   border-left: 3px solid var(--header-border);
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);

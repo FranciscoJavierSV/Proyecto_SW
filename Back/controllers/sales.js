@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const fsPromises = fs.promises;
 const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
 const bwipjs = require("bwip-js");
@@ -161,6 +162,9 @@ const getOrderDetails = async (req, res) => {
 
 const getOrderPDF = async (req, res) => {
   try {
+    console.log("DEBUG POST /api/auth/ordenar/pdf - req.user:", req.user && req.user.id);
+    console.log("DEBUG body:", req.body && Object.keys(req.body));
+
     const {
       customerName,
       customerEmail,
@@ -173,153 +177,168 @@ const getOrderPDF = async (req, res) => {
       metodoPago
     } = req.body;
 
-    if (!customerName || !customerEmail || !items || !subtotal || !total || metodoPago) {
+    if (!customerName || !customerEmail || !items || !Array.isArray(items) || items.length === 0 || metodoPago === undefined) {
       return res.status(400).json({
         success: false,
         message: "Faltan campos obligatorios.",
       });
     }
 
-    // Crear PDF temporal
-    const pdfName = `order_${Date.now()}.pdf`;
-    const pdfPath = path.join(__dirname, "..", "tmp", pdfName);
+    // Asegurar tmp existe
+    const tmpDir = path.join(__dirname, "..", "tmp");
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
 
+    const pdfName = `order_${Date.now()}.pdf`;
+    const pdfPath = path.join(tmpDir, pdfName);
+
+    // Crear doc
     const doc = new PDFDocument({ margin: 40 });
     const stream = fs.createWriteStream(pdfPath);
     doc.pipe(stream);
 
-    // ENCABEZADO - Datos de la compañia
-    const logoPath = path.join(
-      __dirname,
-      "..",
-      "docs",
-      "ImagenesPrincipal",
-      "f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg"
-    );
-
-    // Insertar logo si existe
+    // Encabezado: logo + nombre + lema
+    const logoPath = path.join(__dirname, "..", "assets", "logo.jpg");
     if (fs.existsSync(logoPath)) {
-      doc.image(logoPath, 40, 40, { width: 80 });
+      try {
+        doc.image(logoPath, 40, 40, { width: 80 });
+      } catch (err) {
+        console.warn("WARN: No se pudo insertar logo en PDF:", err.message);
+      }
     }
 
     doc
       .fontSize(20)
-      .text(process.env.COMPANY_NAME || "Nombre de la Compañía", 140, 50)
+      .text(process.env.COMPANY_NAME || "Sexta Armonia", 140, 50)
       .fontSize(12)
-      .text(
-        `"${process.env.COMPANY_SLOGAN || "Nuestro lema va aquí"}"`,
-        140,
-        75
-      );
+      .text(`"${process.env.COMPANY_SLOGAN || "Tu café favorito a un clic de distancia"}"`, 140, 75);
 
-    // Fecha y hora
+    const now = new Date();
     doc
       .fontSize(10)
-      .text(`Fecha: ${new Date().toLocaleDateString()}`, 40, 130)
-      .text(`Hora: ${new Date().toLocaleTimeString()}`);
+      .text(`Fecha: ${now.toLocaleDateString()}`, 40, 130)
+      .text(`Hora: ${now.toLocaleTimeString()}`);
 
     doc.moveDown(2);
 
-    // DATOS DEL CLIENTE
-    doc
-      .fontSize(16)
-      .text("Información del Cliente")
-      .moveDown(0.5);
+    doc.fontSize(16).text("Información del Cliente").moveDown(0.5);
+    doc.fontSize(12).text(`Nombre: ${customerName}`).moveDown();
 
-    doc
-      .fontSize(12)
-      .text(`Nombre: ${customerName}`)
-      .moveDown();
-
-    // ITEMS DEL CARRITO
-    doc
-      .fontSize(16)
-      .text("Detalles de la Compra")
-      .moveDown();
-
+    doc.fontSize(16).text("Detalles de la Compra").moveDown();
     items.forEach((item, idx) => {
+      const cantidad = item.cantidad || 1;
+      const precioUnitario = item.precioUnitario ?? (item.subtotal ? item.subtotal / cantidad : 0);
+      const totalItem = item.total ?? item.subtotal ?? (precioUnitario * cantidad);
+
       doc
         .fontSize(12)
-        .text(
-          `${idx + 1}. ${item.nombre} | Cant: ${item.cantidad} | Precio: $${(item.subtotal / item.cantidad).toFixed(2)} | Total: $${item.total}`
-        );
+        .text(`${idx + 1}. ${item.nombre || item.title || "Producto"} | Cant: ${cantidad} | Precio: $${Number(precioUnitario).toFixed(2)} | Total: $${Number(totalItem).toFixed(2)}`);
     });
 
     doc.moveDown(2);
 
-    // RESUMEN DEL COBRO
-    doc
-      .fontSize(16)
-      .text("Resumen de Pago")
-      .moveDown(0.5);
-
-    doc.fontSize(12).text(`Subtotal: $${subtotal}`);
-    doc.text(`Impuestos: $${tax || 0}`);
-    doc.text(`Envío: $${shipping || 0}`);
-
-    if (coupon) {
-      doc.text(`Cupón aplicado: -$${coupon}`);
-    }
-
+    doc.fontSize(16).text("Resumen de Pago").moveDown(0.5);
+    doc.fontSize(12).text(`Subtotal: $${Number(subtotal).toFixed(2)}`);
+    doc.text(`Impuestos: $${Number(tax || 0).toFixed(2)}`);
+    doc.text(`Envío: $${Number(shipping || 0).toFixed(2)}`);
+    if (coupon) doc.text(`Cupón aplicado: -$${Number(coupon).toFixed(2)}`);
     doc.moveDown(0.5);
-    doc.fontSize(14).text(`TOTAL: $${total}`, { bold: true });
+    doc.fontSize(14).text(`TOTAL: $${Number(total).toFixed(2)}`);
 
     doc.moveDown(2);
 
-    // Si es pago en OXXO se genera un código de barras
-    if (paymentMethod === "pagoOxxo"){
-      // Generamos un ID único para el pago OXXO
+    if (metodoPago === "oxxo") {
       const oxxoReference = uuidv4().replace(/-/g, "").slice(0, 12);
 
-      doc
-        .fontSize(18)
-        .text("PAGO EN OXXO")
-        .moveDown();
+      doc.fontSize(18).text("PAGO EN OXXO").moveDown();
+      doc.fontSize(12).text("Presenta este código en caja para realizar tu pago.").moveDown();
 
-      doc
-        .fontSize(12)
-        .text("Presenta este código en caja para realizar tu pago.")
-        .moveDown();
-
-      // Generar código de barras con bwip-js
-      const barcodeBuffer = await bwipjs.toBuffer({
-        bcid: "code128",       // Formato estándar
-        text: oxxoReference,   // Referencia OXXO
-        scale: 3,
-        height: 15,
-        includetext: true,
-        textxalign: "center",
-      });
-
-      // Insertar en PDF
-      doc.image(barcodeBuffer, { width: 260 });
+      try {
+        const barcodeBuffer = await bwipjs.toBuffer({
+          bcid: "code128",
+          text: oxxoReference,
+          scale: 3,
+          height: 15,
+          includetext: true,
+          textxalign: "center",
+        });
+        doc.image(barcodeBuffer, { width: 260 });
+      } catch (err) {
+        console.warn("WARN: No se pudo generar código de barras:", err.message);
+      }
 
       doc.moveDown(1);
       doc.fontSize(12).text(`Referencia: ${oxxoReference}`);
+      doc.moveDown(1);
     }
 
-    // Finalizar PDF
     doc.end();
 
-    // ENVIAR
-    stream.on("finish", async () => {
-      await sendOrderEmail(customerName, customerEmail, pdfPath);
-
-      res.status(200).json({
-        success: true,
-        message: "PDF generado y correo enviado.",
-        pdfFile: pdfName,
-      });
-
-      // Eliminar archivo temporal
-      fs.unlink(pdfPath, () => {});
+    // Esperar a que se escriba el archivo
+    await new Promise((resolve, reject) => {
+      stream.on("finish", resolve);
+      stream.on("error", reject);
     });
 
+    const buffer = await fsPromises.readFile(pdfPath);
+    const pdfBase64 = buffer.toString("base64");
+
+    // ===== RESPONDEMOS AL FRONT PRIMERO para que no se quede colgado =====
+    res.json({
+      success: true,
+      message: "PDF generado (y se intentará enviar por correo).",
+      pdfName,
+      pdfBase64
+    });
+
+    // ===== AHORA intentamos enviar correo, pero NO bloqueamos la respuesta =====
+    (async () => {
+      try {
+        let transporter;
+        // Si no tienes EMAIL_USER/EAMIL_PASS configurados (dev), usa ethereal
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+          const testAccount = await nodemailer.createTestAccount();
+          transporter = nodemailer.createTransport({
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
+            auth: {
+              user: testAccount.user,
+              pass: testAccount.pass
+            }
+          });
+          console.log("Using Ethereal test account for email preview.");
+        } else {
+          transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+          });
+        }
+
+        const info = await transporter.sendMail({
+          from: `"${process.env.COMPANY_NAME || "Tienda"}" <${process.env.EMAIL_USER || 'no-reply@example.com'}>`,
+          to: customerEmail,
+          subject: "Resumen de tu compra",
+          html: `<p>Hola <strong>${customerName}</strong>,</p><p>Gracias por tu compra. Adjunto encontrarás la nota de compra en PDF.</p>`,
+          attachments: [
+            { filename: "order.pdf", content: buffer, contentType: "application/pdf" }
+          ],
+        });
+
+        console.log("Email enviado (info):", info && info.messageId);
+        if (nodemailer.getTestMessageUrl && info) {
+          console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+        }
+      } catch (mailErr) {
+        console.error("ERROR al enviar email (no es crítico):", mailErr);
+      } finally {
+        // limpiar archivo temporal (opcional)
+        try { fs.unlinkSync(pdfPath); } catch (e) {}
+      }
+    })();
+
   } catch (error) {
-    console.error("Error en getOrderPDF:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error en el servidor" });
+    console.error("ERROR PDF:", error);
+    return res.status(500).json({ success:false, message: "Error al generar PDF", error: error.message });
   }
 };
 
