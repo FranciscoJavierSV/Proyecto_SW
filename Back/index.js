@@ -8,15 +8,12 @@ const cors = require("cors");
 // Inicializa la aplicación
 const app = express();
 
-<<<<<<< HEAD
-=======
 const allowedOrigins = [
   "https://franciscojaviersv.github.io",
   "http://localhost:5500",
   "http://127.0.0.1:5500",
 ];
 
->>>>>>> 58292eb5e80d70f4718049e7c7f374006fdf82e9
 // Middleware para procesar JSON y habilitar CORS
 app.use(express.json()); 
 app.use(cors({
