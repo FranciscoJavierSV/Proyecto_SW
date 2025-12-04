@@ -80,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const pais      = document.getElementById("pais").value;
             const pass      = document.getElementById("pass").value.trim();
             const pass2     = document.getElementById("pass2").value.trim();
+            // leer radio "suscripcion"
+            const suscripcion = document.querySelector('input[name="suscripcion"]:checked').value;
+            const suscribirse = suscripcion === "si"; 
 
             if (!username || !correo || !pais || !pass || !pass2) {
                 alertaWarning("Completa todos los campos");
@@ -95,7 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 username,
                 contrasena: pass,
                 correo,
-                pais  
+                pais,
+                suscribirse
             });
 
             if (!res.success) {
