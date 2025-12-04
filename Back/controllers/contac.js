@@ -75,15 +75,12 @@ const sendContact = async (req, res) => {
 
 
 // Funcion para suscribirse en caso de hacerlo 
-const subscribe = async (req, res) => {
+const subscribe = async ({ nombre, email }) => {
   try {
-    const { nombre, email } = req.body;
 
     if (!email || !nombre) {
-      return res.status(400).json({
-        success: false,
-        message: "Nombre y correo son requeridos para suscribirse"
-      });
+      console.error("Faltan datos para suscripción");
+      return;
     }
 
     // Rutas absolutas a imágenes locales
@@ -136,17 +133,10 @@ const subscribe = async (req, res) => {
       ]
     });
 
-    return res.status(200).json({
-      success: true,
-      message: `Suscripción exitosa. Cupón enviado a ${email}`
-    });
+    console.log("Correo de suscripción enviado a:", email);
 
   } catch (error) {
     console.error("Error en suscripción:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error en el servidor"
-    });
   }
 };
 
