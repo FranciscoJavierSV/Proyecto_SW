@@ -73,7 +73,6 @@ async function cargarCarrito() {
     let subtotalTotal = 0;
     let ivaTotal = 0;
     let totalGeneral = 0;
-
     cart.forEach((item) => {
       subtotalTotal += parseFloat(item.subtotal);
       ivaTotal += parseFloat(item.iva);
@@ -91,7 +90,7 @@ async function cargarCarrito() {
             <span class="cantidad">${item.cantidad}</span>
             <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
           </div>
-          <p>$${item.total}</p>
+          <p>$${item.total} x ${item.cantidad} = $${(item.precio * item.cantidad).toFixed(2)}</p>
         </div>
         <button class="btn-eliminar" data-cart-id="${item.id}">
           <i class="fa-regular fa-trash-can"></i>
