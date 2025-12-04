@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(res.user.rol === "admin"){
                 Swal.fire({
-                    title: "¡Bienvenid@!",
+                    title: "¡Bienvenido administrador!",
                     text: "Inicio de sesión exitoso",
                     icon: "success",
                     confirmButtonColor: "#8b6b4a",
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             else{
                 Swal.fire({
-                    title: "¡Bienvenido administrador!",
+                    title: "¡Bienvenid@!",
                     text: "Inicio de sesión exitoso",
                     icon: "success",
                     confirmButtonColor: "#ec85b2ff",

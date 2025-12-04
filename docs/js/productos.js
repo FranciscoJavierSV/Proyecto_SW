@@ -73,6 +73,61 @@ async function cargarProductos() {
     }
 }
 
+function activarBotonesCarrito() {
+    const botones = document.querySelectorAll(".btn-agregar");
+
+    botones.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                Swal.fire({
+                    title: "No has iniciado sesión",
+                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#8b6b4a",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ir a iniciar sesión",
+                    cancelButtonText: "Cancelar"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "../html/IniciarSesion.html"; 
+                    }
+                });
+                return;
+            }
+
+        });
+    });
+
+    const btnCarrito = document.querySelector(".carrito");
+    if (btnCarrito) {
+        btnCarrito.addEventListener("click", () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                Swal.fire({
+                    title: "No has iniciado sesión",
+                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#8b6b4a",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ir a iniciar sesión",
+                    cancelButtonText: "Cancelar"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "../html/IniciarSesion.html"; 
+                    }
+                });
+                return;
+            }
+
+        });
+    }
+}
+
 function inicializarFiltros() {
     const slider = document.getElementById('rangoPrecio');
     const precioMax = document.getElementById('precioMax');

@@ -98,11 +98,11 @@ async function getSalesByCategory() {
   `);
   return rows;
 }
-
+ 
 async function getCompanyTotalSales() {
   const [rows] = await pool.query(`
-    SELECT SUM(total) AS totalGeneral 
-    FROM sales
+    SELECT SUM(subtotal) AS totalGeneral
+    FROM sales_items
   `);
 
   return rows[0].totalGeneral || 0;
@@ -112,13 +112,13 @@ async function getSalesByProduct() {
   const [rows] = await pool.query(`
     SELECT 
       p.nombre AS producto,
-      si.categoria,
+      p.categoria AS categoria,
       SUM(si.cantidad) AS cantidadVendida,
       SUM(si.subtotal) AS totalGenerado
     FROM sales_items si
     INNER JOIN productos p ON si.producto_id = p.id
-    GROUP BY si.producto_id, si.categoria
-    ORDER BY si.categoria, producto
+    GROUP BY si.producto_id, p.categoria
+    ORDER BY p.categoria, producto
   `);
 
   return rows;

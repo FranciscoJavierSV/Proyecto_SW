@@ -1,6 +1,6 @@
 // ALERTA DE ÉXITO
 function alertaExito(mensaje, titulo = "Éxito") {
-    Swal.fire({
+    return Swal.fire({
         title: titulo,
         text: mensaje,
         icon: "success",

@@ -169,7 +169,7 @@ form.addEventListener("submit", async (e) => {
         );
 
         if (response.success) {
-            alertaExito("Producto actualizado correctamente");
+            await alertaExito("Producto actualizado correctamente");
             location.reload();
         } else {
             alertaError("Error al actualizar producto");

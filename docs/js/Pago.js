@@ -9,7 +9,7 @@ async function mostrarFormularioPago() {
     if (metodo === "oxxo") document.getElementById("pagoOxxo").classList.remove("oculto");
     if (metodo === "transferencia") document.getElementById("pagoTransferencia").classList.remove("oculto");
 }
-
+ 
 async function confirmPurchase(event) {
     if (event?.preventDefault) event.preventDefault();
 
@@ -112,7 +112,7 @@ async function confirmPurchase(event) {
         headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
-    });
+    }); 
 
     // el pdf se abre en una pestaña nueva
     if (result.pdfBase64) {
