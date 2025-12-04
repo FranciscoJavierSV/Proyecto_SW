@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css/Pago.css" />
     <title>Datos de envío y pago</title>
+    <script src="https://kit.fontawesome.com/8c4039e060.js" crossorigin="anonymous"></script>
     <link
       rel="icon"
       type="image/jpg"
@@ -109,6 +110,24 @@
       </div>
     </section>
 
+    <div id="accessibility-btn">
+        <i class="fas fa-universal-access"></i>
+    </div>
+
+    <div id="accessibility-panel" class="hidden">
+        <h3>Accesibilidad</h3>
+        
+        <button id="toggle-theme" class="acc-btn icon-btn">
+            <i id="theme-icon" class="fas fa-moon"></i> Cambiar tema
+        </button>
+
+        <div class="text-size-controls">
+            <button id="decrease-text" class="acc-btn">A-</button>
+            <button id="reset-text" class="acc-btn">A</button>
+            <button id="increase-text" class="acc-btn">A+</button>
+        </div>
+    </div>
+
     <footer class="footer">
       <p>
         Sexta Armonía. Proyecto Universitario Correspondiente a Programación Web © 2025
@@ -119,5 +138,6 @@
     <script src="../js/api.js"></script>
     <script src="../js/Alerts.js"></script>
     <script src="../js/Pago.js"></script>
+    <script src="../js/Accesibilidad.js"></script>
   </body>
 </html>
