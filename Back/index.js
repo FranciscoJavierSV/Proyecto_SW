@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 // Configura el puerto desde .env y levanta el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo`);
 });
 
 // Exporta la app para pruebas u otros usos

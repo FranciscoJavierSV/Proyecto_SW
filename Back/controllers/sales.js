@@ -359,6 +359,7 @@ const sendOrderEmail = async (customerName, customerEmail, pdfPath) => {
 };
 
 
+// --------------------------- GRÁFICA DE VENTAS ---------------------------
 const getSalesChart = async (req, res) => {
   try {
     const categorias = await sales.getSalesByCategory();
@@ -369,7 +370,11 @@ const getSalesChart = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    console.error("Error en getSalesChart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error en el servidor"
+    });
   }
 };
 
