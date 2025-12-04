@@ -39,7 +39,7 @@ async function cargarExistencias() {
 
     } catch (error) {
         console.error("Error obteniendo productos:", error);
-        Swal.fire("Error", "No se pudieron cargar las existencias", "error");
+        alertaError("No se pudieron cargar las existencias");
     }
 }
 

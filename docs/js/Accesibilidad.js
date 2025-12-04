@@ -37,6 +37,7 @@ function obtenerUsuarioActual() {
 function guardarPreferencia(clave, valor) {
     if (!currentUserId) {
         console.warn("No hay usuario logueado");
+        alertaError("No hay usuario logueado");
         return;
     }
     

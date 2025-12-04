@@ -210,6 +210,16 @@ textarea {
   border: 2px dashed #e5b7bf;
   margin-top: 8px;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Filas dobles del form */

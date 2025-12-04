@@ -14,7 +14,7 @@ function activarBotonesCarrito() {
       if (data.success) {
         cargarCarrito();
       } else {
-        alert(data.message || "Error al agregar producto");
+        alertaError(data.message || "Error al agregar producto");
       }
     });
   });
@@ -120,7 +120,7 @@ function activarBotonesEliminar() {
       if (data.success) {
         cargarCarrito();
       } else {
-        alert(data.message);
+        alertaError(data.message);
       }
     });
   });
