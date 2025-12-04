@@ -9,17 +9,30 @@ const cors = require("cors");
 const app = express();
 
 // Middleware para procesar JSON y habilitar CORS
-app.use(express.json()); 
-app.use(cors({
-  origin: [
-    "https://franciscojaviersv.github.io",
-    "http://127.0.0.1:5500",
-    "http://localhost:5500"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(express.json());
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://franciscojaviersv.github.io",
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+      ];
+
+      // Permitir peticiones sin origen (como Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS: " + origin));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Importa las rutas
 const authRoutes = require("./routes/authRoutes");
