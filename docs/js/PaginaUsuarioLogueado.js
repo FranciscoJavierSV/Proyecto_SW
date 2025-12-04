@@ -155,3 +155,8 @@ async function actualizarBadgeCarrito() {
         console.error("Error actualizando badge:", error);
     }
 }
+
+document.getElementById('wishlist-btn').addEventListener('click', function() {
+    const panel = document.getElementById('wishlist-panel');
+    panel.classList.toggle('hidden');
+});
