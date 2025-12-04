@@ -1,6 +1,9 @@
 const { enviarCorreo } = require('../utils/mailer');
 const nodemailer = require("nodemailer");
 const path = require("path");
+const { createCoupon } = require('../models/cuponModel');
+const nodemailer = require('nodemailer');
+
 
 // Contacto y suscripción
 const sendContact = async (req, res) => {
@@ -74,9 +77,75 @@ const sendContact = async (req, res) => {
 
 const subscribe = async (req, res) => {
   try {
-    // Suscribirse y recibir cupón
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "El correo es requerido para suscribirse"
+      });
+    }
+
+    // Generar código único para el cupón
+    const codigo = "WELCOME-" + Math.floor(Math.random() * 100000);
+
+    // Definir datos del cupón
+    const nuevoCupon = {
+      codigo,
+      tipo: "descuento",
+      valor: 10,
+      expiracion: new Date(Date.now() + 7*24*60*60*1000), // expira en 7 días
+      uso_maximo: 1,
+      activo: 1
+    };
+
+    // Crear el cupón en la base de datos
+    const creado = await createCoupon(nuevoCupon);
+
+    if (!creado) {
+      return res.status(500).json({
+        success: false,
+        message: "No se pudo crear el cupón"
+      });
+    }
+
+    // Configurar transporte de correo (ejemplo con Gmail, pero puedes usar SMTP propio)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAIL_USER, // tu correo
+        pass: process.env.MAIL_PASS  // tu contraseña o app password
+      }
+    });
+
+    // Definir contenido del correo
+    const mailOptions = {
+      from: '"Mi Tienda" <no-reply@mitienda.com>',
+      to: email,
+      subject: '¡Gracias por suscribirte! Aquí está tu cupón 🎁',
+      text: `Hola, gracias por suscribirte. Tu cupón es: ${codigo}. 
+             Úsalo antes del ${nuevoCupon.expiracion.toLocaleDateString()}.`,
+      html: `<p>Hola, gracias por suscribirte 🙌</p>
+             <p>Tu cupón es: <b>${codigo}</b></p>
+             <p>Úsalo antes del <b>${nuevoCupon.expiracion.toLocaleDateString()}</b>.</p>`
+    };
+
+    // Enviar correo
+    await transporter.sendMail(mailOptions);
+
+    // Responder al frontend
+    return res.status(200).json({
+      success: true,
+      message: `Suscripción exitosa. Cupón enviado a ${email}`,
+      coupon: codigo
+    });
+
   } catch (error) {
-    // Manejo de errores
+    console.error("Error en suscripción:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error en el servidor"
+    });
   }
 };
 
