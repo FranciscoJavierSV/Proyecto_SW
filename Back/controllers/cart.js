@@ -9,10 +9,10 @@ const { json } = require('express');
 // Obtener carrito del usuario
 const getCart = async (req, res) => {
   try {
-    console.log("DEBUG GET /api/auth/cart - req.user:", req.user && req.user.id); // <- LOG
+    //console.log("DEBUG GET /api/auth/cart - req.user:", req.user && req.user.id); // <- LOG
     const userId = req.user.id;
     const verCarrito = await cart.getCart(userId);
-    console.log("DEBUG GET /api/auth/cart - itemsFound:", verCarrito.length); // <- LOG
+    //console.log("DEBUG GET /api/auth/cart - itemsFound:", verCarrito.length); // <- LOG
 
     return res.json({
       success: true,
@@ -170,11 +170,33 @@ const applyCoupon = async (req, res) => {
   }
 };
 
+// Limpar carrito de compra
+const clearCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    await cart.clearCart(userId);
+
+    return res.json({
+      success: true,
+      message: "Carrito limpiado correctamente"
+    });
+
+  } catch (error) {
+    console.error("Error al limpiar carrito:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error al limpiar carrito"
+    });
+  }
+};
+
 // -------------------- EXPORTS --------------------
 module.exports = {
   getCart,
   addToCart,
   updateCartItem,
   deleteCartItem,
-  applyCoupon
+  applyCoupon,
+  clearCart
 };
