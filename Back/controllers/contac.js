@@ -2,7 +2,6 @@ const { enviarCorreo } = require('../utils/mailer');
 const nodemailer = require("nodemailer");
 const path = require("path");
 const { createCoupon } = require('../models/cuponModel');
-const nodemailer = require('nodemailer');
 
 
 // Contacto y suscripción
