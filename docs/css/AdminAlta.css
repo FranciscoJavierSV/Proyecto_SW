@@ -1,11 +1,9 @@
-/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- Layout general --- */
 body {
   background: #faf3e0;
   min-height: 100vh;
@@ -14,7 +12,6 @@ body {
   margin: 0;
 }
 
-/* --- HEADER --- */
 .header {
     width: 100%;
     background: #e57d90;
@@ -67,7 +64,6 @@ body {
   color: #ffe8c9;
 }
 
-/* --- PERFIL --- */
 .perfil-admin {
   display: flex;
   align-items: center;
@@ -85,8 +81,25 @@ body {
   color: #f3e9dd;
   font-weight: bold;
 }
+.logout-btn {
+  background: #faf3e0;
+  color: #e57d90;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 2px solid #faf3e0;
+}
 
-/* --- SIDEBAR --- */
+.logout-btn:hover {
+  background: transparent;
+  color: #faf3e0;
+  border: 2px solid #faf3e0;
+  transform: translateY(-2px);
+}
 .sidebar {
   width: 260px;
   background: #f99aaa;
@@ -103,7 +116,6 @@ body {
   overflow-y: auto;
 }
 
-/* Cards del sidebar */
 .sidebar-card {
   background: #faf3e0;
   border-radius: 12px;
@@ -146,7 +158,6 @@ body {
   text-align: center;
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
 .main-container {
   margin-top: 94px;
   padding-left: 260px;
@@ -159,10 +170,9 @@ body {
   padding: 40px;
 }
 
-/* Títulos */
 .page-header h1 {
   font-size: 32px;
-  color: #f1889b;
+  color: #fdb4bf;
 }
 
 .page-header p {
@@ -170,7 +180,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* --- FORMULARIO --- */
 .form-container {
   background: #fff4f4;
   padding: 25px;
@@ -184,7 +193,6 @@ body {
   gap: 22px;
 }
 
-/* Inputs */
 .form-group label {
   font-weight: bold;
   color: #b56b77;
@@ -203,7 +211,6 @@ textarea {
   resize: vertical;
 }
 
-/* Vista previa de imagen */
 .image-preview {
   width: 250px;
   height: 250px;
