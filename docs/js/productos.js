@@ -28,8 +28,6 @@ async function cargarProductos() {
             const precioMostrar = tieneOferta ? prod.ofertaP : prod.precio;
             const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
-            console.log(`Producto: ${prod.nombre}, Inventario: ${prod.inventario}, Sin stock: ${sinStock}`);
-
             let priceHtml = '';
             if (prod.ofertaP && prod.ofertaP !== null && prod.ofertaP !== '') {
                 priceHtml = `
@@ -42,10 +40,16 @@ async function cargarProductos() {
             } else {
                 priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
             }
+            const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+            const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+            const claseActiva = estaEnWishlistActual ? 'active' : '';
 
             card.innerHTML = `
                 ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
                 ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+                <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                    ${iconoCorazon}
+                </button>
                 <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
                 <h3>${prod.nombre}</h3>
                 <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -63,14 +67,54 @@ async function cargarProductos() {
             grid.appendChild(card);
         });
 
-        if (typeof activarBotonesCarrito === 'function') {
-            activarBotonesCarrito();
-        }
+        activarBotonesCarrito();
+        activarBotonesWishlist();
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
         grid.innerHTML = "<p>No se pudieron cargar los productos.</p>";
     }
+}
+
+function activarBotonesWishlist() {
+    document.querySelectorAll('.btn-wishlist').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productoId = btn.dataset.id;
+
+            const productoCard = btn.closest('.producto');
+            const nombre = productoCard.querySelector('h3').textContent;
+            const descripcion = productoCard.querySelector('.descripcion').textContent;
+            const imagen = productoCard.querySelector('img').src.split('/').pop();
+            const precioTexto = productoCard.querySelector('.precio').textContent;
+            const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
+            
+            const precioOfertaElem = productoCard.querySelector('.precio-oferta');
+            const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
+            
+            const producto = {
+                id: productoId,
+                nombre: nombre,
+                descripcion: descripcion,
+                imagen: imagen,
+                precio: precio,
+                ofertaP: ofertaP,
+                categoria: productoCard.dataset.categoria
+            };
+            if (typeof estaEnWishlist === 'function' && estaEnWishlist(productoId)) {
+                if (typeof eliminarDeWishlist === 'function') {
+                    eliminarDeWishlist(productoId);
+                }
+            } else {
+                if (typeof agregarAWishlist === 'function') {
+                    agregarAWishlist(producto);
+                }
+            }
+            if (typeof actualizarCorazones === 'function') {
+                actualizarCorazones();
+            }
+        });
+    });
 }
 
 function activarBotonesCarrito() {
@@ -97,7 +141,6 @@ function activarBotonesCarrito() {
                 });
                 return;
             }
-
         });
     });
 
@@ -123,7 +166,6 @@ function activarBotonesCarrito() {
                 });
                 return;
             }
-
         });
     }
 }
@@ -170,13 +212,11 @@ async function aplicarFiltros() {
     const base = '/public/products';
     const params = new URLSearchParams();
 
-    // precio: solo si es número (>=0)
     if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
       params.set('min', 0);
       params.set('max', precioMaximo);
     }
 
-    // categoría: enviar la primera seleccionada 
     if (categoriasSeleccionadas.length > 0) {
       params.set('categoria', categoriasSeleccionadas[0]);
     }
@@ -185,15 +225,11 @@ async function aplicarFiltros() {
     else if (!conOferta && sinOferta) params.set('oferta', 'no');
 
     const url = params.toString() ? `${base}?${params.toString()}` : base;
-    console.log('[aplicarFiltros] URL ->', url);
 
     const res = await apiGet(url); 
 
-    console.log('[aplicarFiltros] respuesta ->', res);
-
     let productos = res.products || res.product || [];
 
-    // Aplicar filtrado final en frontend 
     let resultado = productos.slice();
 
     if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
@@ -216,7 +252,7 @@ async function aplicarFiltros() {
 
     renderProductos(resultado);
 
-  }catch (err) {
+  } catch (err) {
     console.error('Error en aplicar filtros: ', err);
     renderProductos([]);
   }
@@ -245,9 +281,16 @@ function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
+        const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+        const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+        const claseActiva = estaEnWishlistActual ? 'active' : '';
+
         card.innerHTML = `
             ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
             ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+            <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                ${iconoCorazon}
+            </button>
             <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
             <h3>${prod.nombre}</h3>
             <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -265,10 +308,8 @@ function renderProductos(productos) {
         contenedor.appendChild(card);
     });
 
-    if (typeof activarBotonesCarrito === 'function') {
-        activarBotonesCarrito();
-    }
-}
+    activarBotonesCarrito();
+    activarBotonesWishlist(); 
 
 function limpiarFiltros() {
     document.getElementById('rangoPrecio').value = 100;
