@@ -115,10 +115,16 @@ async function cargarProductos() {
             } else {
                 priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
             }
+            const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+            const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+            const claseActiva = estaEnWishlistActual ? 'active' : '';
 
             card.innerHTML = `
                 ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
                 ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+                <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                    ${iconoCorazon}
+                </button>
                 <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
                 <h3>${prod.nombre}</h3>
                 <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -139,6 +145,7 @@ async function cargarProductos() {
         if (typeof activarBotonesCarrito === 'function') {
             activarBotonesCarrito();
         }
+        activarBotonesWishlist();
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
@@ -208,13 +215,11 @@ async function aplicarFiltros() {
     const base = '/public/products';
     const params = new URLSearchParams();
 
-    // precio: solo si es número (>=0)
     if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
       params.set('min', 0);
       params.set('max', precioMaximo);
     }
 
-    // categoría: enviar la primera seleccionada 
     if (categoriasSeleccionadas.length > 0) {
       params.set('categoria', categoriasSeleccionadas[0]);
     }
@@ -231,7 +236,6 @@ async function aplicarFiltros() {
 
     let productos = res.products || res.product || [];
 
-    // Aplicar filtrado final en frontend 
     let resultado = productos.slice();
 
     if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
@@ -283,9 +287,16 @@ function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
+        const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+        const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+        const claseActiva = estaEnWishlistActual ? 'active' : '';
+
         card.innerHTML = `
             ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
             ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+            <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                ${iconoCorazon}
+            </button>
             <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
             <h3>${prod.nombre}</h3>
             <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -306,6 +317,7 @@ function renderProductos(productos) {
     if (typeof activarBotonesCarrito === 'function') {
         activarBotonesCarrito();
     }
+    activarBotonesWishlist();
 }
 
 function limpiarFiltros() {
@@ -321,4 +333,47 @@ function limpiarFiltros() {
     });
 
     cargarProductos();
+}
+
+function activarBotonesWishlist() {
+    document.querySelectorAll('.btn-wishlist').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productoId = btn.dataset.id;
+            
+            const productoCard = btn.closest('.producto');
+            const nombre = productoCard.querySelector('h3').textContent;
+            const descripcion = productoCard.querySelector('.descripcion').textContent;
+            const imagen = productoCard.querySelector('img').src.split('/').pop();
+            const precioTexto = productoCard.querySelector('.precio').textContent;
+            const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
+
+            const precioOfertaElem = productoCard.querySelector('.precio-oferta');
+            const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
+            
+            const producto = {
+                id: productoId,
+                nombre: nombre,
+                descripcion: descripcion,
+                imagen: imagen,
+                precio: precio,
+                ofertaP: ofertaP,
+                categoria: productoCard.dataset.categoria
+            };
+
+            if (typeof estaEnWishlist === 'function' && estaEnWishlist(productoId)) {
+                if (typeof eliminarDeWishlist === 'function') {
+                    eliminarDeWishlist(productoId);
+                }
+            } else {
+                if (typeof agregarAWishlist === 'function') {
+                    agregarAWishlist(producto);
+                }
+            }
+            
+            if (typeof actualizarCorazones === 'function') {
+                actualizarCorazones();
+            }
+        });
+    });
 }

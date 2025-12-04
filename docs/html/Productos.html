@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../css/Productos.css" />
     <title>Productos - Sexta Armonía</title>
     <link rel="icon" type="image/jpg" href="/docs/ImagenesPrincipal/f4e7e872-b0d1-4d62-855f-eddcf3595a47.jpg">
+    <script src="https://kit.fontawesome.com/8c4039e060.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
@@ -73,6 +74,13 @@
         <div class="grid-productos"></div>
       </section>
     </div>
+    <div id="wishlist-btn"><i class="fas fa-heart"></i></div>
+    <div id="wishlist-panel" class="hidden">
+        <h3>Lista de Deseos</h3>
+        <div class="wishlist-productos">
+            <p class="wishlist-vacio">No hay productos en tu lista de deseos</p>
+        </div>
+    </div>
 
     <footer class="footer">
       <p>
@@ -82,7 +90,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../js/api.js"></script> 
+    <script src="../js/api.js"></script>
+    <script src="../js/wishlist.js"></script>
     <script src="../js/Alerts.js"></script>
     <script src="../js/productos.js"></script>
   </body>
