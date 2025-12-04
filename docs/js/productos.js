@@ -310,7 +310,7 @@ function renderProductos(productos) {
 
     activarBotonesCarrito();
     activarBotonesWishlist(); 
-
+}
 function limpiarFiltros() {
     document.getElementById('rangoPrecio').value = 100;
     document.getElementById('precioMax').textContent = '100';

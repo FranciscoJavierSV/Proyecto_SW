@@ -115,10 +115,16 @@ async function cargarProductos() {
             } else {
                 priceHtml = `<div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>`;
             }
+            const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+            const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+            const claseActiva = estaEnWishlistActual ? 'active' : '';
 
             card.innerHTML = `
                 ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
                 ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+                <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                    ${iconoCorazon}
+                </button>
                 <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
                 <h3>${prod.nombre}</h3>
                 <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -139,6 +145,7 @@ async function cargarProductos() {
         if (typeof activarBotonesCarrito === 'function') {
             activarBotonesCarrito();
         }
+        activarBotonesWishlist();
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
@@ -280,9 +287,16 @@ function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
+        const estaEnWishlistActual = typeof estaEnWishlist === 'function' && estaEnWishlist(prod.id);
+        const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
+        const claseActiva = estaEnWishlistActual ? 'active' : '';
+
         card.innerHTML = `
             ${tieneOferta ? '<span class="badge-oferta">¡OFERTA!</span>' : ''}
             ${sinStock ? '<span class="badge-sin-stock">Agotado</span>' : ''}
+            <button class="btn-wishlist ${claseActiva}" data-id="${prod.id}" title="Agregar a lista de deseos">
+                ${iconoCorazon}
+            </button>
             <img src="../ImagenesGenerales/${prod.imagen}" alt="${prod.nombre}">
             <h3>${prod.nombre}</h3>
             <p class="descripcion">${prod.descripcion || 'Sin descripción'}</p>
@@ -303,6 +317,7 @@ function renderProductos(productos) {
     if (typeof activarBotonesCarrito === 'function') {
         activarBotonesCarrito();
     }
+    activarBotonesWishlist();
 }
 
 function limpiarFiltros() {
@@ -319,6 +334,7 @@ function limpiarFiltros() {
 
     cargarProductos();
 }
+
 function activarBotonesWishlist() {
     document.querySelectorAll('.btn-wishlist').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -331,7 +347,7 @@ function activarBotonesWishlist() {
             const imagen = productoCard.querySelector('img').src.split('/').pop();
             const precioTexto = productoCard.querySelector('.precio').textContent;
             const precio = parseFloat(precioTexto.replace(/[^0-9.]/g, ''));
-            
+
             const precioOfertaElem = productoCard.querySelector('.precio-oferta');
             const ofertaP = precioOfertaElem ? parseFloat(precioOfertaElem.textContent.replace(/[^0-9.]/g, '')) : 0;
             
@@ -344,7 +360,7 @@ function activarBotonesWishlist() {
                 ofertaP: ofertaP,
                 categoria: productoCard.dataset.categoria
             };
-            
+
             if (typeof estaEnWishlist === 'function' && estaEnWishlist(productoId)) {
                 if (typeof eliminarDeWishlist === 'function') {
                     eliminarDeWishlist(productoId);
