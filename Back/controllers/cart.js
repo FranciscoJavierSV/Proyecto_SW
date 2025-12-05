@@ -5,7 +5,7 @@ const coupons = require('../models/coupons');
 const { json } = require('express');
 
 // -------------------- CONTROLLERS --------------------
-
+ 
 // Obtener carrito del usuario
 const getCart = async (req, res) => {
   try {

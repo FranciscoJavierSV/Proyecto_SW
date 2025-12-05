@@ -5,7 +5,7 @@ const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
 const bwipjs = require("bwip-js");
 const { v4: uuidv4 } = require("uuid");
-
+ 
 // --------------------------- IMPORTS ---------------------------
 const sales = require('../models/sales.js');
 const cart = require('../models/cart.js');
@@ -17,10 +17,10 @@ const pool = require("../db/conexion.js");
 const createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    const { customerName, customerEmail, metodoPago } = req.body;
     // Obtener carrito completo del usuario
     const cartData = await cart.getCart(userId);
-    const items = cartData.items;   // ← AQUÍ tomas el arreglo real
+    const items = cartData.items; 
 
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -51,9 +51,31 @@ const createOrder = async (req, res) => {
       subtotal += item.subtotal;
       descuento += item.descuento;
       iva += item.iva;
-      total += item.total;
       if (item.codigo_cupon) codigoCupon = item.codigo_cupon;
     }
+
+    const [[usuario]] = await pool.query(
+      `SELECT pais_id FROM usuarios WHERE id = ?`,
+      [req.user.id]
+    );
+
+    if (!usuario) {
+      return res.status(400).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    const [[pais]] = await pool.query(
+      `SELECT iva, envio FROM paises WHERE id = ?`,
+      [usuario.pais_id]
+    );
+
+    if (!pais) {
+      return res.status(400).json({ success: false, message: "País no encontrado" });
+    }
+
+    const ivaRate = Number(pais.iva);
+    const envio = Number(pais.envio);
+    const base = subtotal + envio;
+    total = Number((base * (1 + ivaRate)).toFixed(2));
 
     // ------------------------
     // 2. Crear venta
@@ -79,12 +101,15 @@ const createOrder = async (req, res) => {
 
       console.log(">>> Restando inventario de producto:", item.producto_id, "cantidad:", item.cantidad);
 
+      const product = await products.getProductById(item.producto_id);
+
       await sales.addSaleItem(
         saleId,
         item.producto_id,
-        item.cantidad,
-        item.subtotal / item.cantidad,
-        item.subtotal
+        product.categoria,              
+        item.cantidad,                  
+        item.subtotal / item.cantidad,  
+        item.subtotal                  
       );
 
       count++;
@@ -126,6 +151,8 @@ const createOrder = async (req, res) => {
     });
   }
 };
+
+
 
 // --------------------------- OBTENER HISTORIAL ---------------------------
 const getOrders = async (req, res) => {

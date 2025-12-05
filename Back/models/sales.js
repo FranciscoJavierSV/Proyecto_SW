@@ -16,21 +16,21 @@ async function createSale(userId, subtotal, descuento, codigoCupon, iva, total) 
     `,
     [userId, subtotal, descuento, codigoCupon, iva, total, 0] // productos se actualiza después
   );
-
+ 
   return sale.insertId;
 }
 
 // =====================================
 // Registrar item en sales_items
 // =====================================
-async function addSaleItem(saleId, productoId, cantidad, precioUnitario, subtotal) {
+async function addSaleItem(saleId, productoId, categoria, cantidad, precioUnitario, subtotal) {
   const [insert] = await pool.query(
     `
       INSERT INTO sales_items 
-      (sale_id, producto_id, cantidad, precio_unitario, subtotal)
-      VALUES (?, ?, ?, ?, ?)
+      (sale_id, producto_id, categoria, cantidad, precio_unitario, subtotal)
+      VALUES (?, ?, ?, ?, ?, ?)
     `,
-    [saleId, productoId, cantidad, precioUnitario, subtotal]
+    [saleId, productoId, categoria, cantidad, precioUnitario, subtotal]
   );
 
   return insert.insertId;

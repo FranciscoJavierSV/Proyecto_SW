@@ -56,9 +56,23 @@ async function confirmPurchase(event) {
     const orderResp = await fetch("http://localhost:3000/api/auth/ordenar", {
         method: "POST",
         headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({
+            customerName,
+            customerEmail,
+            metodoPago
+        })
+    });
+
+/*
+    const orderResp = await fetch("http://localhost:3000/api/auth/ordenar", {
+        method: "POST",
+        headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
-    });
+    });*/
 
     const orderResult = await orderResp.json();
 
@@ -129,7 +143,7 @@ async function confirmPurchase(event) {
         window.location.href = "../html/PaginaUsuarioLogueado.html";
     }, 1500);
 }
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username");
     const nombreSpan = document.querySelector(".usuario-nombre");
