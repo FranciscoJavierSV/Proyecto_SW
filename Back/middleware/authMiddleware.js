@@ -1,16 +1,17 @@
-const jwt = require('jsonwebtoken');
-const svgCaptcha = require("svg-captcha");
-const { captchas } = require("../utils/captchaStore");
-const JWT_SECRET = process.env.JWT_SECRET;
+const jwt = require('jsonwebtoken');              // Manejo y verificación de tokens JWT
+const svgCaptcha = require("svg-captcha");        // Generación de captchas en SVG
+const { captchas } = require("../utils/captchaStore"); // Almacén temporal de captchas generados
+const JWT_SECRET = process.env.JWT_SECRET;        // Clave secreta para validar tokens
 
 // ----------------------------------------------------
 // VERIFICAR TOKEN (ACCESS TOKEN)
+// Middleware que valida que el usuario envíe un JWT válido
 // ----------------------------------------------------
 const verifyT = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization; // Obtiene el header Authorization
 
-    // Si no viene header
+    // Si no se envía el header Authorization
     if (!authHeader) {
       return res.status(401).json({
         success: false,
@@ -18,7 +19,7 @@ const verifyT = (req, res, next) => {
       });
     }
 
-    // Formato incorrecto
+    // Extrae el token después de "Bearer"
     const token = authHeader.split(' ')[1];
     if (!token) {
       return res.status(401).json({
@@ -27,16 +28,16 @@ const verifyT = (req, res, next) => {
       });
     }
 
-    // Verificar token
+    // Verifica el token con la clave secreta
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Guardar la info del usuario para los controllers
+    // Guarda la información del usuario en la request
     req.user = decoded;
 
-    next();
+    next(); // Continúa al siguiente middleware o controlador
 
   } catch (error) {
-    // token expirado
+    // Token expirado
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
@@ -45,7 +46,7 @@ const verifyT = (req, res, next) => {
       });
     }
 
-    // token alterado
+    // Token alterado o inválido
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
@@ -53,7 +54,7 @@ const verifyT = (req, res, next) => {
       });
     }
 
-    // error interno
+    // Error inesperado
     return res.status(500).json({
       success: false,
       message: 'Error al verificar el token.'
@@ -63,10 +64,11 @@ const verifyT = (req, res, next) => {
 
 // ----------------------------------------------------
 // VALIDAR SI EL USUARIO ES ADMIN
+// Middleware que permite acceso solo a usuarios con rol "admin"
 // ----------------------------------------------------
 const isAdmin = (req, res, next) => {
   if (req.user?.rol === 'admin') {
-    return next();
+    return next(); // Usuario autorizado
   }
 
   return res.status(403).json({
@@ -77,34 +79,40 @@ const isAdmin = (req, res, next) => {
 
 // ----------------------------------------------------
 // VALIDAR CAPTCHA
+// Middleware que valida que el captcha enviado coincida con el generado
 // ----------------------------------------------------
 const captchaV = (req, res, next) => {
   try {
-    const { tokenCaptcha, captchaIngresado } = req.body;
+    const { tokenCaptcha, captchaIngresado } = req.body; // Datos enviados por el usuario
 
+    // Validación de campos requeridos
     if (!tokenCaptcha || !captchaIngresado) {
-        return res.status(400).json({ succes: false, message: "Faltan datos del captcha" });
+      return res.status(400).json({ succes: false, message: "Faltan datos del captcha" });
     }
 
+    // Busca el captcha en el almacén temporal
     const registro = captchas[tokenCaptcha];
 
+    // Si no existe, ya expiró o nunca fue generado
     if (!registro) {
-        return res.status(400).json({ succes: false, message: "Captcha inválido o expirado" });
+      return res.status(400).json({ succes: false, message: "Captcha inválido o expirado" });
     }
 
+    // Verifica si el captcha ya expiró
     if (Date.now() > registro.expira) {
-        delete captchas[tokenCaptcha];
-        return res.status(400).json({ succes: false, message: "Captcha expirado" });
+      delete captchas[tokenCaptcha]; // Limpieza
+      return res.status(400).json({ succes: false, message: "Captcha expirado" });
     }
 
+    // Compara el texto ingresado con el generado
     if (registro.texto.toLowerCase() !== captchaIngresado.toLowerCase()) {
-        return res.status(400).json({ succes: false, message: "Captcha incorrecto" });
+      return res.status(400).json({ succes: false, message: "Captcha incorrecto" });
     }
 
-    // captcha correcto → eliminar para no reusar
+    // Captcha válido → eliminar para evitar reutilización
     delete captchas[tokenCaptcha];
 
-    next();
+    next(); // Continúa al siguiente middleware o controlador
 
   } catch (error) {
     return res.status(500).json({
@@ -114,7 +122,7 @@ const captchaV = (req, res, next) => {
   }
 };
 
- 
+// Exporta los middlewares para usarlos en las rutas
 module.exports = {
   verifyT,
   isAdmin,

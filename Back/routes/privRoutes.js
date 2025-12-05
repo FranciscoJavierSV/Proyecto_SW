@@ -1,21 +1,27 @@
-// info en README.md
+// Rutas administrativas (solo accesibles para administradores)
 const express = require('express');
 const router = express.Router();
-const {verifyT, isAdmin} = require('../middleware/authMiddleware');
+
+// Middlewares y controladores
+const { verifyT, isAdmin } = require('../middleware/authMiddleware');
 const productos = require('../controllers/items');
 const ventas = require('../controllers/sales');
 
-// Todas las rutas protegidas verificando que sea admin
-router.post('/mProducts', verifyT, isAdmin, productos.createProduct);
-router.put('/mProducts/:id', verifyT, isAdmin, productos.updateProduct);
-router.delete('/mProducts/:id', verifyT, isAdmin, productos.deleteProduct);
-router.get('/mProducts/inventory', verifyT, isAdmin, productos.getInventory);
+// ---- PRODUCTOS (ADMIN) ----
+router.post('/mProducts', verifyT, isAdmin, productos.createProduct);          // Crear producto
+router.put('/mProducts/:id', verifyT, isAdmin, productos.updateProduct);       // Actualizar producto
+router.delete('/mProducts/:id', verifyT, isAdmin, productos.deleteProduct);    // Eliminar producto
+router.get('/mProducts/inventory', verifyT, isAdmin, productos.getInventory);  // Inventario completo
 
-router.get('/sales/chart', verifyT, isAdmin, ventas.getSalesChart);
-router.get('/sales/products', verifyT, isAdmin, ventas.getSalesProducts);
-router.get('/sales/company-total', verifyT, isAdmin, ventas.getTotalCompanySales);
+// ---- REPORTES DE VENTAS ----
+router.get('/sales/chart', verifyT, isAdmin, ventas.getSalesChart);            // Datos para gráficas
+router.get('/sales/products', verifyT, isAdmin, ventas.getSalesProducts);      // Ventas por producto
+router.get('/sales/company-total', verifyT, isAdmin, ventas.getTotalCompanySales); // Total general
 
-router.get('/inventory', verifyT, isAdmin, productos.getInventoryByCategory);
-router.post("/orders/pdf", verifyT, ventas.getOrderPDF);
+// ---- INVENTARIO POR CATEGORÍA ----
+router.get('/inventory', verifyT, isAdmin, productos.getInventoryByCategory);  // Inventario filtrado
 
-module.exports = router; 
+// ---- PDF DE ÓRDENES ----
+router.post('/orders/pdf', verifyT, ventas.getOrderPDF);                       // Generar PDF de orden
+
+module.exports = router;

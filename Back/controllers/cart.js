@@ -1,4 +1,5 @@
 // -------------------- IMPORTS --------------------
+// Modelos que manejan la lógica de base de datos del carrito, productos y cupones
 const cart = require('../models/cart');
 const products = require('../models/products');
 const coupons = require('../models/coupons');
@@ -6,16 +7,16 @@ const { json } = require('express');
 
 // -------------------- CONTROLLERS --------------------
 
-// Obtener carrito del usuario
+// Obtener carrito del usuario autenticado
 const getCart = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const data = await cart.getCart(userId);
+    const userId = req.user.id;              // ID del usuario desde el token
+    const data = await cart.getCart(userId); // Obtiene items y resumen del carrito
 
     return res.json({
       success: true,
-      cart: data.items,
-      resumen: data.resumen
+      cart: data.items,                      // Lista de productos en el carrito
+      resumen: data.resumen                  // Totales, descuentos, etc.
     });
 
   } catch (error) {
@@ -28,20 +29,20 @@ const getCart = async (req, res) => {
 };
 
 
-// Agregar al carrito
+// Agregar un producto al carrito
 const addToCart = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity } = req.body; // Datos enviados por el cliente
     const userId = req.user.id;
 
     if (!productId || !quantity) {
       return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    // Ver si ya existe en el carrito
+    // Verifica si el producto ya está en el carrito
     const itemExiste = await cart.getCartItem(userId, productId);
 
-    // 2Si ya está, aumentar cantidad
+    // Si ya existe, solo aumenta la cantidad
     if (itemExiste) {
       const nuevaCantidad = itemExiste.cantidad + quantity;
       const actualizado = await cart.updateCart(userId, productId, nuevaCantidad);
@@ -53,7 +54,7 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Sino, insertar uno nuevo
+    // Si no existe, lo agrega como nuevo registro
     const add = await cart.addCart(userId, productId, quantity);
 
     return res.json({
@@ -68,11 +69,11 @@ const addToCart = async (req, res) => {
   }
 };
 
-// Actualizar cantidad
+// Actualizar cantidad de un producto en el carrito
 const updateCartItem = async (req, res) => {
   try {
-    const { productId } = req.params;
-    const { action } = req.body;
+    const { productId } = req.params; // ID del producto
+    const { action } = req.body;      // "add" o "remove"
     const userId = req.user.id;
 
     const item = await cart.getCartItem(userId, productId);
@@ -82,14 +83,17 @@ const updateCartItem = async (req, res) => {
 
     let nuevaCantidad = item.cantidad;
 
+    // Ajusta la cantidad según la acción
     if (action === "add") nuevaCantidad++;
     if (action === "remove") nuevaCantidad--;
 
+    // Si la cantidad llega a 0, elimina el producto del carrito
     if (nuevaCantidad <= 0) {
       await cart.deleteItem(item.id, userId);
       return res.json({ success: true, message: "Producto eliminado" });
     }
 
+    // Actualiza la cantidad en BD
     await cart.updateCart(userId, productId, nuevaCantidad);
 
     return res.json({
@@ -104,16 +108,17 @@ const updateCartItem = async (req, res) => {
 };
 
 
-// Eliminar producto
+// Eliminar un producto del carrito
 const deleteCartItem = async (req, res) => {
   try {
-    const cartId = req.params.id;
+    const cartId = req.params.id; // ID del registro en el carrito
     const userId = req.user.id;
 
     console.log("Eliminar carrito registro:", cartId, "usuario:", userId);
 
     const result = await cart.deleteItem(cartId, userId);
 
+    // Si no afectó filas, no existía o no pertenecía al usuario
     if (result.affectedRows === 0) {
       return res.status(400).json({
         success: false,
@@ -136,18 +141,19 @@ const deleteCartItem = async (req, res) => {
 };
 
 
-// Aplicar cupón
+// Aplicar cupón de descuento al carrito
 const applyCoupon = async (req, res) => {
   try {
-    const { coupon } = req.body;
+    const { coupon } = req.body; // Código del cupón
     const userId = req.user.id;
 
     if (!coupon) {
       return res.status(400).json({ success: false, message: "Ingresa el cupón" });
     }
 
-    const couponData = await coupons.getCoupon(coupon);
+    const couponData = await coupons.getCoupon(coupon); // Busca cupón en BD
 
+    // Validación del cupón
     if (!couponData || couponData.activo !== 1) {
       return res.status(404).json({
         success: false,
@@ -155,7 +161,9 @@ const applyCoupon = async (req, res) => {
       });
     }
 
-    const cupon = await cart.aplicarCupon(userId, coupon); // <- usar aplicarCupon (modelo)
+    // Aplica el cupón al carrito del usuario
+    const cupon = await cart.aplicarCupon(userId, coupon);
+
     return res.json({
       success: true,
       data: cupon
@@ -170,12 +178,12 @@ const applyCoupon = async (req, res) => {
   }
 };
  
-// Limpar carrito de compra
+// Limpiar todo el carrito del usuario
 const clearCart = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    await cart.clearCart(userId);
+    await cart.clearCart(userId); // Elimina todos los registros del carrito
 
     return res.json({
       success: true,
@@ -192,6 +200,7 @@ const clearCart = async (req, res) => {
 };
 
 // -------------------- EXPORTS --------------------
+// Exporta todos los controladores para usarlos en las rutas
 module.exports = {
   getCart,
   addToCart,

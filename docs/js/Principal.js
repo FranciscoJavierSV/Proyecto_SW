@@ -1,14 +1,26 @@
+// ============================================================
+// LIMPIAR SESIÓN AL ENTRAR A LA PÁGINA PRINCIPAL
+// Se eliminan token y username para evitar sesiones previas
+// ============================================================
 localStorage.removeItem("token");
 localStorage.removeItem("username");
 
 let swiper = null;
 
+// ============================================================
+// INICIALIZACIÓN GENERAL AL CARGAR LA PÁGINA
+// ============================================================
 document.addEventListener("DOMContentLoaded", () => {
-    cargarProductos();
-    inicializarContacto();
-    inicializarCarrito();
+    cargarProductos();      // Carga imágenes del slider
+    inicializarContacto();  // Activa formulario de contacto
+    inicializarCarrito();   // Activa comportamiento del ícono del carrito
 });
 
+
+// ============================================================
+// CARGAR PRODUCTOS PARA EL SLIDER (Swiper)
+// Obtiene productos desde la API y los muestra como imágenes
+// ============================================================
 async function cargarProductos() {
     const grid = document.querySelector(".swiper-wrapper");
     if (!grid) return;
@@ -23,6 +35,7 @@ async function cargarProductos() {
 
         grid.innerHTML = "";
 
+        // Crear una diapositiva por producto
         data.products.forEach(prod => {
             const card = document.createElement("div");
             card.className = "swiper-slide";
@@ -35,6 +48,7 @@ async function cargarProductos() {
             grid.appendChild(card);
         });
 
+        // Inicializar o actualizar Swiper
         if (swiper) {
             swiper.update();
         } else {
@@ -55,6 +69,11 @@ async function cargarProductos() {
     }
 }
 
+
+// ============================================================
+// FORMULARIO DE CONTACTO
+// Envía datos al backend y muestra alertas según la respuesta
+// ============================================================
 function inicializarContacto() {
     const form = document.getElementById("contactForm");
     if (!form) return;
@@ -66,13 +85,12 @@ function inicializarContacto() {
         const correo = document.getElementById("contactEmail").value.trim();
         const mensaje = document.getElementById("contactMessage").value.trim();
 
-        const res = await fetch("http://localhost:3000/api/public/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre, correo, mensaje })
+        const data = await apiPost("/public/contact", {
+            nombre,
+            correo,
+            mensaje
         });
 
-        const data = await res.json();
         console.log("Respuesta del backend:", data);
 
         if (data.success) {
@@ -84,6 +102,12 @@ function inicializarContacto() {
     });
 }
 
+
+// ============================================================
+// INICIALIZAR ÍCONO DEL CARRITO
+// Si no hay sesión → alerta y opción de iniciar sesión
+// Si hay sesión → redirige a la página del usuario
+// ============================================================
 function inicializarCarrito() {
     const carritoIcon = document.querySelector('.carrito');
     if (!carritoIcon) return;
@@ -91,24 +115,26 @@ function inicializarCarrito() {
     carritoIcon.addEventListener('click', function() {
         const username = localStorage.getItem('username');
         const token = localStorage.getItem('token');
-        
+
+        // Si no hay sesión → mostrar alerta
         if (!username && !token) {
-            
             Swal.fire({
-                    title: "No has iniciado sesión",
-                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#8b6b4a",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Ir a iniciar sesión",
-                    cancelButtonText: "Cancelar"
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        window.location.href = "../html/IniciarSesion.html"; 
-                    }
-                });
+                title: "No has iniciado sesión",
+                text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#8b6b4a",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ir a iniciar sesión",
+                cancelButtonText: "Cancelar"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = "../html/IniciarSesion.html";
+                }
+            });
+
         } else {
+            // Si hay sesión → ir a la página del usuario
             window.location.href = 'html/PaginaUsuarioLogueado.html';
         }
     });

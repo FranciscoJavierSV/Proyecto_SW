@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
- 
     // ====================================================
     //  LOGIN
     // ====================================================
@@ -9,37 +8,42 @@ document.addEventListener("DOMContentLoaded", () => {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
+            // Obtener valores del formulario
             const correo = document.getElementById("correo").value.trim();
             const contrasena = document.getElementById("pass").value.trim();
             const captchaIngresado = document.getElementById("captcha-input").value;
-            const tokenCaptcha = window.tokenCaptcha;
+            const tokenCaptcha = window.tokenCaptcha; // Token generado por el backend
 
+            // Validación básica
             if (!correo || !contrasena || !captchaIngresado || !tokenCaptcha) {
                 alertaWarning("Ingresa todos los campos");
                 return;
             }
 
+            // Enviar datos al backend
             const res = await apiPost("/public/login", { correo, contrasena, captchaIngresado, tokenCaptcha });
 
-            
+            // Compatibilidad con diferentes estructuras de respuesta
             const token = res?.token ?? res?.data?.token ?? null;
             const refreshToken = res?.refreshToken ?? res?.data?.refreshToken ?? null;
             const user = res?.user ?? res?.data?.user ?? null;
             const success = res?.success ?? (token !== null);
 
+            // Si falla el login
             if (!success || !token) {
                 alertaError(res?.message || "Datos inválidos");
-                cargarCaptcha();
+                cargarCaptcha(); // Recargar captcha
                 return;
             }
 
-            // Guardar tokens y datos
+            // Guardar tokens y datos del usuario
             localStorage.setItem("token", token);
             if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
             if (user?.username) localStorage.setItem("username", user.username);
             else if (res?.username) localStorage.setItem("username", res.username);
 
-            if(res.user.rol === "admin"){
+            // Redirección según rol
+            if (res.user.rol === "admin") {
                 Swal.fire({
                     title: "¡Bienvenido administrador!",
                     text: "Inicio de sesión exitoso",
@@ -50,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     showConfirmButton: false
                 }).then(() => { window.location.href = "AdminPrincipal.html"; });
             }
-            else{
+            else {
                 Swal.fire({
                     title: "¡Bienvenid@!",
                     text: "Inicio de sesión exitoso",
@@ -60,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     timerProgressBar: true,
                     showConfirmButton: false
                 }).then(() => { window.location.href = "PaginaUsuarioLogueado.html"; });
-                
             }
         });
     }
@@ -75,15 +78,18 @@ document.addEventListener("DOMContentLoaded", () => {
         registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
+            // Obtener valores del formulario
             const username  = document.getElementById("nombre").value.trim();
             const correo    = document.getElementById("correo").value.trim();
             const pais      = document.getElementById("pais").value;
             const pass      = document.getElementById("pass").value.trim();
             const pass2     = document.getElementById("pass2").value.trim();
-            // leer radio "suscripcion"
-            const suscripcion = document.querySelector('input[name="suscripcion"]:checked').value;
-            const suscribirse = suscripcion === "si"; 
 
+            // Radio de suscripción
+            const suscripcion = document.querySelector('input[name="suscripcion"]:checked').value;
+            const suscribirse = suscripcion === "si";
+
+            // Validaciones básicas
             if (!username || !correo || !pais || !pass || !pass2) {
                 alertaWarning("Completa todos los campos");
                 return;
@@ -94,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // Enviar datos al backend
             const res = await apiPost("/public/register", {
                 username,
                 contrasena: pass,
@@ -142,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+
     // ==========================================
     // CAPTCHA
     // ==========================================
@@ -159,17 +167,26 @@ document.addEventListener("DOMContentLoaded", () => {
     async function cargarCaptcha() {
         try {
             const data = await apiGet("/public/generarCaptcha");
-            // Insertar SVG en el div
+
+            // Insertar SVG en el contenedor
             captchaImg.innerHTML = data.svg;
-            // Guardar token temporal
+
+            // Guardar token temporal para validación
             window.tokenCaptcha = data.token;
+
         } catch (error) {
             console.error("Error cargando captcha:", error);
         }
     }
+
+    // Inicializar comportamiento del carrito
     inicializarCarrito();
 });
- 
+
+
+// ====================================================
+//  VERIFICAR ACCESO AL CARRITO
+// ====================================================
 function inicializarCarrito() {
     const carritoIcon = document.querySelector('.carrito');
     if (!carritoIcon) return;
@@ -177,24 +194,27 @@ function inicializarCarrito() {
     carritoIcon.addEventListener('click', function() {
         const username = localStorage.getItem('username');
         const token = localStorage.getItem('token');
-        
+
+        // Si no hay sesión, preguntar si desea iniciar sesión
         if (!username && !token) {
-            
+
             Swal.fire({
-                    title: "No has iniciado sesión",
-                    text: "¿Deseas iniciar sesión para agregar productos al carrito?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#8b6b4a",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Ir a iniciar sesión",
-                    cancelButtonText: "Cancelar"
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        window.location.href = "../html/IniciarSesion.html"; 
-                    }
-                });
+                title: "No has iniciado sesión",
+                text: "¿Deseas iniciar sesión para agregar productos al carrito?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#8b6b4a",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ir a iniciar sesión",
+                cancelButtonText: "Cancelar"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = "../html/IniciarSesion.html";
+                }
+            });
+
         } else {
+            // Si ya está logueado, ir a la página del usuario
             window.location.href = 'html/PaginaUsuarioLogueado.html';
         }
     });
