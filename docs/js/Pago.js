@@ -35,10 +35,19 @@ async function confirmPurchase(event) {
         ];
     }
 
-    // === CREAR ORDEN ===
-    const orderResult = await apiPost("/auth/ordenar", {}, {
+// === CREAR ORDEN ===
+const orderResult = await apiPost(
+    "/auth/ordenar",
+    {
+        customerName,
+        customerEmail,
+        metodoPago
+    },
+    {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
-    });
+    }
+);
+
 
     if (!orderResult.success) {
         console.error(orderResult);
@@ -99,3 +108,15 @@ async function confirmPurchase(event) {
         window.location.href = "../html/PaginaUsuarioLogueado.html";
     }, 1500);
 }
+ 
+document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("username");
+    const nombreSpan = document.querySelector(".usuario-nombre");
+
+    if (username && nombreSpan) {
+        nombreSpan.textContent = `Hola, ${username}`;
+    }
+
+    const select = document.getElementById("metodoPago");
+    if (select) select.addEventListener("change", mostrarFormularioPago);
+});
