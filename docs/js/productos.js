@@ -15,9 +15,14 @@ async function cargarProductos() {
             return;
         }
 
-        // Cargar wishlist UNA sola vez
-        const wishlist = await obtenerWishlist();
-        const wishlistIds = wishlist.map(item => item.producto_id);
+        // Solo cargar wishlist si el usuario está logueado
+        let wishlistIds = [];
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            const wishlist = await obtenerWishlist();
+            wishlistIds = wishlist.map(item => item.producto_id);
+        }
 
         grid.innerHTML = "";
 
@@ -60,7 +65,7 @@ async function cargarProductos() {
         });
 
         activarBotonesCarrito();
-        activarBotonesWishlist();
+        activarBotonesWishlist(); // Aquí se maneja la alerta si no hay token
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
@@ -150,6 +155,34 @@ function activarBotonesCarrito() {
     }
 }
 
+
+function inicializarFiltros() {
+    const slider = document.getElementById('rangoPrecio');
+    const precioMax = document.getElementById('precioMax');
+    const checkboxesCat = document.querySelectorAll('input[name="categoria"]');
+    const checkboxesOferta = document.querySelectorAll('input[name="oferta"]');
+    const btnLimpiar = document.querySelector('.btn-limpiar-filtros');
+
+    if (slider && precioMax) {
+        slider.addEventListener('input', function() {
+            precioMax.textContent = this.value;
+            aplicarFiltros();
+        });
+    }
+
+    checkboxesCat.forEach(checkbox => {
+        checkbox.addEventListener('change', aplicarFiltros);
+    });
+
+    checkboxesOferta.forEach(checkbox => {
+        checkbox.addEventListener('change', aplicarFiltros);
+    });
+
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarFiltros);
+    }
+}
+
 async function aplicarFiltros() {
   try {
     const precioMaximo = Number(document.getElementById('rangoPrecio')?.value);
@@ -203,9 +236,14 @@ async function renderProductos(productos) {
         return;
     }
 
-    // ✅ Cargar wishlist una sola vez
-    const wishlist = await obtenerWishlist();
-    const wishlistIds = wishlist.map(item => item.producto_id);
+    // Solo cargar wishlist si el usuario está logueado
+    let wishlistIds = [];
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const wishlist = await obtenerWishlist();
+        wishlistIds = wishlist.map(item => item.producto_id);
+    }
 
     productos.forEach(prod => {
         const card = document.createElement("div");
@@ -219,6 +257,7 @@ async function renderProductos(productos) {
 
         const sinStock = !prod.inventario || parseInt(prod.inventario) === 0;
 
+        // Si no hay token → wishlistIds = [] → corazones vacíos
         const estaEnWishlistActual = wishlistIds.includes(prod.id);
         const iconoCorazon = estaEnWishlistActual ? '❤️' : '🤍';
         const claseActiva = estaEnWishlistActual ? 'active' : '';
@@ -247,22 +286,19 @@ async function renderProductos(productos) {
     });
 
     activarBotonesCarrito();
-    activarBotonesWishlist();
+    activarBotonesWishlist(); // Maneja alerta si no hay token
 }
 
 function limpiarFiltros() {
-    // Reset slider
     const slider = document.getElementById('rangoPrecio');
     const precioMax = document.getElementById('precioMax');
 
     if (slider) slider.value = 100;
     if (precioMax) precioMax.textContent = '100';
 
-    // Reset checkboxes
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
 
-    // Recargar todos los productos desde el backend
     cargarProductos();
 }

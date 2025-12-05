@@ -45,17 +45,21 @@
                 <input type="password" id="pass2" placeholder="Repite tu contraseña" required>
 
                 <div class="suscripcion-section">
-                    <label for="suscripcion">¿Deseas suscribirte para recibir novedades acerca de Sexta Armonía?</label>
-                    <div class="suscripcion-opciones">
-                        <label class="opcion-item">
-                            <input type="radio" name="suscripcion" value="si" id="suscripcion-si">
-                            <span>Sí</span>
-                        </label>
-                        <label class="opcion-item">
-                            <input type="radio" name="suscripcion" value="no" id="suscripcion-no" checked>
-                            <span>No</span>
-                        </label>
-                    </div>
+                    <fieldset>
+                        <legend>¿Deseas suscribirte para recibir novedades acerca de Sexta Armonía?</legend>
+
+                        <div class="suscripcion-opciones">
+                            <label class="opcion-item">
+                                <input type="radio" name="suscripcion" value="si" id="suscripcion-si">
+                                <span>Sí</span>
+                            </label>
+
+                            <label class="opcion-item">
+                                <input type="radio" name="suscripcion" value="no" id="suscripcion-no" checked>
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </fieldset>
                 </div>
 
                 <button type="submit" class="btn-crear">Crear Cuenta</button>

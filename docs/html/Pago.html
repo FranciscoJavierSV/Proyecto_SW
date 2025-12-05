@@ -38,27 +38,27 @@
     <section class="formulario-envio">
       <h2>Datos de envío</h2>
 
-      <label>Nombre completo:</label>
-      <input type="text" id="nombreCliente" required />
+      <label for="nombreCliente">Nombre completo:</label>
+      <input type="text" id="nombreCliente" name="nombreCliente" required />
 
-      <label>Correo electrónico:</label>
-      <input type="email" id="emailCliente" placeholder="cliente@correo.com" required />
+      <label for="emailCliente">Correo electrónico:</label>
+      <input type="email" id="emailCliente" name="emailCliente" placeholder="cliente@correo.com" required />
 
-      <label>Dirección:</label>
-      <input type="text" />
+      <label for="direccionCliente">Dirección:</label>
+      <input type="text" id="direccionCliente" name="direccionCliente" />
 
-      <label>Código Postal:</label>
-      <input type="text" />
+      <label for="cpCliente">Código Postal:</label>
+      <input type="text" id="cpCliente" name="cpCliente" />
 
-      <label>Ciudad:</label>
-      <input type="text" />
+      <label for="ciudadCliente">Ciudad:</label>
+      <input type="text" id="ciudadCliente" name="ciudadCliente" />
 
-      <label>Teléfono:</label>
-      <input type="text" />
+      <label for="telefonoCliente">Teléfono:</label>
+      <input type="text" id="telefonoCliente" name="telefonoCliente" />
 
       <h3>Método de pago</h3>
- 
-      <select id="metodoPago" onchange="mostrarFormularioPago()">
+
+      <select id="metodoPago" name="metodoPago" onchange="mostrarFormularioPago()">
         <option value="">Seleccione una opción</option>
         <option value="tarjeta">Tarjeta de crédito/débito</option>
         <option value="oxxo">Pago en OXXO</option>
@@ -68,44 +68,52 @@
       <div id="pagoTarjeta" class="form-pago oculto">
         <h3>Pago con tarjeta</h3>
 
-        <label>Número de tarjeta:</label>
-        <input type="text" />
+        <label for="numTarjeta">Número de tarjeta:</label>
+        <input type="text" id="numTarjeta" name="numTarjeta" />
 
-        <label>Nombre en la tarjeta:</label>
-        <input type="text" />
+        <label for="nombreTarjeta">Nombre en la tarjeta:</label>
+        <input type="text" id="nombreTarjeta" name="nombreTarjeta" />
 
-        <label>Fecha de expiración:</label>
-        <input type="month" />
+        <label for="expTarjeta">Fecha de expiración:</label>
+        <input type="month" id="expTarjeta" name="expTarjeta" />
 
-        <label>CVC:</label>
-        <input type="text" />
+        <label for="cvcTarjeta">CVC:</label>
+        <input type="text" id="cvcTarjeta" name="cvcTarjeta" />
 
-        <button id="btnConfirmarTarjeta" class="btn-confirmar" onclick="confirmPurchase(event)">Confirmar compra</button>
+        <button id="btnConfirmarTarjeta" class="btn-confirmar" onclick="confirmPurchase(event)">
+          Confirmar compra
+        </button>
       </div>
 
       <div id="pagoOxxo" class="form-pago oculto">
         <h3>Pago en OXXO</h3>
-
         <p>Se generará un recibo con instrucciones de pago.</p>
-
-        <button id="btnGenerarOxxo" class="btn-confirmar" onclick="confirmPurchase(event)">Generar recibo</button>
+        <button id="btnGenerarOxxo" class="btn-confirmar" onclick="confirmPurchase(event)">
+          Generar recibo
+        </button>
       </div>
 
       <div id="pagoTransferencia" class="form-pago oculto">
         <form>
           <h3>Pago con transferencia</h3>
-          <label for="Nombre del destinatario">Nombre</label>
-          <input type="text" />
-          <label for="Cuenta Clabe">Cuenta Clabe</label>
+
+          <label for="destinatario">Nombre</label>
+          <input type="text" id="destinatario" name="destinatario" />
+
+          <label for="clabe">Cuenta Clabe</label>
           <input
             type="text"
             id="clabe"
+            name="clabe"
             maxlength="18"
             pattern="[0-9]{18}"
             title="La CLABE debe contener 18 dígitos numéricos"
             required
           />
-          <button id="btnConfirmarTransferencia" class="btn-confirmar" onclick="confirmPurchase(event)">Confirmar transferencia</button>
+
+          <button id="btnConfirmarTransferencia" class="btn-confirmar" onclick="confirmPurchase(event)">
+            Confirmar transferencia
+          </button>
         </form>
       </div>
     </section>
