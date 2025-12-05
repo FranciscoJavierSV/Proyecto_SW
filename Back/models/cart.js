@@ -43,9 +43,9 @@ async function getCart(userId) {
   let totalProductos = 0;
 
   rows.forEach(item => {
-    subtotal += Number(item.subtotal);
-    iva += Number(item.iva);
-    totalProductos += Number(item.total);
+    subtotal = Number(item.subtotal);
+    iva = subtotal * Number(item.iva);
+    totalProductos = subtotal + iva;
   });
 
   // total final: productos (con IVA) + envío

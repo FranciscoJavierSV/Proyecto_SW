@@ -10,7 +10,7 @@ async function getProducts() {
   );
   return rows;
 }
-
+ 
 // ----------------------------------------
 // Obtener productos por categoría
 // ----------------------------------------
@@ -35,6 +35,10 @@ async function getProductId(id) {
     [id]
   );
   return row;
+}
+
+async function getProductById(id) {
+  return await getProductId(id);
 }
 
 // ----------------------------------------
@@ -147,10 +151,11 @@ module.exports = {
   getProducts,
   getProductCategory,
   getProductId,
+  getProductById,
   addProduct,
   updateProduct,
   deleteProduct,
-  decreaseInventory, // <- agregado
+  decreaseInventory, 
   getOftertas,
   getProductsByPriceRange,
   getProductsWithoutOfert
