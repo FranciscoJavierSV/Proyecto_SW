@@ -36,7 +36,6 @@ router.delete('/wishlist/:productId', verifyT, wishlistController.removeFromWish
 // ---- COMPRAS ----
 router.post('/ordenar', verifyT, salesController.createOrder);
 router.get('/ordenar', verifyT, salesController.getOrders);
-router.post('/ordenar/:id/email', verifyT, salesController.sendOrderEmail);
 router.post('/ordenar/pdf', verifyT, salesController.getOrderPDF);
 
 

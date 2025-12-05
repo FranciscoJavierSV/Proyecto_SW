@@ -180,8 +180,6 @@ const getOrderDetails = async (req, res) => {
 
 const getOrderPDF = async (req, res) => {
   try {
-    //console.log("DEBUG POST /api/auth/ordenar/pdf - req.user:", req.user && req.user.id);
-
     const {
       customerName,
       customerEmail,
@@ -189,14 +187,22 @@ const getOrderPDF = async (req, res) => {
       metodoPago
     } = req.body;
 
-    if (!customerName || !customerEmail || !items || !Array.isArray(items) || items.length === 0 || metodoPago === undefined) {
+    // Validación básica
+    if (
+      !customerName ||
+      !customerEmail ||
+      !items ||
+      !Array.isArray(items) ||
+      items.length === 0 ||
+      metodoPago === undefined
+    ) {
       return res.status(400).json({
         success: false,
         message: "Faltan campos obligatorios.",
       });
     }
 
-    
+    // Obtener país del usuario
     const [[usuario]] = await pool.query(
       `SELECT pais_id FROM usuarios WHERE id = ?`,
       [req.user.id]
@@ -206,7 +212,6 @@ const getOrderPDF = async (req, res) => {
       return res.status(400).json({ success: false, message: "Usuario no encontrado" });
     }
 
-    // obtener iva y envio de la bd en la tabla paises
     const [[pais]] = await pool.query(
       `SELECT iva, envio FROM paises WHERE id = ?`,
       [usuario.pais_id]
@@ -216,30 +221,111 @@ const getOrderPDF = async (req, res) => {
       return res.status(400).json({ success: false, message: "País no encontrado" });
     }
 
-    const ivaRate = Number(pais.iva);    // ejemplo: 0.16
-    const envio = Number(pais.envio);    // ejemplo: 100
+    const ivaRate = Number(pais.iva);
+    const envio = Number(pais.envio);
 
-    // se calcula subtotal
+    // Calcular subtotal
     const subtotal = items.reduce((acc, it) => {
       const cantidad = it.cantidad || 1;
       const precio = it.precioUnitario ?? (it.subtotal / cantidad);
       return acc + (precio * cantidad);
     }, 0);
 
-    // Base antes de IVA
     const base = subtotal + envio;
     const total = Number((base * (1 + ivaRate)).toFixed(2));
 
-    // Crear carpeta PDF temporal
-    const tmpDir = path.join(__dirname, "..", "tmp");
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+    // ============================
+    // PREPARAR CÓDIGO DE BARRAS (SI ES OXXO)
+    // ============================
+    let oxxoReference = null;
+    let barcodeBuffer = null;
 
-    const pdfName = `order_${Date.now()}.pdf`;
-    const pdfPath = path.join(tmpDir, pdfName);
+    if (metodoPago === "oxxo") {
+      oxxoReference = uuidv4().replace(/-/g, "").slice(0, 12);
 
+      try {
+        barcodeBuffer = await bwipjs.toBuffer({
+          bcid: "code128",
+          text: oxxoReference,
+          scale: 3,
+          height: 15,
+          includetext: true,
+          textxalign: "center",
+        });
+      } catch (err) {
+        console.warn("WARN: No se pudo generar código de barras:", err.message);
+      }
+    }
+
+    // ============================
+    // CREAR PDF EN MEMORIA
+    // ============================
     const doc = new PDFDocument({ margin: 40 });
-    const stream = fs.createWriteStream(pdfPath);
-    doc.pipe(stream);
+    let buffers = [];
+
+    doc.on("data", buffers.push.bind(buffers));
+
+    doc.on("end", async () => {
+      const buffer = Buffer.concat(buffers);
+      const pdfBase64 = buffer.toString("base64");
+
+      // Responder al frontend
+      res.json({
+        success: true,
+        message: "PDF generado (y se intentará enviar por correo).",
+        pdfBase64
+      });
+
+      // Enviar correo en segundo plano
+      try {
+        let transporter;
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+          const testAccount = await nodemailer.createTestAccount();
+          transporter = nodemailer.createTransport({
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
+            auth: {
+              user: testAccount.user,
+              pass: testAccount.pass
+            }
+          });
+          console.log("Usando cuenta de prueba Ethereal para el correo de la orden.");
+        } else {
+          transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASS
+            }
+          });
+        }
+
+        const info = await transporter.sendMail({
+          from: `"${process.env.COMPANY_NAME || "Tienda"}" <${process.env.EMAIL_USER || 'no-reply@example.com'}>`,
+          to: customerEmail,
+          subject: "Resumen de tu compra",
+          html: `<p>Hola <strong>${customerName}</strong>,</p><p>Gracias por tu compra. Adjunto encontrarás la nota de compra en PDF.</p>`,
+          attachments: [
+            { filename: "order.pdf", content: buffer, contentType: "application/pdf" }
+          ]
+        });
+
+        console.log("✅ Correo de orden enviado. messageId:", info && info.messageId);
+
+        if (nodemailer.getTestMessageUrl && info) {
+          console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+        }
+
+      } catch (mailErr) {
+        console.error("❌ ERROR al enviar email de orden:", mailErr);
+      }
+    });
+
+    // ============================
+    // CONTENIDO DEL PDF
+    // ============================
 
     // Encabezado: logo + nombre + lema
     const logoPath = path.join(__dirname, "..", "assets", "logo.jpg");
@@ -253,7 +339,7 @@ const getOrderPDF = async (req, res) => {
 
     doc
       .fontSize(20)
-      .text(process.env.COMPANY_NAME || "Sexta Armonia", 140, 50)
+      .text(process.env.COMPANY_NAME || "Sexta Armonía", 140, 50)
       .fontSize(12)
       .text(`"${process.env.COMPANY_SLOGAN || "Tu café favorito a un clic de distancia"}"`, 140, 75);
 
@@ -265,22 +351,31 @@ const getOrderPDF = async (req, res) => {
 
     doc.moveDown(2);
 
+    // Información del cliente
     doc.fontSize(16).text("Información del Cliente").moveDown(0.5);
     doc.fontSize(12).text(`Nombre: ${customerName}`).moveDown();
 
+    // Detalles de la compra
     doc.fontSize(16).text("Detalles de la Compra").moveDown();
     items.forEach((item, idx) => {
       const cantidad = item.cantidad || 1;
-      const precioUnitario = item.precioUnitario ?? (item.subtotal ? item.subtotal / cantidad : 0);
-      const totalItem = item.total ?? item.subtotal ?? (precioUnitario * cantidad);
+      const precioUnitario =
+        item.precioUnitario ?? (item.subtotal ? item.subtotal / cantidad : 0);
+      const totalItem =
+        item.total ?? item.subtotal ?? (precioUnitario * cantidad);
 
       doc
         .fontSize(12)
-        .text(`${idx + 1}. ${item.nombre || item.title || "Producto"} | Cant: ${cantidad} | Precio: $${Number(precioUnitario).toFixed(2)} | Total: $${Number(totalItem).toFixed(2)}`);
+        .text(
+          `${idx + 1}. ${item.nombre || item.title || "Producto"} | Cant: ${cantidad} | Precio: $${Number(
+            precioUnitario
+          ).toFixed(2)} | Total: $${Number(totalItem).toFixed(2)}`
+        );
     });
 
     doc.moveDown(2);
 
+    // Resumen de pago
     doc.fontSize(16).text("Resumen de Pago").moveDown(0.5);
     doc.fontSize(12).text(`Subtotal: $${subtotal.toFixed(2)}`);
     doc.text(`Envío: $${envio.toFixed(2)}`);
@@ -290,24 +385,15 @@ const getOrderPDF = async (req, res) => {
 
     doc.moveDown(2);
 
+    // Sección OXXO (solo si aplica)
     if (metodoPago === "oxxo") {
-      const oxxoReference = uuidv4().replace(/-/g, "").slice(0, 12);
-
       doc.fontSize(18).text("PAGO EN OXXO").moveDown();
       doc.fontSize(12).text("Presenta este código en caja para realizar tu pago.").moveDown();
 
-      try {
-        const barcodeBuffer = await bwipjs.toBuffer({
-          bcid: "code128",
-          text: oxxoReference,
-          scale: 3,
-          height: 15,
-          includetext: true,
-          textxalign: "center",
-        });
+      if (barcodeBuffer) {
         doc.image(barcodeBuffer, { width: 260 });
-      } catch (err) {
-        console.warn("WARN: No se pudo generar código de barras:", err.message);
+      } else {
+        doc.fontSize(10).text("No se pudo generar el código de barras.").moveDown();
       }
 
       doc.moveDown(1);
@@ -315,109 +401,16 @@ const getOrderPDF = async (req, res) => {
       doc.moveDown(1);
     }
 
+    // Cerrar el PDF (esto dispara luego el evento "end")
     doc.end();
-
-    // Esperar a que se escriba el archivo
-    await new Promise((resolve, reject) => {
-      stream.on("finish", resolve);
-      stream.on("error", reject);
-    });
-
-    const buffer = await fsPromises.readFile(pdfPath);
-    const pdfBase64 = buffer.toString("base64");
-
-    // ===== RESPONDEMOS AL FRONT PRIMERO para que no se quede colgado =====
-    res.json({
-      success: true,
-      message: "PDF generado (y se intentará enviar por correo).",
-      pdfName,
-      pdfBase64
-    });
-
-    // ===== AHORA intentamos enviar correo, pero NO bloqueamos la respuesta =====
-    (async () => {
-      try {
-        let transporter;
-        // Si no tienes EMAIL_USER/EAMIL_PASS configurados (dev), usa ethereal
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-          const testAccount = await nodemailer.createTestAccount();
-          transporter = nodemailer.createTransport({
-            host: testAccount.smtp.host,
-            port: testAccount.smtp.port,
-            secure: testAccount.smtp.secure,
-            auth: {
-              user: testAccount.user,
-              pass: testAccount.pass
-            }
-          });
-          console.log("Using Ethereal test account for email preview.");
-        } else {
-          transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-          });
-        }
-
-        const info = await transporter.sendMail({
-          from: `"${process.env.COMPANY_NAME || "Tienda"}" <${process.env.EMAIL_USER || 'no-reply@example.com'}>`,
-          to: customerEmail,
-          subject: "Resumen de tu compra",
-          html: `<p>Hola <strong>${customerName}</strong>,</p><p>Gracias por tu compra. Adjunto encontrarás la nota de compra en PDF.</p>`,
-          attachments: [
-            { filename: "order.pdf", content: buffer, contentType: "application/pdf" }
-          ],
-        });
-
-        console.log("Email enviado (info):", info && info.messageId);
-        if (nodemailer.getTestMessageUrl && info) {
-          console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-        }
-      } catch (mailErr) {
-        console.error("ERROR al enviar email (no es crítico):", mailErr);
-      } finally {
-        // limpiar archivo temporal (opcional)
-        try { fs.unlinkSync(pdfPath); } catch (e) {}
-      }
-    })();
 
   } catch (error) {
     console.error("ERROR PDF:", error);
-    return res.status(500).json({ success:false, message: "Error al generar PDF", error: error.message });
-  }
-};
-
-
-const sendOrderEmail = async (customerName, customerEmail, pdfPath) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { 
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS 
-      },
+    return res.status(500).json({
+      success: false,
+      message: "Error al generar PDF",
+      error: error.message
     });
-
-    await transporter.sendMail({
-      from: `"Tienda" <${process.env.EMAIL_USER}>`,
-      to: customerEmail,
-      subject: "Resumen de tu compra",
-      html: `
-        <p>Hola <strong>${customerName}</strong>,</p>
-        <p>¡Gracias por tu compra! Te enviamos el resumen de tu pedido adjunto en PDF.</p>
-      `,
-      attachments: [
-        { 
-          filename: "order.pdf", 
-          path: pdfPath 
-        }
-      ],
-    });
-
-    console.log("Correo enviado correctamente");
-
-  } catch (error) {
-    console.error("Error enviando email:", error);
-    return res.status(500).json({ success:false, message: "Error en el servidor" });
   }
 };
 
@@ -496,7 +489,6 @@ module.exports = {
   getOrders,
   getOrderDetails,
   getOrderPDF,
-  sendOrderEmail,
   getSalesChart,    
   getSalesProducts,
   getTotalCompanySales
