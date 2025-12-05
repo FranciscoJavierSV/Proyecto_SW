@@ -1,7 +1,27 @@
+// ===============================
+// MOSTRAR FORMULARIO DE PAGO
+// ===============================
+async function mostrarFormularioPago() {
+    const metodo = document.getElementById("metodoPago").value;
+
+    document.getElementById("pagoTarjeta").classList.add("oculto");
+    document.getElementById("pagoOxxo").classList.add("oculto");
+    document.getElementById("pagoTransferencia").classList.add("oculto");
+
+    if (metodo === "tarjeta") document.getElementById("pagoTarjeta").classList.remove("oculto");
+    if (metodo === "oxxo") document.getElementById("pagoOxxo").classList.remove("oculto");
+    if (metodo === "transferencia") document.getElementById("pagoTransferencia").classList.remove("oculto");
+}
+
+
+
+// ===============================
+// CONFIRMAR COMPRA
+// ===============================
 async function confirmPurchase(event) {
     if (event?.preventDefault) event.preventDefault();
 
-    // === DATOS DEL CLIENTE ===
+    // Datos del cliente
     const customerName = document.getElementById("nombreCliente")?.value || "Cliente";
     const customerEmail = document.getElementById("emailCliente")?.value;
 
@@ -10,11 +30,13 @@ async function confirmPurchase(event) {
     }
 
     const metodoPago = document.getElementById("metodoPago").value;
-    if (!metodoPago) {
-        return Swal.fire("Selecciona un método de pago", "", "warning");
-    }
+    if (!metodoPago) return Swal.fire("Selecciona un método de pago", "", "warning");
 
-    // === OBTENER CARRITO DEL BACKEND ===
+
+
+    // ===============================
+    // OBTENER CARRITO (API.js)
+    // ===============================
     let items = [];
 
     try {
@@ -23,6 +45,7 @@ async function confirmPurchase(event) {
         });
 
         items = data.cart || [];
+
     } catch (err) {
         console.warn("Error obteniendo carrito, usando valores ejemplo.");
     }
@@ -35,18 +58,22 @@ async function confirmPurchase(event) {
         ];
     }
 
-    // === CREAR ORDEN ===
-const orderResult = await apiPost(
-    "/auth/ordenar",
-    {
-        customerName,
-        customerEmail,
-        metodoPago
-    },
-    {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-    }
-);
+
+
+    // ===============================
+    // CREAR ORDEN (API.js)
+    // ===============================
+    const orderResult = await apiPost(
+        "/auth/ordenar",
+        {
+            customerName,
+            customerEmail,
+            metodoPago
+        },
+        {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    );
 
     if (!orderResult.success) {
         console.error(orderResult);
@@ -55,7 +82,11 @@ const orderResult = await apiPost(
 
     console.log("Orden creada con ID:", orderResult.saleId);
 
-    // === GENERAR PDF ===
+
+
+    // ===============================
+    // GENERAR PDF (API.js)
+    // ===============================
     const payload = {
         customerName,
         customerEmail,
@@ -63,16 +94,24 @@ const orderResult = await apiPost(
         metodoPago
     };
 
-    const pdfResult = await apiPost("/auth/ordenar/pdf", payload, {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-    });
+    const pdfResult = await apiPost(
+        "/auth/ordenar/pdf",
+        payload,
+        {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    );
 
     if (!pdfResult.success) {
         console.error(pdfResult);
         return Swal.fire("Error", pdfResult.message || "No se pudo generar el PDF", "error");
     }
 
-    // === ALERTAS ===
+
+
+    // ===============================
+    // ALERTAS
+    // ===============================
     await Swal.fire({
         icon: "success",
         title: "Compra finalizada",
@@ -86,12 +125,20 @@ const orderResult = await apiPost(
         showConfirmButton: true
     });
 
-    // === LIMPIAR CARRITO ===
+
+
+    // ===============================
+    // LIMPIAR CARRITO (API.js)
+    // ===============================
     await apiDelete("/auth/cart", {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
     });
 
-    // === ABRIR PDF EN NUEVA PESTAÑA ===
+
+
+    // ===============================
+    // ABRIR PDF EN NUEVA PESTAÑA
+    // ===============================
     if (pdfResult.pdfBase64) {
         const byteCharacters = atob(pdfResult.pdfBase64);
         const byteNumbers = Array.from(byteCharacters).map(c => c.charCodeAt(0));
@@ -102,30 +149,21 @@ const orderResult = await apiPost(
         window.open(url, "_blank");
     }
 
-    // === REDIRECCIÓN FINAL ===
+
+
+    // ===============================
+    // REDIRECCIÓN FINAL
+    // ===============================
     setTimeout(() => {
         window.location.href = "../html/PaginaUsuarioLogueado.html";
     }, 1500);
 }
- 
-function mostrarFormularioPago() {
-    const metodo = document.getElementById("metodoPago").value;
 
-    const tarjetaForm = document.getElementById("formTarjeta");
-    const transferenciaForm = document.getElementById("formTransferencia");
 
-    // Ocultar ambos
-    tarjetaForm.style.display = "none";
-    transferenciaForm.style.display = "none";
 
-    // Mostrar el que corresponda
-    if (metodo === "tarjeta") {
-        tarjetaForm.style.display = "block";
-    } else if (metodo === "transferencia") {
-        transferenciaForm.style.display = "block";
-    }
-}
-
+// ===============================
+// INICIALIZACIÓN
+// ===============================
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username");
     const nombreSpan = document.querySelector(".usuario-nombre");

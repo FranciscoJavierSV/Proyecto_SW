@@ -1,10 +1,9 @@
 function activarBotonesCarrito() {
-
-  // Selecciona todos los botones "Agregar al carrito"
+   // Selecciona todos los botones "Agregar al carrito"
   document.querySelectorAll(".btn-agregar").forEach((btn) => {
-
-    btn.addEventListener("click", async () => {
-
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const token = localStorage.getItem("token");
 
       // Si no hay sesión, no permite agregar
@@ -25,6 +24,8 @@ function activarBotonesCarrito() {
 
       console.log("Respuesta agregar:", data);
 
+      console.log("Respuesta agregar:", data);
+
       // Si se agregó correctamente
       if (data.success) {
         Swal.fire({
@@ -33,7 +34,7 @@ function activarBotonesCarrito() {
           timer: 2000,
           showConfirmButton: false,
           toast: true,
-          position: 'top-end'
+          position: "top-end",
         });
 
         // Recargar carrito visual
@@ -46,12 +47,11 @@ function activarBotonesCarrito() {
   });
 }
 
-
 async function cargarCarrito() {
 
   const token = localStorage.getItem("token");
 
-  // Si no hay token, no cargar nada
+  // Si no hay token, no hacer nada
   if (!token) {
     console.log("No hay token, usuario no logueado");
     return;
@@ -86,7 +86,8 @@ async function cargarCarrito() {
 
     // Si el carrito está vacío
     if (!Array.isArray(cart) || cart.length === 0) {
-      contenedor.innerHTML = '<p class="carrito-vacio">No hay productos aún.</p>';
+      contenedor.innerHTML =
+        '<p class="carrito-vacio">No hay productos aún.</p>';
       subtotalElem.textContent = "$0";
       ivaElem.textContent = "$0";
       totalElem.textContent = "$0";
@@ -107,12 +108,17 @@ async function cargarCarrito() {
           <p>${item.nombre}</p>
 
           <div class="cantidad-control">
-            <button class="btn-menos" data-product-id="${item.producto_id}">-</button>
+            <button class="btn-menos" data-product-id="${
+              item.producto_id
+            }">-</button>
             <span class="cantidad">${item.cantidad}</span>
-            <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
+            <button class="btn-mas" data-product-id="${
+              item.producto_id
+            }">+</button>
           </div>
-
-          <p>$${Number(item.subtotal).toFixed(2)}</p>
+          <p>$${Number(item.precio).toFixed(2)} x ${item.cantidad} = $${(
+        Number(item.precio) * item.cantidad
+      ).toFixed(2)}</p>
         </div>
 
         <button class="btn-eliminar" data-cart-id="${item.id}">
@@ -128,7 +134,9 @@ async function cargarCarrito() {
 
     subtotalElem.textContent = `$${resumen.subtotal.toFixed(2)}`;
     ivaElem.textContent = `$${resumen.iva.toFixed(2)}`;
-    document.getElementById("envio").textContent = `$${resumen.envio.toFixed(2)}`;
+    document.getElementById("envio").textContent = `$${resumen.envio.toFixed(
+      2
+    )}`;
     totalElem.textContent = `$${resumen.totalFinal.toFixed(2)}`;
 
     // Activar botones de eliminar y +/- cantidad
