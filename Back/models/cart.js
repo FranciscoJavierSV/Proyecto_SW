@@ -5,7 +5,6 @@ const pool = require('../db/conexion'); // usa tu conexión existente
 // -----------------------------
 
 async function getCart(userId) {
-
   // traer items del carrito
   const [rows] = await pool.query(
     `SELECT 
@@ -35,32 +34,38 @@ async function getCart(userId) {
     [userId]
   );
 
-  const envio = usuario?.envio ?? 0;
+  const envio = Number(usuario?.envio ?? 0);
+  // asumimos usuario.iva **ya es decimal** (ej. 0.16)
+  const ivaRate = typeof usuario?.iva !== 'undefined' ? Number(usuario.iva) : 0;
 
   // totales base
   let subtotal = 0;
-  let iva = 0;
-  let totalProductos = 0;
 
   rows.forEach(item => {
-    subtotal = Number(item.subtotal);
-    iva = subtotal * Number(item.iva);
-    totalProductos = subtotal + iva;
+    subtotal += Number(item.subtotal) || 0;
   });
 
-  // total final: productos (con IVA) + envío
-  const totalFinal = totalProductos + envio;
+  // calcular base (subtotal + envío)
+  const base = subtotal + envio;
+
+  // calcular IVA sobre toda la base (base * 0.16)
+  const iva = Number((base * ivaRate).toFixed(2));
+
+  // total final: base + iva
+  const totalFinal = Number((base + iva).toFixed(2));
+
 
   return {
     items: rows,
     resumen: {
-      subtotal,
+      subtotal: Number(subtotal.toFixed(2)),
       iva,
-      envio,
+      envio: Number(envio.toFixed(2)),
       totalFinal
     }
   };
 }
+
 
 
 
