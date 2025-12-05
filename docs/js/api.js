@@ -1,6 +1,6 @@
 // URL base del backend (local, Host )
-//const API_URL = "https://proyecto-production-5301.up.railway.app/api";
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://proyecto-production-5301.up.railway.app/api";
+//const API_URL = "http://localhost:3000/api";
 
 // POST genérico (envía datos en JSON)
 async function apiPost(endpoint, data = {}, extraHeaders = {}) {

@@ -13,8 +13,6 @@ async function mostrarFormularioPago() {
     if (metodo === "transferencia") document.getElementById("pagoTransferencia").classList.remove("oculto");
 }
 
-
-
 // ===============================
 // CONFIRMAR COMPRA
 // ===============================
