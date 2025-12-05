@@ -1,7 +1,8 @@
 function activarBotonesCarrito() {
-
   document.querySelectorAll(".btn-agregar").forEach((btn) => {
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -16,29 +17,29 @@ function activarBotonesCarrito() {
         { productId, quantity: 1 },
         { Authorization: "Bearer " + token }
       );
- 
-       console.log("Respuesta agregar:", data);
+
+      console.log("Respuesta agregar:", data);
 
       if (data.success) {
-         Swal.fire({
-                    text: "Producto agregado al carrito 🛒",
-                    icon: "success",
-                    timer: 2000,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'top-end'
-                });
+        Swal.fire({
+          text: "Producto agregado al carrito 🛒",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+          toast: true,
+          position: "top-end",
+        });
         cargarCarrito();
       } else {
         alertaError(data.message || "Error al agregar producto");
       }
     });
   });
-} 
- 
+}
+
 async function cargarCarrito() {
   const token = localStorage.getItem("token");
-  
+
   // Si no hay token, no hacer nada
   if (!token) {
     console.log("No hay token, usuario no logueado");
@@ -57,7 +58,7 @@ async function cargarCarrito() {
     });
 
     console.log("Respuesta del servidor carrito:", data);
-    
+
     if (!data.success) {
       contenedor.innerHTML = "<p>Error al cargar carrito.</p>";
       return;
@@ -69,7 +70,8 @@ async function cargarCarrito() {
     carritoCountElem.textContent = cantidadTotal;
 
     if (!Array.isArray(cart) || cart.length === 0) {
-      contenedor.innerHTML = '<p class="carrito-vacio">No hay productos aún.</p>';
+      contenedor.innerHTML =
+        '<p class="carrito-vacio">No hay productos aún.</p>';
       subtotalElem.textContent = "$0";
       ivaElem.textContent = "$0";
       totalElem.textContent = "$0";
@@ -87,11 +89,17 @@ async function cargarCarrito() {
         <div class="carrito-detalle">
           <p>${item.nombre}</p>
           <div class="cantidad-control">
-            <button class="btn-menos" data-product-id="${item.producto_id}">-</button>
+            <button class="btn-menos" data-product-id="${
+              item.producto_id
+            }">-</button>
             <span class="cantidad">${item.cantidad}</span>
-            <button class="btn-mas" data-product-id="${item.producto_id}">+</button>
+            <button class="btn-mas" data-product-id="${
+              item.producto_id
+            }">+</button>
           </div>
-          <p>$${Number(item.subtotal).toFixed(2)}</p>
+          <p>$${Number(item.precio).toFixed(2)} x ${item.cantidad} = $${(
+        Number(item.precio) * item.cantidad
+      ).toFixed(2)}</p>
         </div>
         <button class="btn-eliminar" data-cart-id="${item.id}">
           <i class="fa-regular fa-trash-can"></i>
@@ -101,14 +109,14 @@ async function cargarCarrito() {
       contenedor.appendChild(div);
     });
 
-
     const resumen = data.resumen;
 
     subtotalElem.textContent = `$${resumen.subtotal.toFixed(2)}`;
     ivaElem.textContent = `$${resumen.iva.toFixed(2)}`;
-    document.getElementById("envio").textContent = `$${resumen.envio.toFixed(2)}`;
+    document.getElementById("envio").textContent = `$${resumen.envio.toFixed(
+      2
+    )}`;
     totalElem.textContent = `$${resumen.totalFinal.toFixed(2)}`;
-
 
     activarBotonesEliminar();
     activarBotonesCantidad();
