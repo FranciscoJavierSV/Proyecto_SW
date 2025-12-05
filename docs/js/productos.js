@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     cargarProductos();
-    //inicializarFiltros();
+    inicializarFiltros();
 });
 
 async function cargarProductos() {
