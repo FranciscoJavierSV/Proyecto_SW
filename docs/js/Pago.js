@@ -16,6 +16,8 @@ async function confirmPurchase(event) {
     // Datos del cliente
     const customerName = document.getElementById("nombreCliente")?.value || "Cliente";
     const customerEmail = document.getElementById("emailCliente")?.value;
+    const cuponCliente = document.getElementById("cuponCliente")?.value || null;
+
 
     if (!customerEmail) {
         return Swal.fire("Correo requerido", "Por favor ingresa el correo del cliente.", "warning");
@@ -53,11 +55,43 @@ async function confirmPurchase(event) {
         ];
     }
 
+    // === VALIDAR CUPÓN SI EL USUARIO ESCRIBIÓ UNO ===
+    let cuponCodigo = null;
+    let cuponDescuento = 0;
+
+    if (cuponCliente) {
+        const respCupon = await fetch("http://localhost:3000/api/auth/validar-cupon", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cupon: cuponCliente })
+        });
+
+        const cuponData = await respCupon.json();
+
+        if (!respCupon.ok || !cuponData.success) {
+            return Swal.fire("Cupón inválido", cuponData.message || "El cupón no es válido.", "error");
+        }
+
+        // EXTRAEMOS DATOS QUE NECESITA EL PDF
+        cuponCodigo = cuponData.data.codigo;
+        cuponDescuento = cuponData.data.valor;
+    }
+
+
+
+
     const orderResp = await fetch("http://localhost:3000/api/auth/ordenar", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
-        }
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cuponCliente
+        })
     });
 
     const orderResult = await orderResp.json();
@@ -74,8 +108,13 @@ async function confirmPurchase(event) {
         customerName,
         customerEmail,
         items,
-        metodoPago
+        metodoPago,
+
+        // Estos valores vienen del cupón validado arriba
+        cuponCodigo: cuponCodigo || null,
+        cuponDescuento: cuponDescuento || 0
     };
+
 
     const pdfResp = await fetch("http://localhost:3000/api/auth/ordenar/pdf", {
         method: "POST",

@@ -10,7 +10,7 @@ const getCoupon = async (req, res) => {
     if (!code) {
       return res.status(400).json({
         success: false,
-        message: "Debes enviar un código de cupón"
+        message: "Debes enviar un código de cupón"  
       });
     }
 
@@ -42,7 +42,7 @@ const getCoupon = async (req, res) => {
 // ===============================
 const validateCoupon = async (req, res) => {
   try {
-    const { code } = req.body;
+    const code = req.body.cupon || req.body.code;
 
     if (!code) {
       return res.status(400).json({
@@ -73,6 +73,7 @@ const validateCoupon = async (req, res) => {
     });
   }
 };
+
 
 // ===============================
 // ADMIN — CREAR CUPÓN

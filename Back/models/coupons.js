@@ -38,10 +38,39 @@ async function getAllCoupons() {
   return rows;
 }
 
+async function validateCoupon(code) {
+  const [[cupon]] = await pool.query(
+    "SELECT * FROM cupones WHERE codigo = ? AND activo = 1",
+    [code]
+  );
+
+  if (!cupon) {
+    return { valid: false, message: "Cupón no existe o está inactivo" };
+  }
+
+  // Validar fecha
+  const hoy = new Date();
+  const exp = new Date(cupon.expiracion);
+
+  if (hoy > exp) {
+    return { valid: false, message: "El cupón ha expirado" };
+  }
+
+  // Validar uso máximo, si aplica
+  if (cupon.uso_maximo !== null && cupon.usado >= cupon.uso_maximo) {
+    return { valid: false, message: "El cupón ya alcanzó su límite de usos" };
+  }
+
+  // Si todo está bien → cupón válido
+  return { valid: true, coupon: cupon };
+}
+
+
 module.exports = { 
   getCoupon, 
   usarCupon,
   createCoupon,      // NUEVO
   disableCoupon,     // NUEVO
-  getAllCoupons      // NUEVO
+  getAllCoupons,      // NUEVO
+  validateCoupon
 };
