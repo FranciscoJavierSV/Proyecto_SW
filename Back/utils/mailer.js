@@ -8,13 +8,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function enviarCorreo({ to, subject, html }) {
+async function enviarCorreo({ to, subject, html, attachments = [] }) {
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to,
       subject,
-      html
+      html,
+      attachments
     });
 
     return { success: true };
@@ -23,5 +24,6 @@ async function enviarCorreo({ to, subject, html }) {
     return { success: false, error: err };
   }
 }
+
 
 module.exports = { enviarCorreo };

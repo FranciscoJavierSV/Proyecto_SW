@@ -17,9 +17,17 @@ function activarBotonesCarrito() {
         { Authorization: "Bearer " + token }
       );
  
-       console.log("Respuesta agregar:", data); // <-- IMPORTANTE
+       console.log("Respuesta agregar:", data);
 
       if (data.success) {
+         Swal.fire({
+                    text: "Producto agregado al carrito 🛒",
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
         cargarCarrito();
       } else {
         alertaError(data.message || "Error al agregar producto");

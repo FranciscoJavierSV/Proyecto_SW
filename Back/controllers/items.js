@@ -75,46 +75,49 @@ const getProductById = async (req, res) => {
 // Productos por filtros
 async function getProductsbyFilters(req, res) {
   try {
-
     const { min, max, categoria, oferta } = req.query;
 
-    // Filtro por categoría
+    // 1) Traemos TODOS los productos primero
+    let productos = await products.getProducts();
+
+    // 2) Filtrar por categoría
     if (categoria) {
-      productos = await products.getProductsCategory(categoria);
+      const categorias = Array.isArray(categoria) ? categoria : [categoria];
+      productos = productos.filter(p => categorias.includes(p.categoria));
     }
 
-    // Filtro precio
-    else if (min !== undefined && max !== undefined) {
-      productos = await products.getProductsByPriceRange(min, max);
+
+    // 3) Filtrar por rango de precio
+    if (min !== undefined && max !== undefined) {
+      const minNum = Number(min);
+      const maxNum = Number(max);
+
+      productos = productos.filter(p => {
+        const tieneOferta = p.ofertaP && Number(p.ofertaP) > 0;
+        const precioReal = tieneOferta ? Number(p.ofertaP) : Number(p.precio);
+        return precioReal >= minNum && precioReal <= maxNum;
+      });
     }
 
-    // Solo ofertas
-    else if (oferta === "si") {
-      productos = await products.getOfertas();
-    }
-
-    // Sin oferta
+    // 4) Filtrar por oferta
+    if (oferta === "si") {
+      productos = productos.filter(p => p.ofertaP && Number(p.ofertaP) > 0);
+    } 
     else if (oferta === "no") {
-      productos = await products.getProductsWithoutOfert();
+      productos = productos.filter(p => !p.ofertaP || Number(p.ofertaP) === 0);
     }
 
-    // Todos los productos
-    else {
-      productos = await products.getProducts();
-    }
-
+    // 5) Respuesta final
     res.json({
       success: true,
       products: productos
     });
 
   } catch (error) {
-    console.error("Error en getProducts: ", error);
-    res.status(500).json({ success: false, message: "Error del servidor"
-    });
+    console.error("Error en getProductsbyFilters: ", error);
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 }
-
 // AGREGAR ESTAS FUNCIONES:
 // FUNCIONES QUE SOLO EL ADMIN USA
 

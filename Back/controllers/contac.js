@@ -29,7 +29,7 @@ const sendContact = async (req, res) => {
       <p><strong>Mensaje:</strong></p>
       <p>${mensaje}</p>
     `;
-
+    
     await enviarCorreo({
       to: process.env.EMAIL_USER, 
       subject: "Nuevo mensaje de contacto - Sexta Armonía",
@@ -38,32 +38,41 @@ const sendContact = async (req, res) => {
 
     // CORREO AUTOMÁTICO AL USUARIO 
     const contenidoHTML_usuario = `
-      <center>
-        <img src="https://i.imgur.com/gx6QxzL.png" width="120">
-        <h2 style="color:#8B5E3C;">Sexta Armonía</h2>
-        <h4>"Armonía que se saborea"</h4>
-      </center>
+    <center>
+      <img src="cid:logoCafeteria" width="120">
+      <h2 style="color:#8B5E3C;">Sexta Armonía</h2>
+      <h4>"Tu café favorito, a un clic de distancia"</h4>
+    </center>
 
-      <p>Hola <strong>${nombre}</strong>,</p>
-      <p>Gracias por comunicarte con nosotros. <br>
-      <strong>En breve será atendido.</strong></p>
+    <p>Hola <strong>${nombre}</strong>,</p>
+    <p>Gracias por comunicarte con nosotros. <br>
+    <strong>En breve será atendido.</strong></p>
 
-      <p>Tu mensaje recibido fue:</p>
-      <blockquote style="background:#f7f3e9;padding:10px;border-left:4px solid #8B5E3C;">
-        ${mensaje}
-      </blockquote>
+    <p>Tu mensaje recibido fue:</p>
+    <blockquote style="background:#f7f3e9;padding:10px;border-left:4px solid #8B5E3C;">
+      ${mensaje}
+    </blockquote>
 
-      <p>Nos pondremos en contacto lo antes posible.</p>
+    <p>Nos pondremos en contacto lo antes posible.</p>
 
-      <br>
-      <p>Atentamente,<br><strong>Sexta Armonía</strong></p>
-    `;
+    <br>
+    <p>Atentamente,<br><strong>Sexta Armonía</strong></p>
+  `;
+
 
     await enviarCorreo({
-      to: correo, // <-- Este le llega al USUARIO
+      to: correo,
       subject: "Gracias por contactarnos - Sexta Armonía",
-      html: contenidoHTML_usuario
+      html: contenidoHTML_usuario,
+      attachments: [
+        {
+          filename: "logo.jpg",
+          path: "./assets/logo.jpg", 
+          cid: "logoCafeteria"       
+        }
+      ]
     });
+
 
     return res.json({ success: true });
 

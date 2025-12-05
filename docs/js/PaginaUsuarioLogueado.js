@@ -346,7 +346,7 @@ function limpiarFiltros() {
     });
 
     cargarProductos();
-}
+} 
 
 function activarBotonesWishlist() {
     document.querySelectorAll('.btn-wishlist').forEach(btn => {

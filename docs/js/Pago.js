@@ -126,7 +126,7 @@ async function confirmPurchase(event) {
     }
 
     setTimeout(() => {
-        window.location.href = "/html/PaginaUsuarioLogueado.html";
+        window.location.href = "../html/PaginaUsuarioLogueado.html";
     }, 1500);
 }
 

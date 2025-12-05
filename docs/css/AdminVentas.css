@@ -13,10 +13,30 @@
   align-items: center;
   border-bottom: 2px solid #f99aaa;
   position: sticky;
-  top: 0;
+  top: 0; 
   box-sizing: border-box;
 }
- 
+
+.logout-btn {
+  background: #faf3e0;
+  color: #e57d90;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 2px solid #faf3e0;
+}
+
+.logout-btn:hover {
+  background: transparent;
+  color: #faf3e0;
+  border: 2px solid #faf3e0;
+  transform: translateY(-2px);
+}
+
 .logo-area {
   display: flex;
   align-items: center;

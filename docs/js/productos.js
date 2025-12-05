@@ -81,7 +81,22 @@ function activarBotonesWishlist() {
 
             const token = localStorage.getItem("token");
             if (!token) {
-                mostrarAlertaLogin();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: "No has iniciado sesión",
+                        text: "¿Deseas iniciar sesión para agregar productos a tu lista de deseos?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#8b6b4a",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Ir a iniciar sesión",
+                        cancelButtonText: "Cancelar"
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            window.location.href = "../html/IniciarSesion.html";
+                        }
+                    });
+                }
                 return;
             }
 
@@ -126,6 +141,8 @@ function activarBotonesCarrito() {
                 });
                 return;
             }
+            
+            
         });
     });
 
@@ -151,74 +168,72 @@ function activarBotonesCarrito() {
                 });
                 return;
             }
-        });
+        }); 
     }
 }
 
-
-function inicializarFiltros() {
+ function inicializarFiltros() {
     const slider = document.getElementById('rangoPrecio');
     const precioMax = document.getElementById('precioMax');
     const checkboxesCat = document.querySelectorAll('input[name="categoria"]');
     const checkboxesOferta = document.querySelectorAll('input[name="oferta"]');
     const btnLimpiar = document.querySelector('.btn-limpiar-filtros');
-
+ 
     if (slider && precioMax) {
         slider.addEventListener('input', function() {
             precioMax.textContent = this.value;
             aplicarFiltros();
         });
     }
-
+ 
     checkboxesCat.forEach(checkbox => {
         checkbox.addEventListener('change', aplicarFiltros);
     });
-
+ 
     checkboxesOferta.forEach(checkbox => {
         checkbox.addEventListener('change', aplicarFiltros);
     });
-
+ 
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', limpiarFiltros);
     }
 }
-
+ 
 async function aplicarFiltros() {
   try {
     const precioMaximo = Number(document.getElementById('rangoPrecio')?.value);
     const categoriasSeleccionadas = Array.from(
       document.querySelectorAll('input[name="categoria"]:checked')
     ).map(cb => cb.value);
-
+  
     const conOferta = !!document.getElementById('conOferta')?.checked;
     const sinOferta = !!document.getElementById('sinOferta')?.checked;
-
-    let url = '/public/filtros';
-
-    // PRIORIDAD 1: Categoría
-    if (categoriasSeleccionadas.length > 0) {
-      url += `?categoria=${encodeURIComponent(categoriasSeleccionadas[0])}`;
+ 
+    const base = '/public/filtros';
+    const params = new URLSearchParams();
+ 
+    // Categoría
+    categoriasSeleccionadas.forEach(cat => {
+        params.append('categoria', cat);
+    });
+ 
+    // Precio
+    if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
+      params.set('min', 0);
+      params.set('max', precioMaximo);
     }
-
-    // PRIORIDAD 2: Precio
-    else if (!Number.isNaN(precioMaximo) && precioMaximo >= 0) {
-      url += `?min=0&max=${precioMaximo}`;
-    }
-
-    // PRIORIDAD 3: Oferta
-    else if (conOferta && !sinOferta) {
-      url += `?oferta=si`;
-    } else if (!conOferta && sinOferta) {
-      url += `?oferta=no`;
-    }
-
-    console.log("[aplicarFiltros] URL ->", url);
-
+ 
+    // Oferta
+    if (conOferta && !sinOferta) params.set('oferta', 'si');
+    else if (!conOferta && sinOferta) params.set('oferta', 'no');
+ 
+    const url = params.toString() ? `${base}?${params.toString()}` : base;
+ 
     const res = await apiGet(url);
     const productos = res.products || [];
-
+ 
     renderProductos(productos);
-
+ 
   } catch (err) {
     console.error("Error en aplicar filtros:", err);
     renderProductos([]);

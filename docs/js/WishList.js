@@ -200,7 +200,7 @@ function mostrarAlerta(mensaje, tipo) {
         });
     } else {
         alert(mensaje);
-    }
+    } 
 }
 
 function mostrarAlertaLogin() {

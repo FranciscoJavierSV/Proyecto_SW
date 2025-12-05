@@ -14,7 +14,7 @@ body {
 }
  
 .header {
-  width: 100%;
+  width: 100%; 
   background: #e57d90;
   padding: 12px 40px;
   display: flex;

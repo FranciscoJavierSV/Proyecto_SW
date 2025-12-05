@@ -13,7 +13,7 @@ body {
 }
 
 .header {
-    width: 100%;
+    width: 100%; 
     background: #8B6B4A;
     padding: 12px 40px;
     display: flex;
@@ -23,6 +23,7 @@ body {
     position: sticky;
     top: 0;
     box-sizing: border-box;
+    z-index: 1000;
 }
 
 .logo-area {
@@ -203,7 +204,7 @@ body {
     background: #6B5642;
     transform: translateY(-2px);
 }
-
+/*
 .productos-contenedor {
     width: 100%;
 }
@@ -213,7 +214,7 @@ body {
     color: #8B6B4A;
     margin-bottom: 25px;
     text-align: center;
-}
+}*/
 
 .grid-productos {
     display: grid;
@@ -222,8 +223,23 @@ body {
     gap: 25px;
 }
 
+.producto-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px var(--shadow-light);
+  transition: box-shadow 0.3s;
+  position: relative;
+  border: 1px solid var(--border-color);
+}
+
+.producto-card:hover {
+  box-shadow: 0 4px 15px var(--shadow-light);
+}
+
 .producto {
-    background: #F3E9DD;
+    background: var(--bg-secondary);
+    /*background: #F3E9DD;*/
     border-radius: 12px;
     padding: 15px;
     text-align: center;
@@ -231,7 +247,7 @@ body {
     transition: all 0.3s;
     position: relative;
     cursor: pointer;
-}
+} 
 
 .producto:hover {
     transform: scale(1.1);
@@ -375,6 +391,7 @@ body {
     left: 0;
     width: 100%;
     border-top: 2px solid #8B6B4A;
+    z-index: 100;
 }
 
 /* WhishList Styles */
