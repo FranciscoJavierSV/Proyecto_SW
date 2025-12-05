@@ -35,7 +35,7 @@ async function confirmPurchase(event) {
         ];
     }
 
-// === CREAR ORDEN ===
+    // === CREAR ORDEN ===
 const orderResult = await apiPost(
     "/auth/ordenar",
     {
@@ -47,7 +47,6 @@ const orderResult = await apiPost(
         "Authorization": `Bearer ${localStorage.getItem("token")}`
     }
 );
-
 
     if (!orderResult.success) {
         console.error(orderResult);
@@ -109,6 +108,24 @@ const orderResult = await apiPost(
     }, 1500);
 }
  
+function mostrarFormularioPago() {
+    const metodo = document.getElementById("metodoPago").value;
+
+    const tarjetaForm = document.getElementById("formTarjeta");
+    const transferenciaForm = document.getElementById("formTransferencia");
+
+    // Ocultar ambos
+    tarjetaForm.style.display = "none";
+    transferenciaForm.style.display = "none";
+
+    // Mostrar el que corresponda
+    if (metodo === "tarjeta") {
+        tarjetaForm.style.display = "block";
+    } else if (metodo === "transferencia") {
+        transferenciaForm.style.display = "block";
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username");
     const nombreSpan = document.querySelector(".usuario-nombre");
