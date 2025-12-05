@@ -39,13 +39,35 @@ const addToCart = async (req, res) => {
       return res.status(400).json({ success: false, message: "Ingresar ID y cantidad" });
     }
 
-    // Verifica si el producto ya está en el carrito
+    // 1. Obtener información del producto
+    const product = await products.getProductById(productId);
+
+    if (!product) {
+      return res.json({ success: false, message: "Producto no encontrado" });
+    }
+
+    if (product.inventario <= 0) {
+      return res.json({
+        success: false,
+        message: "Este producto está agotado"
+      });
+    }
+
+    // 2. Ver si ya existe en el carrito
     const itemExiste = await cart.getCartItem(userId, productId);
 
-    // Si ya existe, solo aumenta la cantidad
+    // 3. Si existe, validar inventario antes de aumentar
     if (itemExiste) {
       const nuevaCantidad = itemExiste.cantidad + quantity;
-      const actualizado = await cart.updateCart(userId, productId, nuevaCantidad);
+
+      if (nuevaCantidad > product.inventario) {
+        return res.json({
+          success: false,
+          message: `Solo quedan ${product.inventario} unidades disponibles`
+        });
+      }
+
+      await cart.updateCart(userId, productId, nuevaCantidad);
 
       return res.json({
         success: true,
@@ -54,7 +76,14 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Si no existe, lo agrega como nuevo registro
+    // 4. Si no existe, validar inventario antes de agregar
+    if (quantity > product.inventario) {
+      return res.json({
+        success: false,
+        message: `Solo quedan ${product.inventario} unidades disponibles`
+      });
+    }
+
     const add = await cart.addCart(userId, productId, quantity);
 
     return res.json({

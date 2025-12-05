@@ -7,6 +7,7 @@ const users = require('../controllers/users');
 const cartController = require('../controllers/cart');
 const salesController = require('../controllers/sales');
 const wishlistController = require('../controllers/wishlist');
+const couponController = require('../controllers/cupons');
 
 // ---- USUARIO ----
 router.post('/logout', verifyT, users.logout);               // Cerrar sesión
@@ -34,8 +35,12 @@ router.post('/wishlist', verifyT, wishlistController.addToWishlist);      // Agr
 router.delete('/wishlist/:productId', verifyT, wishlistController.removeFromWishlist); // Eliminar
 
 // ---- COMPRAS ----
-router.post('/ordenar', verifyT, salesController.createOrder);            // Crear orden
-router.get('/ordenar', verifyT, salesController.getOrders);               // Obtener órdenes
-router.post('/ordenar/pdf', verifyT, salesController.getOrderPDF);        // Generar PDF
+router.post('/ordenar', verifyT, salesController.createOrder);
+router.get('/ordenar', verifyT, salesController.getOrders);
+router.post('/ordenar/pdf', verifyT, salesController.getOrderPDF);
+
+// ---- CUPÓn ----
+router.post('/validar-cupon', verifyT, couponController.validateCoupon);
+
 
 module.exports = router;

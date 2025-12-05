@@ -24,6 +24,7 @@ async function confirmPurchase(event) {
     // Datos del cliente
     const customerName = document.getElementById("nombreCliente")?.value || "Cliente";
     const customerEmail = document.getElementById("emailCliente")?.value;
+    const cuponCliente = document.getElementById("cuponCliente")?.value || null;
 
     if (!customerEmail) {
         return Swal.fire("Correo requerido", "Por favor ingresa el correo del cliente.", "warning");
@@ -31,8 +32,6 @@ async function confirmPurchase(event) {
 
     const metodoPago = document.getElementById("metodoPago").value;
     if (!metodoPago) return Swal.fire("Selecciona un método de pago", "", "warning");
-
-
 
     // ===============================
     // OBTENER CARRITO (API.js)
@@ -58,7 +57,26 @@ async function confirmPurchase(event) {
         ];
     }
 
+    // ===============================
+    // VALIDAR CUPÓN (si existe)
+    // ===============================
+    let cuponCodigo = null;
+    let cuponDescuento = 0;
 
+    if (cuponCliente) {
+        const cuponResult = await apiPost(
+            "/auth/validar-cupon",
+            { cupon: cuponCliente },
+            { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+        );
+
+        if (!cuponResult.success) {
+            return Swal.fire("Cupón inválido", cuponResult.message || "El cupón no es válido.", "error");
+        }
+
+        cuponCodigo = cuponResult.data.codigo;
+        cuponDescuento = cuponResult.data.valor;
+    }
 
     // ===============================
     // CREAR ORDEN (API.js)
@@ -68,7 +86,8 @@ async function confirmPurchase(event) {
         {
             customerName,
             customerEmail,
-            metodoPago
+            metodoPago,
+            cuponCliente
         },
         {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -82,8 +101,6 @@ async function confirmPurchase(event) {
 
     console.log("Orden creada con ID:", orderResult.saleId);
 
-
-
     // ===============================
     // GENERAR PDF (API.js)
     // ===============================
@@ -91,7 +108,9 @@ async function confirmPurchase(event) {
         customerName,
         customerEmail,
         items,
-        metodoPago
+        metodoPago,
+        cuponCodigo,
+        cuponDescuento
     };
 
     const pdfResult = await apiPost(
@@ -106,8 +125,6 @@ async function confirmPurchase(event) {
         console.error(pdfResult);
         return Swal.fire("Error", pdfResult.message || "No se pudo generar el PDF", "error");
     }
-
-
 
     // ===============================
     // ALERTAS
@@ -125,16 +142,12 @@ async function confirmPurchase(event) {
         showConfirmButton: true
     });
 
-
-
     // ===============================
     // LIMPIAR CARRITO (API.js)
     // ===============================
     await apiDelete("/auth/cart", {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
     });
-
-
 
     // ===============================
     // ABRIR PDF EN NUEVA PESTAÑA
@@ -148,8 +161,6 @@ async function confirmPurchase(event) {
         const url = URL.createObjectURL(blob);
         window.open(url, "_blank");
     }
-
-
 
     // ===============================
     // REDIRECCIÓN FINAL
