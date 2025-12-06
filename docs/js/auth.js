@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            await alertaExito("Cuenta creada correctamente. Inicia sesión.");
+            alertaExito("Cuenta creada correctamente. Inicia sesión.");
             window.location.href = "IniciarSesion.html";
         });
     }
