@@ -35,10 +35,12 @@ async function agregarAWishlist(producto) {
         return;
     }
 
+    const productId = producto.producto_id || producto.id;
+
     try {
         const res = await apiPost(
             "/auth/wishlist",
-            { productId: producto.id },
+            { productId },
             { Authorization: "Bearer " + token }
         );
 
@@ -50,6 +52,7 @@ async function agregarAWishlist(producto) {
         mostrarAlerta("Error al agregar a wishlist", "error");
     }
 }
+
 
 // ===============================
 // ELIMINAR DE WISHLIST (API)
