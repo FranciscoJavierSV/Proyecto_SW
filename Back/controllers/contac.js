@@ -30,7 +30,7 @@ const sendContact = async (req, res) => {
       <p>${mensaje}</p>
     `;
     
-    await enviarCorreo({
+    enviarCorreo({
       to: process.env.EMAIL_USER, 
       subject: "Nuevo mensaje de contacto - Sexta Armonía",
       html: contenidoHTML_admin
@@ -131,7 +131,7 @@ const subscribe = async ({ nombre, email }) => {
     `;
 
     // Enviar correo
-    await transporter.sendMail({
+    transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: email,
       subject: "Tu cupón de bienvenida - Sexta Armonía",
