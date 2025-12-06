@@ -1,4 +1,3 @@
-const API_URL = "http://localhost:3000/api/auth";
 
 // ELEMENTOS HTML
 const paso1 = document.querySelector(".paso-1");
@@ -23,13 +22,8 @@ document.querySelector(".btn-enviar").addEventListener("click", async () => {
         return;
     }
 
-    const res = await fetch(`${API_URL}/recovery`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo })
-    });
+    const data = await apiPost("/auth/recovery", { correo });
 
-    const data = await res.json();
     console.log("Paso 1:", data);
 
     if (!data.success) {
@@ -57,13 +51,8 @@ document.querySelector(".btn-validar").addEventListener("click", async () => {
         return;
     }
 
-    const res = await fetch(`${API_URL}/validate-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo: correoGuardado, token })
-    });
+    const data = await apiPost("/auth/validate-token", { correo: correoGuardado, token } );
 
-    const data = await res.json();
     console.log("Paso 2:", data);
 
     if (!data.success) {
@@ -89,16 +78,8 @@ document.querySelector(".btn-cambiar").addEventListener("click", async () => {
         return;
     }
 
-    const res = await fetch(`${API_URL}/change-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            correo: correoGuardado,
-            newPassword
-        })
-    });
+    const data = await apiPost("/auth/change-password", { correo: correoGuardado, newPassword } );
 
-    const data = await res.json();
     console.log("Paso 3:", data);
 
     if (!data.success) {

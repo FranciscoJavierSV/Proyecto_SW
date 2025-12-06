@@ -256,7 +256,6 @@ const getOrderDetails = async (req, res) => {
   }
 };
 
-
 const getOrderPDF = async (req, res) => {
   try {
     const {
@@ -267,7 +266,7 @@ const getOrderPDF = async (req, res) => {
       cuponCodigo,    
       cuponDescuento
     } = req.body;
-
+ 
     // Validación básica
     if (
       !customerName ||
@@ -282,49 +281,49 @@ const getOrderPDF = async (req, res) => {
         message: "Faltan campos obligatorios.",
       });
     }
-
+ 
     // Obtener país del usuario
     const [[usuario]] = await pool.query(
       `SELECT pais_id FROM usuarios WHERE id = ?`,
       [req.user.id]
     );
-
+ 
     if (!usuario) {
       return res.status(400).json({ success: false, message: "Usuario no encontrado" });
     }
-
+ 
     const [[pais]] = await pool.query(
       `SELECT iva, envio FROM paises WHERE id = ?`,
       [usuario.pais_id]
     );
-
+ 
     if (!pais) {
       return res.status(400).json({ success: false, message: "País no encontrado" });
     }
-
+ 
     const ivaRate = Number(pais.iva);
     const envio = Number(pais.envio);
-
+ 
     // Calcular subtotal
     const subtotal = items.reduce((acc, it) => {
       const cantidad = it.cantidad || 1;
       const precio = it.precioUnitario ?? (it.subtotal / cantidad);
       return acc + (precio * cantidad);
     }, 0);
-
+ 
     const descuento = cuponDescuento ? Number(cuponDescuento) : 0;
     const base = subtotal - descuento + envio;
     const total = Number((base * (1 + ivaRate)).toFixed(2));
-
+ 
     // ============================
     // PREPARAR CÓDIGO DE BARRAS (SI ES OXXO)
     // ============================
     let oxxoReference = null;
     let barcodeBuffer = null;
-
+ 
     if (metodoPago === "oxxo") {
       oxxoReference = uuidv4().replace(/-/g, "").slice(0, 12);
-
+ 
       try {
         barcodeBuffer = await bwipjs.toBuffer({
           bcid: "code128",
@@ -338,30 +337,30 @@ const getOrderPDF = async (req, res) => {
         console.warn("WARN: No se pudo generar código de barras:", err.message);
       }
     }
-
+ 
     // ============================
     // CREAR PDF EN MEMORIA
     // ============================
     const doc = new PDFDocument({ margin: 40 });
     let buffers = [];
-
+ 
     doc.on("data", buffers.push.bind(buffers));
-
+ 
     doc.on("end", async () => {
       const buffer = Buffer.concat(buffers);
       const pdfBase64 = buffer.toString("base64");
-
+ 
       // Responder al frontend
       res.json({
         success: true,
         message: "PDF generado (y se intentará enviar por correo).",
         pdfBase64
       });
-
+ 
       // Enviar correo en segundo plano
       try {
         let transporter;
-
+ 
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
           const testAccount = await nodemailer.createTestAccount();
           transporter = nodemailer.createTransport({
@@ -383,7 +382,7 @@ const getOrderPDF = async (req, res) => {
             }
           });
         }
-
+ 
         const info = await transporter.sendMail({
           from: `"${process.env.COMPANY_NAME || "Tienda"}" <${process.env.EMAIL_USER || 'no-reply@example.com'}>`,
           to: customerEmail,
@@ -393,22 +392,22 @@ const getOrderPDF = async (req, res) => {
             { filename: "order.pdf", content: buffer, contentType: "application/pdf" }
           ]
         });
-
+ 
         console.log("✅ Correo de orden enviado. messageId:", info && info.messageId);
-
+ 
         if (nodemailer.getTestMessageUrl && info) {
           console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
         }
-
+ 
       } catch (mailErr) {
         console.error("❌ ERROR al enviar email de orden:", mailErr);
       }
     });
-
+ 
     // ============================
     // CONTENIDO DEL PDF
     // ============================
-
+ 
     // Encabezado: logo + nombre + lema
     const logoPath = path.join(__dirname, "..", "assets", "logo.jpg");
     if (fs.existsSync(logoPath)) {
@@ -418,25 +417,25 @@ const getOrderPDF = async (req, res) => {
         console.warn("WARN: No se pudo insertar logo en PDF:", err.message);
       }
     }
-
+ 
     doc
       .fontSize(20)
       .text(process.env.COMPANY_NAME || "Sexta Armonía", 140, 50)
       .fontSize(12)
       .text(`"${process.env.COMPANY_SLOGAN || "Tu café favorito a un clic de distancia"}"`, 140, 75);
-
+ 
     const now = new Date();
     doc
       .fontSize(10)
       .text(`Fecha: ${now.toLocaleDateString()}`, 40, 130)
       .text(`Hora: ${now.toLocaleTimeString()}`);
-
+ 
     doc.moveDown(2);
-
+ 
     // Información del cliente
     doc.fontSize(16).text("Información del Cliente").moveDown(0.5);
     doc.fontSize(12).text(`Nombre: ${customerName}`).moveDown();
-
+ 
     // Detalles de la compra
     doc.fontSize(16).text("Detalles de la Compra").moveDown();
     items.forEach((item, idx) => {
@@ -445,7 +444,7 @@ const getOrderPDF = async (req, res) => {
         item.precioUnitario ?? (item.subtotal ? item.subtotal / cantidad : 0);
       const totalItem =
         item.total ?? item.subtotal ?? (precioUnitario * cantidad);
-
+ 
       doc
         .fontSize(12)
         .text(
@@ -454,44 +453,44 @@ const getOrderPDF = async (req, res) => {
           ).toFixed(2)} | Total: $${Number(totalItem).toFixed(2)}`
         );
     });
-
+ 
     doc.moveDown(2);
-
+ 
     // Resumen de pago
     doc.fontSize(16).text("Resumen de Pago").moveDown(0.5);
     doc.fontSize(12).text(`Subtotal: $${subtotal.toFixed(2)}`);
-
+ 
     if (cuponCodigo) {
       doc.text(`Cupón aplicado (${cuponCodigo}): -$${descuento.toFixed(2)}`);
     }
-
+ 
     doc.text(`Envío: $${envio.toFixed(2)}`);
     doc.text(`IVA (${ivaRate * 100}%): $${(base * ivaRate).toFixed(2)}`);
-    
+   
     doc.moveDown(0.5);
     doc.fontSize(14).text(`TOTAL: $${total.toFixed(2)}`);
-
+ 
     doc.moveDown(2);
-
+ 
     // Sección OXXO (solo si aplica)
     if (metodoPago === "oxxo") {
       doc.fontSize(18).text("PAGO EN OXXO").moveDown();
       doc.fontSize(12).text("Presenta este código en caja para realizar tu pago.").moveDown();
-
+ 
       if (barcodeBuffer) {
         doc.image(barcodeBuffer, { width: 260 });
       } else {
         doc.fontSize(10).text("No se pudo generar el código de barras.").moveDown();
       }
-
+ 
       doc.moveDown(1);
       doc.fontSize(12).text(`Referencia: ${oxxoReference}`);
       doc.moveDown(1);
     }
-
+ 
     // Cerrar el PDF (esto dispara luego el evento "end")
     doc.end();
-
+ 
   } catch (error) {
     console.error("ERROR PDF:", error);
     return res.status(500).json({
@@ -501,9 +500,7 @@ const getOrderPDF = async (req, res) => {
     });
   }
 };
-
-
-
+ 
 // --------------------------- GRÁFICA DE VENTAS ---------------------------
 const getSalesChart = async (req, res) => {
   try {

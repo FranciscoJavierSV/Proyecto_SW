@@ -66,13 +66,9 @@ function inicializarContacto() {
         const correo = document.getElementById("contactEmail").value.trim();
         const mensaje = document.getElementById("contactMessage").value.trim();
 
-        const res = await fetch("http://localhost:3000/api/public/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre, correo, mensaje })
-        });
+        const data = await apiPost("/public/contact", {
+            nombre, correo, mensaje });
 
-        const data = await res.json();
         console.log("Respuesta del backend:", data);
 
         if (data.success) {

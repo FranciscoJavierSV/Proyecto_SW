@@ -25,7 +25,7 @@ async function apiGet(endpoint, extraHeaders = {}) {
 
   return res.json();
 }
-
+ 
 async function apiDelete(endpoint, extraHeaders = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: "DELETE",
